@@ -27,17 +27,8 @@ public class PostgresCommands {
 
   private static final Logger log = LoggerFactory.getLogger(Commands.class);
 
-  private static final String LOG_READY_MATCH = "LOG:  database system is ready to accept connections";
-
   // docker exec -i app_db_1 psql -U postgres < app_development.back
   // docker exec -i ut_postgres psql -U postgres < hello.sql
-  // docker exec -i ut_postgres psql -U postgres -c "create role frank with password 'f';"
-
-//  docker exec -i ut_postgres psql -U postgres -c "\l"
-//
-//  docker exec -i ut_postgres psql -U postgres -c "SELECT 1 FROM pg_database WHERE datname = 'my_db'"
-
-  //psql -U postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'my_db'"
 
   private final PostgresConfig config;
 
