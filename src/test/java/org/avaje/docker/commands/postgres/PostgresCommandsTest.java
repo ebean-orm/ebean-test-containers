@@ -20,8 +20,11 @@ public class PostgresCommandsTest {
 
     PostgresCommands pg = new PostgresCommands(config);
 
-    pg.startWithDropCreate();
+    //pg.startWithDropCreate();
 
+    pg.start("dropCreate");
+    pg.start("container");
+    pg.start("normal");
 
     String url = "jdbc:postgresql://localhost:"+config.hostPort+"/"+config.dbName;
 

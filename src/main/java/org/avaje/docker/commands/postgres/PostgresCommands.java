@@ -39,6 +39,34 @@ public class PostgresCommands {
     this.commands = new Commands(config.docker);
   }
 
+  private boolean userDefined() {
+    return isDefined(config.dbUser);
+  }
+
+  private boolean databaseDefined() {
+    return isDefined(config.dbName);
+  }
+
+  private boolean isDefined(String value) {
+    return value != null && !value.equalsIgnoreCase("none");
+  }
+
+  /**
+   * Start with a mode of 'dropCreate', 'container' or otherwise start normally.
+   */
+  public boolean start(String mode) {
+
+    if ("dropcreate".equalsIgnoreCase(mode)) {
+      return startWithDropCreate();
+
+    } else if ("container".equalsIgnoreCase(mode)){
+      return startContainerOnly();
+
+    } else {
+      return start();
+    }
+  }
+
   /**
    * Start the container and wait for it to be ready.
    * <p>
@@ -54,13 +82,8 @@ public class PostgresCommands {
       log.warn("Failed waitForDatabaseReady for postgres container {}", config.name);
       return false;
     }
-    if (!userExists()) {
-      createUser();
-    }
-    if (!databaseExists()) {
-      createDatabase();
-    }
-
+    createUser(true);
+    createDatabase(true);
     createDatabaseExtensions();
 
     if (!waitForIpConnectivity()) {
@@ -70,21 +93,37 @@ public class PostgresCommands {
     return true;
   }
 
+
+
   public boolean startWithDropCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for postgres container {}", config.name);
       return false;
     }
-    if (databaseExists()) {
-      dropDatabase();
-    }
-    if (userExists()) {
-      dropUser();
-    }
-    createUser();
-    createDatabase();
+
+    dropDatabaseIfExists();
+    dropUserIfExists();
+    createUser(false);
+    createDatabase(false);
     createDatabaseExtensions();
+
+    if (!waitForIpConnectivity()) {
+      log.warn("Failed waiting for connectivity");
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Start the container only without creating database, user, extensions etc.
+   */
+  public boolean startContainerOnly() {
+    startIfNeeded();
+    if (!waitForDatabaseReady()) {
+      log.warn("Failed waitForDatabaseReady for postgres container {}", config.name);
+      return false;
+    }
 
     if (!waitForIpConnectivity()) {
       log.warn("Failed waiting for connectivity");
@@ -140,7 +179,10 @@ public class PostgresCommands {
   /**
    * Create the database user.
    */
-  public boolean createUser() {
+  public boolean createUser(boolean checkExists) {
+    if (!userDefined() || (checkExists && userExists())) {
+      return false;
+    }
     log.debug("create postgres user {}", config.name);
     ProcessBuilder pb = createRole(config.dbUser, config.dbPassword);
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
@@ -148,9 +190,14 @@ public class PostgresCommands {
   }
 
   /**
-   * Create the database.
+   * Create the database with the option of checking if if already exists.
+   *
+   * @param checkExists When true check the database doesn't already exists
    */
-  public boolean createDatabase() {
+  public boolean createDatabase(boolean checkExists) {
+    if (!databaseDefined() || (checkExists && databaseExists())) {
+      return false;
+    }
     log.debug("create postgres database {} with owner {}", config.dbName, config.dbUser);
     ProcessBuilder pb = createDatabase(config.dbName, config.dbUser);
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
@@ -158,14 +205,14 @@ public class PostgresCommands {
   }
 
   /**
-   * Create the database.
+   * Create the database extensions if defined.
    */
   public void createDatabaseExtensions() {
 
-    String extn = config.dbExtensions;
-    if (extn != null) {
-      log.debug("create database extensions {}", extn);
-      String[] extns = extn.split(",");
+    String dbExtn = config.dbExtensions;
+    if (isDefined(dbExtn)) {
+      log.debug("create database extensions {}", dbExtn);
+      String[] extns = dbExtn.split(",");
       for (String extension : extns) {
         ProcessHandler.process(createDatabaseExtension(extension));
       }
@@ -191,9 +238,12 @@ public class PostgresCommands {
   }
 
   /**
-   * Drop the database.
+   * Drop the database if it exists.
    */
-  public boolean dropDatabase() {
+  public boolean dropDatabaseIfExists() {
+    if (!databaseDefined() || !databaseExists()) {
+      return false;
+    }
     log.debug("drop postgres database {}", config.dbName);
     ProcessBuilder pb = dropDatabase(config.dbName);
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
@@ -201,9 +251,13 @@ public class PostgresCommands {
   }
 
   /**
-   * Drop the database user.
+   * Drop the database user if it exists.
    */
-  public boolean dropUser() {
+  public boolean dropUserIfExists() {
+
+    if (!userDefined() || !userExists()){
+      return false;
+    }
     log.debug("drop postgres user {}", config.dbUser);
     ProcessBuilder pb = dropUser(config.dbUser);
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
@@ -227,10 +281,6 @@ public class PostgresCommands {
     } catch (IOException e) {
       return false;
     }
-//
-//    return new WaitForLog(config.name, LOG_READY_MATCH)
-//      .withMaxWait(config.maxLogReadyAttempts)
-//      .waitForReady();
   }
 
   /**
@@ -253,7 +303,7 @@ public class PostgresCommands {
   }
 
   /**
-   * Return true when we can make (JDBC) IP connections to the database.
+   * Return true when we can make IP connections to the database (JDBC).
    */
   public boolean waitForIpConnectivity() {
     for (int i = 0; i < 20; i++) {
@@ -270,10 +320,17 @@ public class PostgresCommands {
     return false;
   }
 
-  private boolean checkJdbcConnection() {
+  /**
+   * Return a Connection to the database (make sure you close it).
+   */
+  public Connection createConnection() throws SQLException {
     String url = "jdbc:postgresql://localhost:" + config.hostPort + "/" + config.dbName;
+    return DriverManager.getConnection(url, config.dbUser, config.dbPassword);
+  }
+
+  private boolean checkJdbcConnection() {
     try {
-      Connection connection = DriverManager.getConnection(url, config.dbUser, config.dbPassword);
+      Connection connection = createConnection();
       connection.close();
       log.debug("connectivity confirmed");
       return true;
