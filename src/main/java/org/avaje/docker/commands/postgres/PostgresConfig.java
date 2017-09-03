@@ -5,52 +5,52 @@ public class PostgresConfig {
   /**
    * Container name.
    */
-  String name = "ut_postgres";
+  public String name = "ut_postgres";
 
   /**
    * The exposed port.
    */
-  String hostPort = "6432";
+  public String hostPort = "6432";
 
   /**
    * The internal port.
    */
-  String pgPort = "5432";
+  public String pgPort = "5432";
 
   /**
    * Postgres admin password.
    */
-  String pgPassword = "admin";
+  public String pgPassword = "admin";
 
   /**
    * Set for in-memory tmpfs use.
    */
-  String tmpfs = "/var/lib/postgresql/data:rw";
+  public String tmpfs = "/var/lib/postgresql/data:rw";
 
   /**
    * Image name.
    */
-  String image = "postgres:9.5.4";
+  public String image = "postgres:9.5.4";
 
   /**
    * Database name to use.
    */
-  String dbName = "test_db";
+  public String dbName = "test_db";
 
   /**
    * Database user to use.
    */
-  String dbUser = "test_user";
+  public String dbUser = "test_user";
 
   /**
    * Database password for the user.
    */
-  String dbPassword = "test";
+  public String dbPassword = "test";
 
   /**
    * Comma delimited list of database extensions required (hstore, pgcrypto etc).
    */
-  String dbExtensions;
+  public String dbExtensions;
 
   /**
    * Maximum number of attempts to find the 'database ready to accept connections' log message in the container.
@@ -58,12 +58,12 @@ public class PostgresConfig {
    * 50 attempts equates to 5 seconds.
    * </p>
    */
-  int maxLogReadyAttempts = 50;
+  public int maxLogReadyAttempts = 50;
 
   /**
    * Docker command.
    */
-  String docker = "docker";
+  public String docker = "docker";
 
 
   public PostgresConfig withName(String name) {
