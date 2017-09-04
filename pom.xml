@@ -10,11 +10,11 @@
 
   <groupId>org.avaje.docker</groupId>
   <artifactId>docker-commands</artifactId>
-  <version>0.9.3-SNAPSHOT</version>
+  <version>0.9.3</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/docker-commands.git</developerConnection>
-    <tag>HEAD</tag>
+    <tag>docker-commands-0.9.3</tag>
   </scm>
 
   <dependencies>
