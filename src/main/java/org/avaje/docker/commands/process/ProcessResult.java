@@ -1,37 +1,63 @@
 package org.avaje.docker.commands.process;
 
-import org.avaje.docker.commands.CommandException;
-
 import java.util.List;
 
+/**
+ * The result of an external process call.
+ */
 public class ProcessResult {
 
   final int result;
   final List<String> stdOutLines;
   final List<String> stdErrLines;
 
+  /**
+   * Create with the result exit code and std out and err content.
+   */
   public ProcessResult(int result, List<String> stdOutLines, List<String> stdErrLines) {
     this.result = result;
     this.stdOutLines = stdOutLines;
     this.stdErrLines = stdErrLines;
   }
 
+  /**
+   * Return true if exit result was 0.
+   */
+  public boolean success() {
+    return result == 0;
+  }
+
+  /**
+   * Return the exit result code.
+   */
   public int getResult() {
     return result;
   }
 
+  /**
+   * Return the STD OUT lines.
+   */
   public List<String> getStdOutLines() {
     return stdOutLines;
   }
 
+  /**
+   * Return the STD ERR lines.
+   */
   public List<String> getStdErrLines() {
     return stdErrLines;
   }
 
+  /**
+   * Return all the STD OUT content.
+   */
   public String stdOut() {
     return lines(stdOutLines);
   }
 
+  /**
+   * Return all the STD err content.
+   */
   public String stdErr() {
     return lines(stdErrLines);
   }
@@ -54,14 +80,5 @@ public class ProcessResult {
     return sb.toString();
   }
 
-  public boolean success() {
-    return result == 0;
-  }
 
-  public void reportFail(String message) {
-    if (!success()) {
-      System.err.println("DEBUG:"+debug());
-      throw new CommandException(message, this);
-    }
-  }
 }

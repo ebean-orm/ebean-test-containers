@@ -14,12 +14,12 @@ import java.util.List;
 
 /**
  * Commands for controlling a postgres docker container.
- *
+ * <p>
  * <p>
  * References:
  * </p>
  * <ul>
- *   <li>https://github.com/docker-library/postgres/issues/146</li>
+ * <li>https://github.com/docker-library/postgres/issues/146</li>
  * </ul>
  */
 public class PostgresCommands implements DbCommands {
@@ -49,17 +49,21 @@ public class PostgresCommands implements DbCommands {
 
   /**
    * Start with a mode of 'create', 'dropCreate' or 'container'.
-   *
+   * <p>
    * Expected that mode create will be best most of the time.
    */
   public boolean start() {
 
     String mode = config.dbStartMode.toLowerCase().trim();
     switch (mode) {
-      case "create" : return startWithCreate();
-      case "dropcreate" : return startWithDropCreate();
-      case "container" : return startContainerOnly();
-      default: return startWithCreate();
+      case "create":
+        return startWithCreate();
+      case "dropcreate":
+        return startWithDropCreate();
+      case "container":
+        return startContainerOnly();
+      default:
+        return startWithCreate();
     }
   }
 
@@ -147,7 +151,7 @@ public class PostgresCommands implements DbCommands {
 
   /**
    * Stop using the configured stopMode of 'stop' or 'remove'.
-   *
+   * <p>
    * Remove additionally removes the container (expected use in build agents).
    */
   public void stop() {
@@ -260,7 +264,7 @@ public class PostgresCommands implements DbCommands {
     args.add("-d");
     args.add(config.dbName);
     args.add("-c");
-    args.add("create extension if not exists "+extension);
+    args.add("create extension if not exists " + extension);
 
     return createProcessBuilder(args);
   }
@@ -283,7 +287,7 @@ public class PostgresCommands implements DbCommands {
    */
   public boolean dropUserIfExists() {
 
-    if (!userDefined() || !userExists()){
+    if (!userDefined() || !userExists()) {
       return false;
     }
     log.debug("drop postgres user {}", config.dbUser);
@@ -437,17 +441,10 @@ public class PostgresCommands implements DbCommands {
 
   private ProcessBuilder pgIsReady() {
 
-    // try not to depend on locally installed pg_isready
-    // pg_isready -h localhost -p 9823
-//    args.add("pg_isready");
-//    args.add("-h");
-//    args.add("localhost");
-//    args.add("-p");
-//    args.add(config.hostPort);
+    // not depending on locally installed pg_isready
 
     List<String> args = new ArrayList<>();
 
-    //docker exec -i junk_postgres pg_isready
     args.add(config.docker);
     args.add("exec");
     args.add("-i");

@@ -10,6 +10,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handle the external process response (exit code, std out, std err).
+ */
 public class ProcessHandler {
 
   private static final Logger log = LoggerFactory.getLogger(ProcessHandler.class);
@@ -27,7 +30,9 @@ public class ProcessHandler {
     return process(new ProcessBuilder(command));
   }
 
-
+  /**
+   * Process a command.
+   */
   public static ProcessResult process(ProcessBuilder pb) {
     try {
       ProcessResult result = process(pb.start());

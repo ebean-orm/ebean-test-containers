@@ -4,28 +4,26 @@ import org.junit.Test;
 
 import java.util.Properties;
 
-import static org.junit.Assert.*;
-
 public class DbConfigFactoryTest {
 
-	@Test
-	public void create() throws Exception {
+  @Test
+  public void create() throws Exception {
 
-		Properties properties = new Properties();
-		properties.setProperty("dbPlatform", "postgres");
-		properties.setProperty("dbName", "test_roberto");
-		properties.setProperty("dbUser", "test_robino");
-		properties.setProperty("dbExtensions", "hstore,pgcrypto");
+    Properties properties = new Properties();
+    properties.setProperty("dbPlatform", "postgres");
+    properties.setProperty("dbName", "test_roberto");
+    properties.setProperty("dbUser", "test_robino");
+    properties.setProperty("dbExtensions", "hstore,pgcrypto");
 
-		DbConfig dbConfig = DbConfigFactory.create(properties);
+    DbConfig dbConfig = DbConfigFactory.create(properties);
 
-		if (dbConfig.hasPlatform()) {
-			DbCommands commands = DbConfigFactory.createCommands(dbConfig);
+    if (dbConfig.hasPlatform()) {
+      DbCommands commands = DbConfigFactory.createCommands(dbConfig);
 
-			commands.start();
-			commands.stop();
-		}
+      commands.start();
+      commands.stop();
+    }
 
-	}
+  }
 
 }

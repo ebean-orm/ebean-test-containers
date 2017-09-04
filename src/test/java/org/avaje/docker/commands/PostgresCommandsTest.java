@@ -15,7 +15,7 @@ public class PostgresCommandsTest {
     DbConfig config =
       new DbConfig()
         .withName("junk_postgres")
-        .withHostPort("9823")
+        .withDbPort("9823")
         .withDbExtensions("hstore,pgcrypto");
 
     PostgresCommands pg = new PostgresCommands(config);
@@ -31,7 +31,7 @@ public class PostgresCommandsTest {
     config.dbStartMode = "create";
     pg.start();
 
-    String url = "jdbc:postgresql://localhost:"+config.dbPort +"/"+config.dbName;
+    String url = "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;
 
     try {
       Connection connection = DriverManager.getConnection(url, config.dbUser, config.dbPassword);

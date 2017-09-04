@@ -12,17 +12,19 @@ import java.util.List;
  */
 public class Commands {
 
-
   private static final Logger log = LoggerFactory.getLogger(Commands.class);
 
   private final String docker;
 
+  /**
+   * Create with 'docker' as the command.
+   */
   public Commands() {
     this("docker");
   }
 
   /**
-   * Construct with alternate docker command (like docker-compose?)
+   * Construct with explicit docker command.
    */
   public Commands(String docker) {
     this.docker = docker;
@@ -61,7 +63,7 @@ public class Commands {
    */
   public void remove(String containerName) {
     log.debug("remove {}", containerName);
-    ProcessHandler.command("docker", "rm", containerName);
+    ProcessHandler.command(docker, "rm", containerName);
   }
 
   /**
@@ -69,7 +71,7 @@ public class Commands {
    */
   public void start(String containerName) {
     log.debug("start {}", containerName);
-    ProcessHandler.command("docker", "start", containerName);
+    ProcessHandler.command(docker, "start", containerName);
   }
 
   /**
@@ -77,7 +79,7 @@ public class Commands {
    */
   public void stop(String containerName) {
     log.debug("stop {}", containerName);
-    ProcessHandler.command("docker", "stop", containerName);
+    ProcessHandler.command(docker, "stop", containerName);
   }
 
   /**
@@ -98,7 +100,7 @@ public class Commands {
    * Return the list of containers currently running.
    */
   private List<String> running() {
-    ProcessResult result = ProcessHandler.command("docker", "ps", "--format", "{{.Names}}");
+    ProcessResult result = ProcessHandler.command(docker, "ps", "--format", "{{.Names}}");
     return result.getStdOutLines();
   }
 
@@ -106,7 +108,7 @@ public class Commands {
    * Return the list of containers which maybe running or not.
    */
   private List<String> registered() {
-    ProcessResult result = ProcessHandler.command("docker", "ps", "-a", "--format", "{{.Names}}");
+    ProcessResult result = ProcessHandler.command(docker, "ps", "-a", "--format", "{{.Names}}");
     return result.getStdOutLines();
   }
 
@@ -143,22 +145,11 @@ public class Commands {
 
     ProcessResult result;
     if (tail > 0) {
-      result = ProcessHandler.command("docker", "logs", "--tail", Integer.toString(tail), containerName);
+      result = ProcessHandler.command(docker, "logs", "--tail", Integer.toString(tail), containerName);
     } else {
-      result = ProcessHandler.command("docker", "logs", containerName);
+      result = ProcessHandler.command(docker, "logs", containerName);
     }
     return result.getStdOutLines();
   }
 
-  //  private static String[] PS_COLUMNS = {"CONTAINER ID", "IMAGE", "COMMAND", "CREATED", "STATUS", "PORTS", "NAMES"};
-
-
-  //  public boolean isRunning(String containerName) {
-//    return ps().exists("NAMES", containerName);
-//  }
-
-//  private OutputMeta ps() {
-//    ProcessResult result = ProcessHandler.command("docker", "ps");
-//    return OutputParser.parse(result.getStdOutLines(), PS_COLUMNS);
-//  }
 }
