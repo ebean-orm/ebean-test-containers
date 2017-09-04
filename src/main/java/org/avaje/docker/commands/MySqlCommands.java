@@ -1,31 +1,60 @@
 package org.avaje.docker.commands;
 
-public class MySqlCommands implements DbCommands {
+import java.util.ArrayList;
+import java.util.List;
 
-  private DbConfig config;
+public class MySqlCommands extends BaseDbCommands implements DbCommands {
 
   public MySqlCommands(DbConfig config) {
-    this.config = config;
+    super(config);
   }
 
   @Override
   public boolean start() {
-    return false;
+    startIfNeeded();
+    if (!waitForConnectivity()) {
+      log.warn("Failed waiting for connectivity");
+      return false;
+    }
+    return true;
+  }
+
+  protected String jdbcUrl() {
+    return "jdbc:mysql://localhost:" + config.dbPort + "/" + config.dbName;
   }
 
   @Override
-  public void stop() {
+  protected ProcessBuilder runProcess() {
 
-  }
+    List<String> args = new ArrayList<>();
+    args.add(config.docker);
+    args.add("run");
+    args.add("-d");
+    args.add("--name");
+    args.add(config.name);
+    args.add("-p");
+    args.add(config.dbPort + ":" + config.internalPort);
 
-  @Override
-  public String getStartDescription() {
-    return config.getStartDescription();
-  }
+    if (defined(config.dbAdminPassword)) {
+      args.add("-e");
+      args.add("MYSQL_ROOT_PASSWORD="+config.dbAdminPassword);
+    }
+    if (defined(config.dbName)) {
+      args.add("-e");
+      args.add("MYSQL_DATABASE="+config.dbName);
+    }
+    if (defined(config.dbUser)) {
+      args.add("-e");
+      args.add("MYSQL_USER="+config.dbUser);
+    }
+    if (defined(config.dbPassword)) {
+      args.add("-e");
+      args.add("MYSQL_PASSWORD="+config.dbPassword);
+    }
 
-  @Override
-  public String getStopDescription() {
-    return config.getStopDescription();
+    args.add(config.image);
+
+    return createProcessBuilder(args);
   }
 
 }

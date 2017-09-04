@@ -2,19 +2,13 @@ package org.avaje.docker.commands;
 
 import org.avaje.docker.commands.process.ProcessHandler;
 import org.avaje.docker.commands.process.ProcessResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Commands for controlling a postgres docker container.
- * <p>
  * <p>
  * References:
  * </p>
@@ -22,29 +16,10 @@ import java.util.List;
  * <li>https://github.com/docker-library/postgres/issues/146</li>
  * </ul>
  */
-public class PostgresCommands implements DbCommands {
-
-  private static final Logger log = LoggerFactory.getLogger(Commands.class);
-
-  // docker exec -i ut_postgres psql -U postgres < hello.sql
-
-  private final DbConfig config;
-
-  private final Commands commands;
+public class PostgresCommands extends BaseDbCommands implements DbCommands {
 
   public PostgresCommands(DbConfig config) {
-    this.config = config;
-    this.commands = new Commands(config.docker);
-  }
-
-  @Override
-  public String getStartDescription() {
-    return config.getStartDescription();
-  }
-
-  @Override
-  public String getStopDescription() {
-    return config.getStopDescription();
+    super(config);
   }
 
   /**
@@ -86,7 +61,7 @@ public class PostgresCommands implements DbCommands {
     createDatabase(true);
     createDatabaseExtensions();
 
-    if (!waitForIpConnectivity()) {
+    if (!waitForConnectivity()) {
       log.warn("Failed waiting for connectivity");
       return false;
     }
@@ -109,7 +84,7 @@ public class PostgresCommands implements DbCommands {
     createDatabase(false);
     createDatabaseExtensions();
 
-    if (!waitForIpConnectivity()) {
+    if (!waitForConnectivity()) {
       log.warn("Failed waiting for connectivity");
       return false;
     }
@@ -126,60 +101,11 @@ public class PostgresCommands implements DbCommands {
       return false;
     }
 
-    if (!waitForIpConnectivity()) {
+    if (!waitForConnectivity()) {
       log.warn("Failed waiting for connectivity");
       return false;
     }
     return true;
-  }
-
-  /**
-   * Start the container checking if it is already running.
-   */
-  public void startIfNeeded() {
-
-    if (!commands.isRunning(config.name)) {
-      if (commands.isRegistered(config.name)) {
-        commands.start(config.name);
-
-      } else {
-        log.debug("run postgres container {}", config.name);
-        ProcessHandler.process(run());
-      }
-    }
-  }
-
-  /**
-   * Stop using the configured stopMode of 'stop' or 'remove'.
-   * <p>
-   * Remove additionally removes the container (expected use in build agents).
-   */
-  public void stop() {
-    String mode = config.dbStopMode.toLowerCase().trim();
-    switch (mode) {
-      case "stop":
-        stop();
-        break;
-      case "remove":
-        stopContainerRemove();
-        break;
-      default:
-        stopContainer();
-    }
-  }
-
-  /**
-   * Stop and remove the container effectively deleting the database.
-   */
-  public void stopContainerRemove() {
-    commands.stopRemove(config.name);
-  }
-
-  /**
-   * Stop the postgres container.
-   */
-  public void stopContainer() {
-    commands.stopIfRunning(config.name);
   }
 
   /**
@@ -230,7 +156,7 @@ public class PostgresCommands implements DbCommands {
   public void createDatabaseExtensions() {
 
     String dbExtn = config.dbExtensions;
-    if (isDefined(dbExtn)) {
+    if (defined(dbExtn)) {
       log.debug("create database extensions {}", dbExtn);
       String[] extns = dbExtn.split(",");
       for (String extension : extns) {
@@ -239,17 +165,6 @@ public class PostgresCommands implements DbCommands {
     }
   }
 
-  private boolean userDefined() {
-    return isDefined(config.dbUser);
-  }
-
-  private boolean databaseDefined() {
-    return isDefined(config.dbName);
-  }
-
-  private boolean isDefined(String value) {
-    return value != null && !value.trim().isEmpty();
-  }
 
   private ProcessBuilder createDatabaseExtension(String extension) {
     //docker exec -i ut_postgres psql -U postgres -d test_db -c "create extension if not exists pgcrypto";
@@ -334,43 +249,9 @@ public class PostgresCommands implements DbCommands {
     }
   }
 
-  /**
-   * Return true when we can make IP connections to the database (JDBC).
-   */
-  public boolean waitForIpConnectivity() {
-    for (int i = 0; i < 20; i++) {
-      if (checkJdbcConnection()) {
-        return true;
-      }
-      try {
-        Thread.sleep(200);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        return false;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * Return a Connection to the database (make sure you close it).
-   */
-  public Connection createConnection() throws SQLException {
-    String url = "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;
-    return DriverManager.getConnection(url, config.dbUser, config.dbPassword);
-  }
-
-  private boolean checkJdbcConnection() {
-    try {
-      Connection connection = createConnection();
-      connection.close();
-      log.debug("connectivity confirmed");
-      return true;
-
-    } catch (SQLException e) {
-      log.trace("connection failed: " + e.getMessage());
-      return false;
-    }
+  @Override
+  protected String jdbcUrl() {
+    return "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;
   }
 
   private boolean hasZeroRows(ProcessBuilder pb) {
@@ -416,11 +297,13 @@ public class PostgresCommands implements DbCommands {
     return createProcessBuilder(args);
   }
 
-  private ProcessBuilder run() {
+  @Override
+  protected ProcessBuilder runProcess() {
 
     List<String> args = new ArrayList<>();
     args.add(config.docker);
     args.add("run");
+    args.add("-d");
     args.add("--name");
     args.add(config.name);
     args.add("-p");
@@ -433,7 +316,6 @@ public class PostgresCommands implements DbCommands {
 
     args.add("-e");
     args.add(config.dbAdminPassword);
-    args.add("-d");
     args.add(config.image);
 
     return createProcessBuilder(args);
@@ -456,12 +338,6 @@ public class PostgresCommands implements DbCommands {
     args.add(config.internalPort);
 
     return createProcessBuilder(args);
-  }
-
-  private ProcessBuilder createProcessBuilder(List<String> args) {
-    ProcessBuilder pb = new ProcessBuilder();
-    pb.command(args);
-    return pb;
   }
 
   private boolean hasZeroRows(List<String> stdOutLines) {

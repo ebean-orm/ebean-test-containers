@@ -78,7 +78,12 @@ public class DbConfigFactory {
   }
 
   private DbConfig applyMySqlDefaults(DbConfig dbConfig) {
-    // TODO MySql defaults
+
+    dbConfig.image = "mysql:5.7";
+    dbConfig.name = "ut_mysql";
+    dbConfig.dbPort = "4306";
+    dbConfig.internalPort = "3306";
+    dbConfig.tmpfs = "/var/lib/mysql:rw";
     return dbConfig;
   }
 

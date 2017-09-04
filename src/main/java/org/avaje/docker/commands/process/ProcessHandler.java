@@ -37,7 +37,7 @@ public class ProcessHandler {
     try {
       ProcessResult result = process(pb.start());
       if (!result.success()) {
-        throw new CommandException("command failed", result);
+        throw new CommandException("command failed: " + result.getStdErrLines(), result);
       }
       return result;
 
