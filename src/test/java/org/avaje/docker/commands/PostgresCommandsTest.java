@@ -1,4 +1,4 @@
-package org.avaje.docker.commands.postgres;
+package org.avaje.docker.commands;
 
 import org.junit.Test;
 
@@ -12,8 +12,8 @@ public class PostgresCommandsTest {
   @Test
   public void basic() throws InterruptedException {
 
-    PostgresConfig config =
-      new PostgresConfig()
+    DbConfig config =
+      new DbConfig()
         .withName("junk_postgres")
         .withHostPort("9823")
         .withDbExtensions("hstore,pgcrypto");
@@ -22,11 +22,16 @@ public class PostgresCommandsTest {
 
     //pg.startWithDropCreate();
 
-    pg.start("dropCreate");
-    pg.start("container");
-    pg.start("normal");
+    config.dbStartMode = "dropCreate";
+    pg.start();
 
-    String url = "jdbc:postgresql://localhost:"+config.hostPort+"/"+config.dbName;
+    config.dbStartMode = "container";
+    pg.start();
+
+    config.dbStartMode = "create";
+    pg.start();
+
+    String url = "jdbc:postgresql://localhost:"+config.dbPort +"/"+config.dbName;
 
     try {
       Connection connection = DriverManager.getConnection(url, config.dbUser, config.dbPassword);
@@ -40,7 +45,7 @@ public class PostgresCommandsTest {
       throw new RuntimeException(e);
 
     } finally {
-      pg.stopRemove();
+      pg.stop();
     }
   }
 

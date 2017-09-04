@@ -1,6 +1,5 @@
-package org.avaje.docker.commands.postgres;
+package org.avaje.docker.commands;
 
-import org.avaje.docker.commands.Commands;
 import org.avaje.docker.commands.process.ProcessHandler;
 import org.avaje.docker.commands.process.ProcessResult;
 import org.slf4j.Logger;
@@ -23,47 +22,44 @@ import java.util.List;
  *   <li>https://github.com/docker-library/postgres/issues/146</li>
  * </ul>
  */
-public class PostgresCommands {
+public class PostgresCommands implements DbCommands {
 
   private static final Logger log = LoggerFactory.getLogger(Commands.class);
 
-  // docker exec -i app_db_1 psql -U postgres < app_development.back
   // docker exec -i ut_postgres psql -U postgres < hello.sql
 
-  private final PostgresConfig config;
+  private final DbConfig config;
 
   private final Commands commands;
 
-  public PostgresCommands(PostgresConfig config) {
+  public PostgresCommands(DbConfig config) {
     this.config = config;
     this.commands = new Commands(config.docker);
   }
 
-  private boolean userDefined() {
-    return isDefined(config.dbUser);
+  @Override
+  public String getStartDescription() {
+    return config.getStartDescription();
   }
 
-  private boolean databaseDefined() {
-    return isDefined(config.dbName);
-  }
-
-  private boolean isDefined(String value) {
-    return value != null && !value.equalsIgnoreCase("none");
+  @Override
+  public String getStopDescription() {
+    return config.getStopDescription();
   }
 
   /**
-   * Start with a mode of 'dropCreate', 'container' or otherwise start normally.
+   * Start with a mode of 'create', 'dropCreate' or 'container'.
+   *
+   * Expected that mode create will be best most of the time.
    */
-  public boolean start(String mode) {
+  public boolean start() {
 
-    if ("dropcreate".equalsIgnoreCase(mode)) {
-      return startWithDropCreate();
-
-    } else if ("container".equalsIgnoreCase(mode)){
-      return startContainerOnly();
-
-    } else {
-      return start();
+    String mode = config.dbStartMode.toLowerCase().trim();
+    switch (mode) {
+      case "create" : return startWithCreate();
+      case "dropcreate" : return startWithDropCreate();
+      case "container" : return startContainerOnly();
+      default: return startWithCreate();
     }
   }
 
@@ -76,7 +72,7 @@ public class PostgresCommands {
    * Returns false if the wait for ready was unsuccessful.
    * </p>
    */
-  public boolean start() {
+  public boolean startWithCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for postgres container {}", config.name);
@@ -93,8 +89,9 @@ public class PostgresCommands {
     return true;
   }
 
-
-
+  /**
+   * Start with a drop and create of the database and user.
+   */
   public boolean startWithDropCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
@@ -149,16 +146,35 @@ public class PostgresCommands {
   }
 
   /**
+   * Stop using the configured stopMode of 'stop' or 'remove'.
+   *
+   * Remove additionally removes the container (expected use in build agents).
+   */
+  public void stop() {
+    String mode = config.dbStopMode.toLowerCase().trim();
+    switch (mode) {
+      case "stop":
+        stop();
+        break;
+      case "remove":
+        stopContainerRemove();
+        break;
+      default:
+        stopContainer();
+    }
+  }
+
+  /**
    * Stop and remove the container effectively deleting the database.
    */
-  public void stopRemove() {
+  public void stopContainerRemove() {
     commands.stopRemove(config.name);
   }
 
   /**
    * Stop the postgres container.
    */
-  public void stop() {
+  public void stopContainer() {
     commands.stopIfRunning(config.name);
   }
 
@@ -217,6 +233,18 @@ public class PostgresCommands {
         ProcessHandler.process(createDatabaseExtension(extension));
       }
     }
+  }
+
+  private boolean userDefined() {
+    return isDefined(config.dbUser);
+  }
+
+  private boolean databaseDefined() {
+    return isDefined(config.dbName);
+  }
+
+  private boolean isDefined(String value) {
+    return value != null && !value.trim().isEmpty();
   }
 
   private ProcessBuilder createDatabaseExtension(String extension) {
@@ -288,7 +316,7 @@ public class PostgresCommands {
    */
   public boolean waitForDatabaseReady() {
     try {
-      for (int i = 0; i < config.maxLogReadyAttempts; i++) {
+      for (int i = 0; i < config.maxReadyAttempts; i++) {
         if (isDatabaseReady()) {
           return true;
         }
@@ -324,7 +352,7 @@ public class PostgresCommands {
    * Return a Connection to the database (make sure you close it).
    */
   public Connection createConnection() throws SQLException {
-    String url = "jdbc:postgresql://localhost:" + config.hostPort + "/" + config.dbName;
+    String url = "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;
     return DriverManager.getConnection(url, config.dbUser, config.dbPassword);
   }
 
@@ -392,7 +420,7 @@ public class PostgresCommands {
     args.add("--name");
     args.add(config.name);
     args.add("-p");
-    args.add(config.hostPort + ":" + config.pgPort);
+    args.add(config.dbPort + ":" + config.internalPort);
 
     if (config.tmpfs != null) {
       args.add("--tmpfs");
@@ -400,7 +428,7 @@ public class PostgresCommands {
     }
 
     args.add("-e");
-    args.add(config.pgPassword);
+    args.add(config.dbAdminPassword);
     args.add("-d");
     args.add(config.image);
 
@@ -428,7 +456,7 @@ public class PostgresCommands {
     args.add("-h");
     args.add("localhost");
     args.add("-p");
-    args.add(config.pgPort);
+    args.add(config.internalPort);
 
     return createProcessBuilder(args);
   }
