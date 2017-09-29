@@ -34,14 +34,6 @@ abstract class DbContainer implements Container {
     return config;
   }
 
-  public String getStartDescription() {
-    return config.startDescription();
-  }
-
-  public String getStopDescription() {
-    return config.stopDescription();
-  }
-
   /**
    * Start the container checking if it is already running.
    */

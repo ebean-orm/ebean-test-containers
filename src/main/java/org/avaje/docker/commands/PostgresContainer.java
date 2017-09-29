@@ -28,26 +28,12 @@ public class PostgresContainer extends DbContainer implements Container {
     super(config);
   }
 
-  @Override
-  public String getStartDescription() {
-    return config.startDescription();
-  }
-
-  @Override
-  public String getStopDescription() {
-    return config.stopDescription();
-  }
-
   /**
    * Start with a mode of 'create', 'dropCreate' or 'container'.
    * <p>
    * Expected that mode create will be best most of the time.
    */
-  public boolean start() {//Consumer<String> log) {
-
-//    if (log) {
-//      log.a
-//    }
+  public boolean start() {
 
     String mode = config.getStartMode().toLowerCase().trim();
     switch (mode) {
