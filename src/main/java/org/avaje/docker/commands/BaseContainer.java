@@ -13,7 +13,7 @@ import java.util.List;
 
 abstract class BaseContainer implements Container {
 
-  protected static final Logger log = LoggerFactory.getLogger(Commands.class);
+  static final Logger log = LoggerFactory.getLogger(Commands.class);
 
   protected final BaseConfig config;
 
@@ -63,27 +63,6 @@ abstract class BaseContainer implements Container {
   void runContainer() {
     ProcessHandler.process(runProcess());
   }
-
-//  /**
-//   * Return a Connection to the database (make sure you close it).
-//   */
-//  public Connection createConnection() throws SQLException {
-//    return DriverManager.getConnection(config.jdbcUrl(), config.getDbUser(), config.getDbPassword());
-//  }
-
-//  boolean checkConnectivity() {
-//    try {
-//      log.debug("checkConnectivity ... ");
-//      Connection connection = createConnection();
-//      connection.close();
-//      log.debug("connectivity confirmed ");
-//      return true;
-//
-//    } catch (SQLException e) {
-//      log.trace("connection failed: " + e.getMessage());
-//      return false;
-//    }
-//  }
 
   abstract boolean checkConnectivity();
 
@@ -138,19 +117,6 @@ abstract class BaseContainer implements Container {
   public void stopContainer() {
     commands.stopIfRunning(config.containerName());
   }
-
-
-//  boolean userDefined() {
-//    return defined(config.getDbUser());
-//  }
-//
-//  boolean databaseDefined() {
-//    return defined(config.getDbName());
-//  }
-
-//  boolean defined(String val) {
-//    return val != null && !val.trim().isEmpty();
-//  }
 
   protected ProcessBuilder createProcessBuilder(List<String> args) {
     ProcessBuilder pb = new ProcessBuilder();

@@ -18,18 +18,15 @@ public class ElasticContainer extends BaseContainer {
     return new ElasticContainer(new ElasticConfig(elasticVersion, properties));
   }
 
-  //private final ElasticConfig elasticConfig;
-
   public ElasticContainer(ElasticConfig config) {
     super(config);
-    //this.elasticConfig = config;
   }
 
   @Override
   boolean checkConnectivity() {
 
     try {
-      URL url = new URL("http://localhost:"+config.getPort()+"/");
+      URL url = new URL("http://localhost:" + config.getPort() + "/");
       URLConnection yc = url.openConnection();
 
       StringBuilder sb = new StringBuilder(300);
@@ -47,9 +44,6 @@ public class ElasticContainer extends BaseContainer {
 
   protected ProcessBuilder runProcess() {
 
-    //docker run -d -p 9200:9200 --name elasticsearch -e "http.host=0.0.0.0" -e "transport.host=127.0.0.1"
-    // -e "xpack.security.enabled=false" docker.elastic.co/elasticsearch/elasticsearch:5.6.0
-
     List<String> args = new ArrayList<>();
     args.add(config.docker);
     args.add("run");
@@ -66,13 +60,7 @@ public class ElasticContainer extends BaseContainer {
     args.add("-e");
     args.add("xpack.security.enabled=false");
 
-    //if (config.image != null) {
-      args.add(config.image);
-
-//    } else if (config.version != null) {
-//      args.add(config.imageBase + ":" + config.version);
-//    }
-
+    args.add(config.image);
     return createProcessBuilder(args);
   }
 

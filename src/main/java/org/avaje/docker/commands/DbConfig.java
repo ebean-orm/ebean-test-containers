@@ -13,7 +13,7 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Set for in-memory tmpfs use.
    */
-  private String tmpfs;// = "/var/lib/postgresql/data:rw";
+  private String tmpfs;
 
   /**
    * Database admin password.
@@ -133,8 +133,7 @@ public abstract class DbConfig extends BaseConfig {
     this.dbExtensions = extensions;
     return this;
   }
-
-
+  
   public boolean isInMemory() {
     return inMemory;
   }
