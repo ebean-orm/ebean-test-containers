@@ -1,7 +1,7 @@
-package org.avaje.docker.commands;
+package org.avaje.docker.container;
 
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -32,17 +32,7 @@ public class AutoStart {
   /**
    * Start containers based on the given properties.
    */
-  public void run(Properties properties) {
-
-    DbConfig dbConfig = DbConfigFactory.create(properties);
-
-    if (dbConfig.hasPlatform()) {
-
-      DbCommands db = DbConfigFactory.createCommands(dbConfig);
-      log.info(db.getStartDescription());
-      db.start();
-    }
-
-    // could also start other containers like elasticsearch, redis etc
+  private void run(Properties properties) {
+    new ContainerFactory(properties).startContainers();
   }
 }

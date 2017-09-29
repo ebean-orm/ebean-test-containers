@@ -1,40 +1,52 @@
 package org.avaje.docker.commands;
 
+import org.avaje.docker.container.Container;
+import org.avaje.docker.container.ContainerConfig;
+import org.avaje.docker.container.ContainerFactory;
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Properties;
 
 public class PostgresCommandsTest {
 
   @Test
   public void basic() throws InterruptedException {
 
-    DbConfig config =
-      new DbConfig()
-        .withName("junk_postgres")
-        .withDbPort("9823")
-        .withDbExtensions("hstore,pgcrypto");
+    Properties properties = new Properties();
+    properties.setProperty("postgres.version", "9.6");
+    properties.setProperty("postgres.containerName", "junk_postgres");
+    properties.setProperty("postgres.port", "9823");
 
-    PostgresCommands pg = new PostgresCommands(config);
+    properties.setProperty("postgres.dbExtensions", "hstore,pgcrypto");
 
-    //pg.startWithDropCreate();
+    properties.setProperty("postgres.dbName", "test_roberto");
+    properties.setProperty("postgres.dbUser", "test_robino");
 
-    config.dbStartMode = "dropCreate";
-    pg.start();
+    ContainerFactory factory = new ContainerFactory(properties);
+    //factory.startContainers();
 
-    config.dbStartMode = "container";
-    pg.start();
+    Container container = factory.container("postgres");
+    ContainerConfig config = container.config();
 
-    config.dbStartMode = "create";
-    pg.start();
+    config.setStartMode("dropCreate");
+    container.start();
 
-    String url = "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;
+    config.setStartMode("container");
+    container.start();
+
+    config.setStartMode("create");
+    container.start();
+
+    //String url = config.jdbcUrl();
+    //String url = "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;
 
     try {
-      Connection connection = DriverManager.getConnection(url, config.dbUser, config.dbPassword);
+      Connection connection = config.createConnection();
+      //Connection connection = DriverManager.getConnection(url, config.dbUser, config.dbPassword);
 
       exeSql(connection, "drop table if exists test_junk");
       exeSql(connection, "create table test_junk (acol integer, map hstore)");
@@ -45,7 +57,7 @@ public class PostgresCommandsTest {
       throw new RuntimeException(e);
 
     } finally {
-      pg.stop();
+      container.stop();
     }
   }
 

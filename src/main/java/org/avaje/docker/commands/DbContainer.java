@@ -1,6 +1,8 @@
 package org.avaje.docker.commands;
 
 import org.avaje.docker.commands.process.ProcessHandler;
+import org.avaje.docker.container.Container;
+import org.avaje.docker.container.ContainerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +11,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
-abstract class BaseDbCommands implements DbCommands {
+abstract class DbContainer implements Container {
 
   static final Logger log = LoggerFactory.getLogger(Commands.class);
 
@@ -17,15 +19,10 @@ abstract class BaseDbCommands implements DbCommands {
 
   final Commands commands;
 
-  BaseDbCommands(DbConfig config) {
+  DbContainer(DbConfig config) {
     this.config = config;
     this.commands = new Commands(config.docker);
   }
-
-  /**
-   * Return the JDBC connection URL used for testing connectivity.
-   */
-  protected abstract String jdbcUrl();
 
   /**
    * Return the ProcessBuilder used to execute the container run command.
@@ -33,13 +30,16 @@ abstract class BaseDbCommands implements DbCommands {
   protected abstract ProcessBuilder runProcess();
 
   @Override
-  public String getStartDescription() {
-    return config.getStartDescription();
+  public ContainerConfig config() {
+    return config;
   }
 
-  @Override
+  public String getStartDescription() {
+    return config.startDescription();
+  }
+
   public String getStopDescription() {
-    return config.getStopDescription();
+    return config.stopDescription();
   }
 
   /**
@@ -47,12 +47,12 @@ abstract class BaseDbCommands implements DbCommands {
    */
   void startIfNeeded() {
 
-    if (!commands.isRunning(config.name)) {
-      if (commands.isRegistered(config.name)) {
-        commands.start(config.name);
+    if (!commands.isRunning(config.containerName())) {
+      if (commands.isRegistered(config.containerName())) {
+        commands.start(config.containerName());
 
       } else {
-        log.debug("run postgres container {}", config.name);
+        log.debug("run {} container {}", config.platform(), config.containerName());
         runContainer();
       }
     }
@@ -66,7 +66,7 @@ abstract class BaseDbCommands implements DbCommands {
    * Return a Connection to the database (make sure you close it).
    */
   public Connection createConnection() throws SQLException {
-    return DriverManager.getConnection(jdbcUrl(), config.dbUser, config.dbPassword);
+    return DriverManager.getConnection(config.jdbcUrl(), config.getDbUser(), config.getDbPassword());
   }
 
   boolean checkConnectivity() {
@@ -107,7 +107,7 @@ abstract class BaseDbCommands implements DbCommands {
    * Remove additionally removes the container (expected use in build agents).
    */
   public void stop() {
-    String mode = config.dbStopMode.toLowerCase().trim();
+    String mode = config.getStopMode().toLowerCase().trim();
     switch (mode) {
       case "stop":
         stop();
@@ -124,23 +124,23 @@ abstract class BaseDbCommands implements DbCommands {
    * Stop and remove the container effectively deleting the database.
    */
   public void stopContainerRemove() {
-    commands.stopRemove(config.name);
+    commands.stopRemove(config.containerName());
   }
 
   /**
    * Stop the postgres container.
    */
   public void stopContainer() {
-    commands.stopIfRunning(config.name);
+    commands.stopIfRunning(config.containerName());
   }
 
 
   boolean userDefined() {
-    return defined(config.dbUser);
+    return defined(config.getDbUser());
   }
 
   boolean databaseDefined() {
-    return defined(config.dbName);
+    return defined(config.getDbName());
   }
 
   boolean defined(String val) {

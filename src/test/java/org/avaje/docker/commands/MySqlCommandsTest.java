@@ -1,9 +1,10 @@
 package org.avaje.docker.commands;
 
+import org.avaje.docker.container.ContainerConfig;
+import org.avaje.docker.container.ContainerFactory;
 import org.junit.Test;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -15,35 +16,38 @@ public class MySqlCommandsTest {
 
 
     Properties properties = new Properties();
-    properties.setProperty("dbPlatform", "mysql");
-    properties.setProperty("dbContainerName", "temp_mysql");
-    properties.setProperty("dbPort", "7306");
+    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("mysql.containerName", "temp_mysql");
+    properties.setProperty("mysql.port", "7306");
 
-    properties.setProperty("dbName", "test_roberto");
-    properties.setProperty("dbUser", "test_robino");
+    properties.setProperty("mysql.name", "test_roberto");
+    properties.setProperty("mysql.user", "test_robino");
 
-    DbConfig config = DbConfigFactory.create(properties);
-    DbCommands mysql = DbConfigFactory.createCommands(config);
+    ContainerFactory factory = new ContainerFactory(properties);
 
-    //config.dbStartMode = "dropCreate";
-    mysql.start();
+    factory.startContainers(s -> System.out.println(">> " + s));
 
-
-    String url = "jdbc:mysql://localhost:" + config.dbPort + "/" + config.dbName;
+    ContainerConfig config = factory.config("mysql");
 
     try {
-      Connection connection = DriverManager.getConnection(url, config.dbUser, config.dbPassword);
+      Connection connection = config.createConnection();
+
+      // String url = config.jdbcUrl();
+      // String url = "jdbc:mysql://localhost:" + "7306" + "/" + "test_roberto";
+      // Connection connection = DriverManager.getConnection(url, config.dbUser, config.dbPassword);
 
       exeSql(connection, "drop table if exists test_junk2");
       exeSql(connection, "create table test_junk2 (acol integer)");
       exeSql(connection, "insert into test_junk2 (acol) values (42)");
       exeSql(connection, "insert into test_junk2 (acol) values (43)");
 
+      connection.close();
+
     } catch (SQLException e) {
       throw new RuntimeException(e);
 
     } finally {
-      mysql.stop();
+      factory.stopContainers(s -> System.out.println(">> " + s));
     }
   }
 

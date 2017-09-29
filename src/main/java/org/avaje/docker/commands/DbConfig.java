@@ -1,78 +1,83 @@
 package org.avaje.docker.commands;
 
+import org.avaje.docker.container.ContainerConfig;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 /**
  * Configuration for an DBMS like Postgres, MySql, Oracle, SQLServer
  */
-public class DbConfig {
+public abstract class DbConfig implements ContainerConfig {
 
   /**
    * The database platform.
    * <p>
    * Expected to be one of 'postgres','mysql', 'oracle' or 'sqlserver'.
    */
-  public String platform;
+  private final String platform;
 
   /**
    * Container name.
    */
-  public String name = "ut_postgres";
-
-  /**
-   * The mode used when starting (create, dropCreate, container [only]).
-   */
-  public String dbStartMode = "create";
-
-  /**
-   * The mode used when stopping (stop, remove).
-   */
-  public String dbStopMode = "remove";
+  private String containerName;
 
   /**
    * The exposed port.
    */
-  public String dbPort = "6432";
+  private String port;
 
   /**
    * The internal port.
    */
-  public String internalPort = "5432";
-
-  /**
-   * Set for in-memory tmpfs use.
-   */
-  public String tmpfs = "/var/lib/postgresql/data:rw";
+  private String internalPort;
 
   /**
    * Image name.
    */
-  public String image = "postgres:9.5.4";
+  private String image;
+
+  /**
+   * The mode used when starting (create, dropCreate, container [only]).
+   */
+  private String startMode = "create";
+
+  /**
+   * The mode used when stopping (stop, remove).
+   */
+  private String stopMode = "remove";
+
+  /**
+   * Set for in-memory tmpfs use.
+   */
+  private String tmpfs;// = "/var/lib/postgresql/data:rw";
 
   /**
    * Database admin password.
    */
-  public String dbAdminPassword = "admin";
+  private String dbAdminPassword = "admin";
 
   /**
    * Database name to use.
    */
-  public String dbName = "test_db";
+  private String dbName = "test_db";
 
   /**
    * Database user to use.
    */
-  public String dbUser = "test_user";
+  private String dbUser = "test_user";
 
   /**
    * Database password for the user.
    */
-  public String dbPassword = "test";
+  private String dbPassword = "test";
 
   /**
    * Comma delimited list of database extensions required (hstore, pgcrypto etc).
    */
-  public String dbExtensions;
+  private String dbExtensions;
 
   /**
    * Maximum number of attempts to find the 'database ready to accept connections' log message in the container.
@@ -80,29 +85,65 @@ public class DbConfig {
    * 50 attempts equates to 5 seconds.
    * </p>
    */
-  public int maxReadyAttempts = 50;
+  private int maxReadyAttempts = 50;
+
+  /**
+   * Set to true to run in-memory mode.
+   */
+  private boolean inMemory;
 
   /**
    * Docker command.
    */
   public String docker = "docker";
 
-  /**
-   * Return true if a db platform has been defined (Postgres, MySql etc).
-   */
-  public boolean hasPlatform() {
-    return platform != null;
+  DbConfig(String platform, String port, String internalPort, String version) {
+    this.platform = platform;
+    this.port = port;
+    this.internalPort = internalPort;
+    this.containerName = "ut_" + platform;
+    this.image = platform + ":" + version;
   }
 
   /**
    * Return a description of the configuration.
    */
-  public String getStartDescription() {
-    return "starting " + platform + " container:" + name + " port:" + dbPort + " db:" + dbName + " user:" + dbUser + " extensions:" + dbExtensions + " startMode:" + dbStartMode;
+  @Override
+  public String startDescription() {
+    return "starting " + platform + " container:" + containerName + " port:" + port + " db:" + dbName + " user:" + dbUser + " extensions:" + dbExtensions + " startMode:" + startMode;
   }
 
-  public String getStopDescription() {
-    return "stopping " + platform + " container:" + name + " stopMode:" + dbStopMode;
+  @Override
+  public String stopDescription() {
+    return "stopping " + platform + " container:" + containerName + " stopMode:" + stopMode;
+  }
+
+  @Override
+  public String platform() {
+    return platform;
+  }
+
+  @Override
+  public String containerName() {
+    return containerName;
+  }
+
+  @Override
+  public void setStartMode(String startMode) {
+    this.startMode = startMode;
+  }
+
+  @Override
+  public void setStopMode(String stopMode) {
+    this.stopMode = stopMode;
+  }
+
+  /**
+   * Return a Connection to the database (make sure you close it).
+   */
+  @Override
+  public Connection createConnection() throws SQLException {
+    return DriverManager.getConnection(jdbcUrl(), getDbUser(), getDbPassword());
   }
 
   /**
@@ -112,25 +153,25 @@ public class DbConfig {
     if (properties == null) {
       return this;
     }
-    platform = properties.getProperty("dbPlatform", platform);
     docker = properties.getProperty("docker", docker);
-    name = properties.getProperty("dbContainerName", name);
-    dbPort = properties.getProperty("dbPort", dbPort);
-    internalPort = properties.getProperty("dbInternalPort", internalPort);
-    dbAdminPassword = properties.getProperty("dbAdminPassword", dbAdminPassword);
-    tmpfs = properties.getProperty("dbTmpfs", tmpfs);
-    image = properties.getProperty("dbImage", image);
 
+    containerName = prop(properties,"containerName", containerName);
+    image = prop(properties,"image", image);
+    port = prop(properties,"port", port);
+    internalPort = prop(properties,"internalPort", internalPort);
 
-    dbStartMode = properties.getProperty("dbStartMode", dbStartMode);
-    dbStopMode = properties.getProperty("dbStopMode", dbStopMode);
-    dbName = properties.getProperty("dbName", dbName);
-    dbUser = properties.getProperty("dbUser", dbUser);
-    dbPassword = properties.getProperty("dbPassword", dbPassword);
-    dbExtensions = properties.getProperty("dbExtensions", dbExtensions);
-    dbExtensions = properties.getProperty("dbExtensions", dbExtensions);
+    startMode = prop(properties,"startMode", startMode);
+    stopMode = prop(properties,"stopMode", stopMode);
+    inMemory = Boolean.parseBoolean(prop(properties,"inMemory", Boolean.toString(inMemory)));
 
-    String maxVal = properties.getProperty("dbMaxReadyAttempts");
+    tmpfs = prop(properties,"tmpfs", tmpfs);
+    dbName = prop(properties, "dbName", dbName);
+    dbUser = prop(properties, "dbUser", dbUser);
+    dbPassword = prop(properties,"dbPassword", dbPassword);
+    dbExtensions = prop(properties,"dbExtensions", dbExtensions);
+    dbAdminPassword = prop(properties, "dbAdminPassword", dbAdminPassword);
+
+    String maxVal = prop(properties, "maxReadyAttempts", null);
     if (maxVal != null) {
       try {
         this.maxReadyAttempts = Integer.parseInt(maxVal);
@@ -141,19 +182,24 @@ public class DbConfig {
     return this;
   }
 
+  String prop(Properties properties, String key, String defaultValue) {
+    return properties.getProperty(platform+"."+key, defaultValue);
+  }
+
+
   /**
    * Set the container name.
    */
-  public DbConfig withName(String name) {
-    this.name = name;
+  public DbConfig withContainerName(String containerName) {
+    this.containerName = containerName;
     return this;
   }
 
   /**
    * Set the exposed port.
    */
-  public DbConfig withDbPort(String dbPort) {
-    this.dbPort = dbPort;
+  public DbConfig withPort(String port) {
+    this.port = port;
     return this;
   }
 
@@ -168,8 +214,8 @@ public class DbConfig {
   /**
    * Set the password for the DB admin user.
    */
-  public DbConfig withDbAdminPassword(String dbAdminPassword) {
-    this.dbAdminPassword = dbAdminPassword;
+  public DbConfig withAdminPassword(String adminPassword) {
+    this.dbAdminPassword = adminPassword;
     return this;
   }
 
@@ -200,24 +246,24 @@ public class DbConfig {
   /**
    * Set the DB user.
    */
-  public DbConfig withDbUser(String dbUser) {
-    this.dbUser = dbUser;
+  public DbConfig withUser(String user) {
+    this.dbUser = user;
     return this;
   }
 
   /**
    * Set the DB password.
    */
-  public DbConfig withDbPassword(String dbPassword) {
-    this.dbPassword = dbPassword;
+  public DbConfig withPassword(String password) {
+    this.dbPassword = password;
     return this;
   }
 
   /**
    * Set the DB extensions to install (Postgres hstore, pgcrypto etc)
    */
-  public DbConfig withDbExtensions(String dbExtensions) {
-    this.dbExtensions = dbExtensions;
+  public DbConfig withExtensions(String extensions) {
+    this.dbExtensions = extensions;
     return this;
   }
 
@@ -236,4 +282,61 @@ public class DbConfig {
     this.docker = docker;
     return this;
   }
+
+  public boolean isInMemory() {
+    return inMemory;
+  }
+
+  public String getPort() {
+    return port;
+  }
+
+  public String getInternalPort() {
+    return internalPort;
+  }
+
+  public String getImage() {
+    return image;
+  }
+
+  public String getStartMode() {
+    return startMode;
+  }
+
+  public String getStopMode() {
+    return stopMode;
+  }
+
+  public String getTmpfs() {
+    return tmpfs;
+  }
+
+  public String getDbAdminPassword() {
+    return dbAdminPassword;
+  }
+
+  public String getDbName() {
+    return dbName;
+  }
+
+  public String getDbUser() {
+    return dbUser;
+  }
+
+  public String getDbPassword() {
+    return dbPassword;
+  }
+
+  public String getDbExtensions() {
+    return dbExtensions;
+  }
+
+  public int getMaxReadyAttempts() {
+    return maxReadyAttempts;
+  }
+
+  public String getDocker() {
+    return docker;
+  }
+
 }

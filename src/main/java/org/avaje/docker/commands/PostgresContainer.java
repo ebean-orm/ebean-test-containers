@@ -2,6 +2,9 @@ package org.avaje.docker.commands;
 
 import org.avaje.docker.commands.process.ProcessHandler;
 import org.avaje.docker.commands.process.ProcessResult;
+import org.avaje.docker.container.Container;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,16 +13,29 @@ import java.util.List;
 /**
  * Commands for controlling a postgres docker container.
  * <p>
+ * <p>
  * References:
  * </p>
  * <ul>
  * <li>https://github.com/docker-library/postgres/issues/146</li>
  * </ul>
  */
-public class PostgresCommands extends BaseDbCommands implements DbCommands {
+public class PostgresContainer extends DbContainer implements Container {
 
-  public PostgresCommands(DbConfig config) {
+  private static final Logger log = LoggerFactory.getLogger(Commands.class);
+
+  public PostgresContainer(PostgresConfig config) {
     super(config);
+  }
+
+  @Override
+  public String getStartDescription() {
+    return config.startDescription();
+  }
+
+  @Override
+  public String getStopDescription() {
+    return config.stopDescription();
   }
 
   /**
@@ -27,9 +43,13 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
    * <p>
    * Expected that mode create will be best most of the time.
    */
-  public boolean start() {
+  public boolean start() {//Consumer<String> log) {
 
-    String mode = config.dbStartMode.toLowerCase().trim();
+//    if (log) {
+//      log.a
+//    }
+
+    String mode = config.getStartMode().toLowerCase().trim();
     switch (mode) {
       case "create":
         return startWithCreate();
@@ -54,7 +74,7 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
   public boolean startWithCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for postgres container {}", config.name);
+      log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());
       return false;
     }
     createUser(true);
@@ -74,7 +94,7 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
   public boolean startWithDropCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for postgres container {}", config.name);
+      log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());
       return false;
     }
 
@@ -97,7 +117,7 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
   public boolean startContainerOnly() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for postgres container {}", config.name);
+      log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());
       return false;
     }
 
@@ -112,14 +132,14 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
    * Return true if the database exists.
    */
   public boolean databaseExists() {
-    return !hasZeroRows(databaseExists(config.dbName));
+    return !hasZeroRows(databaseExists(config.getDbName()));
   }
 
   /**
    * Return true if the database user exists.
    */
   public boolean userExists() {
-    return !hasZeroRows(roleExists(config.dbUser));
+    return !hasZeroRows(roleExists(config.getDbUser()));
   }
 
   /**
@@ -129,8 +149,8 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     if (!userDefined() || (checkExists && userExists())) {
       return false;
     }
-    log.debug("create postgres user {}", config.name);
-    ProcessBuilder pb = createRole(config.dbUser, config.dbPassword);
+    log.debug("create postgres user {}", config.containerName());
+    ProcessBuilder pb = createRole(config.getDbUser(), config.getDbPassword());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 2;
   }
@@ -144,8 +164,8 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     if (!databaseDefined() || (checkExists && databaseExists())) {
       return false;
     }
-    log.debug("create postgres database {} with owner {}", config.dbName, config.dbUser);
-    ProcessBuilder pb = createDatabase(config.dbName, config.dbUser);
+    log.debug("create postgres database {} with owner {}", config.getDbName(), config.getDbUser());
+    ProcessBuilder pb = createDatabase(config.getDbName(), config.getDbUser());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 2;
   }
@@ -155,8 +175,8 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
    */
   public void createDatabaseExtensions() {
 
-    String dbExtn = config.dbExtensions;
-    if (defined(dbExtn)) {
+    String dbExtn = config.getDbExtensions();
+    if (isDefined(dbExtn)) {
       log.debug("create database extensions {}", dbExtn);
       String[] extns = dbExtn.split(",");
       for (String extension : extns) {
@@ -165,6 +185,9 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     }
   }
 
+  private boolean isDefined(String value) {
+    return value != null && !value.isEmpty();
+  }
 
   private ProcessBuilder createDatabaseExtension(String extension) {
     //docker exec -i ut_postgres psql -U postgres -d test_db -c "create extension if not exists pgcrypto";
@@ -172,12 +195,12 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     args.add(config.docker);
     args.add("exec");
     args.add("-i");
-    args.add(config.name);
+    args.add(config.containerName());
     args.add("psql");
     args.add("-U");
     args.add("postgres");
     args.add("-d");
-    args.add(config.dbName);
+    args.add(config.getDbName());
     args.add("-c");
     args.add("create extension if not exists " + extension);
 
@@ -191,8 +214,8 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     if (!databaseDefined() || !databaseExists()) {
       return false;
     }
-    log.debug("drop postgres database {}", config.dbName);
-    ProcessBuilder pb = dropDatabase(config.dbName);
+    log.debug("drop postgres database {}", config.getDbName());
+    ProcessBuilder pb = dropDatabase(config.getDbName());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 1;
   }
@@ -205,8 +228,8 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     if (!userDefined() || !userExists()) {
       return false;
     }
-    log.debug("drop postgres user {}", config.dbUser);
-    ProcessBuilder pb = dropUser(config.dbUser);
+    log.debug("drop postgres user {}", config.getDbUser());
+    ProcessBuilder pb = dropUser(config.getDbUser());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 1;
   }
@@ -235,7 +258,7 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
    */
   public boolean waitForDatabaseReady() {
     try {
-      for (int i = 0; i < config.maxReadyAttempts; i++) {
+      for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
         if (isDatabaseReady()) {
           return true;
         }
@@ -247,11 +270,6 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
       Thread.currentThread().interrupt();
       return false;
     }
-  }
-
-  @Override
-  protected String jdbcUrl() {
-    return "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;
   }
 
   private boolean hasZeroRows(ProcessBuilder pb) {
@@ -287,7 +305,7 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     args.add(config.docker);
     args.add("exec");
     args.add("-i");
-    args.add(config.name);
+    args.add(config.containerName());
     args.add("psql");
     args.add("-U");
     args.add("postgres");
@@ -305,18 +323,19 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     args.add("run");
     args.add("-d");
     args.add("--name");
-    args.add(config.name);
+    args.add(config.containerName());
     args.add("-p");
-    args.add(config.dbPort + ":" + config.internalPort);
+    args.add(config.getPort() + ":" + config.getInternalPort());
 
-    if (config.tmpfs != null) {
+    if (config.isInMemory() && config.getTmpfs() != null) {
       args.add("--tmpfs");
-      args.add(config.tmpfs);
+      args.add(config.getTmpfs());
     }
 
     args.add("-e");
-    args.add(config.dbAdminPassword);
-    args.add(config.image);
+    args.add(config.getDbAdminPassword());
+    args.add("-d");
+    args.add(config.getImage());
 
     return createProcessBuilder(args);
   }
@@ -330,12 +349,12 @@ public class PostgresCommands extends BaseDbCommands implements DbCommands {
     args.add(config.docker);
     args.add("exec");
     args.add("-i");
-    args.add(config.name);
+    args.add(config.containerName());
     args.add("pg_isready");
     args.add("-h");
     args.add("localhost");
     args.add("-p");
-    args.add(config.internalPort);
+    args.add(config.getInternalPort());
 
     return createProcessBuilder(args);
   }
