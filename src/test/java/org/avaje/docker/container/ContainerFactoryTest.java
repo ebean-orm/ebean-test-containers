@@ -1,9 +1,8 @@
 package org.avaje.docker.container;
 
-import org.avaje.docker.container.ContainerFactory;
-import org.avaje.docker.container.Container;
 import org.junit.Test;
 
+import java.sql.Connection;
 import java.util.Properties;
 
 public class ContainerFactoryTest {
@@ -16,13 +15,28 @@ public class ContainerFactoryTest {
     properties.setProperty("postgres.containerName", "junk_postgres");
     properties.setProperty("postgres.port", "9823");
 
-    properties.setProperty("mysql.version", "5.7");
-    properties.setProperty("mysql.containerName", "temp_mysql");
-    properties.setProperty("mysql.port", "7306");
+    properties.setProperty("elastic.version", "5.6.0");
+    properties.setProperty("elastic.port", "9201");
+
+//    properties.setProperty("mysql.version", "5.7");
+//    properties.setProperty("mysql.containerName", "temp_mysql");
+//    properties.setProperty("mysql.port", "7306");
 
 
     ContainerFactory factory = new ContainerFactory(properties);
+
+    // start all containers
     factory.startContainers();
+
+    // get a container
+    Container postgres = factory.container("postgres");
+
+    // for a DB container we can get JDBC URL & Connection
+    String jdbcUrl = postgres.config().jdbcUrl();
+    Connection connection = postgres.config().createConnection();
+    connection.close();
+
+    // stop all containers
     factory.stopContainers();
   }
 

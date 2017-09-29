@@ -4,21 +4,16 @@ import org.avaje.docker.container.Container;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class MySqlContainer extends DbContainer implements Container {
 
-  public MySqlContainer(MySqlConfig config) {
-    super(config);
+  public static MySqlContainer create(String mysqlVersion, Properties properties) {
+    return new MySqlContainer(new MySqlConfig(mysqlVersion, properties));
   }
 
-  @Override
-  public boolean start() {
-    startIfNeeded();
-    if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
-      return false;
-    }
-    return true;
+  public MySqlContainer(MySqlConfig config) {
+    super(config);
   }
 
   @Override
@@ -33,21 +28,21 @@ public class MySqlContainer extends DbContainer implements Container {
     args.add("-p");
     args.add(config.getPort() + ":" + config.getInternalPort());
 
-    if (defined(config.getDbAdminPassword())) {
+    if (defined(dbConfig.getDbAdminPassword())) {
       args.add("-e");
-      args.add("MYSQL_ROOT_PASSWORD="+config.getDbAdminPassword());
+      args.add("MYSQL_ROOT_PASSWORD=" + dbConfig.getDbAdminPassword());
     }
-    if (defined(config.getDbName())) {
+    if (defined(dbConfig.getDbName())) {
       args.add("-e");
-      args.add("MYSQL_DATABASE="+config.getDbName());
+      args.add("MYSQL_DATABASE=" + dbConfig.getDbName());
     }
-    if (defined(config.getDbUser())) {
+    if (defined(dbConfig.getDbUser())) {
       args.add("-e");
-      args.add("MYSQL_USER="+config.getDbUser());
+      args.add("MYSQL_USER=" + dbConfig.getDbUser());
     }
-    if (defined(config.getDbPassword())) {
+    if (defined(dbConfig.getDbPassword())) {
       args.add("-e");
-      args.add("MYSQL_PASSWORD="+config.getDbPassword());
+      args.add("MYSQL_PASSWORD=" + dbConfig.getDbPassword());
     }
 
     args.add(config.getImage());

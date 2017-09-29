@@ -1,8 +1,7 @@
 package org.avaje.docker.container;
 
-import org.avaje.docker.commands.MySqlConfig;
+import org.avaje.docker.commands.ElasticContainer;
 import org.avaje.docker.commands.MySqlContainer;
-import org.avaje.docker.commands.PostgresConfig;
 import org.avaje.docker.commands.PostgresContainer;
 
 import java.util.ArrayList;
@@ -28,13 +27,17 @@ public class ContainerFactory {
   }
 
   private void init() {
+    String elasticVersion = version("elastic");
+    if (elasticVersion != null) {
+      containers.add(ElasticContainer.create(elasticVersion, properties));
+    }
     String pgVersion = version("postgres");
     if (pgVersion != null) {
-      containers.add(new PostgresContainer(new PostgresConfig(pgVersion, properties)));
+      containers.add(PostgresContainer.create(pgVersion, properties));
     }
     String mysqlVersion = version("mysql");
     if (mysqlVersion != null) {
-      containers.add(new MySqlContainer(new MySqlConfig(mysqlVersion, properties)));
+      containers.add(MySqlContainer.create(mysqlVersion, properties));
     }
   }
 
@@ -72,6 +75,7 @@ public class ContainerFactory {
    * Stop all the containers with a consumer for logging stop descriptions.
    */
   public void stopContainers(Consumer<String> logging) {
+
     for (Container container : containers) {
       if (logging != null) {
         logging.accept(container.config().startDescription());

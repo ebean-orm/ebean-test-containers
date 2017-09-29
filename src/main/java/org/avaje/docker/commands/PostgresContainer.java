@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  * Commands for controlling a postgres docker container.
@@ -22,8 +23,18 @@ import java.util.List;
  */
 public class PostgresContainer extends DbContainer implements Container {
 
+  /**
+   * Create Postgres container with configuration from properties.
+   */
+  public static PostgresContainer create(String pgVersion, Properties properties) {
+    return new PostgresContainer(new PostgresConfig(pgVersion, properties));
+  }
+
   private static final Logger log = LoggerFactory.getLogger(Commands.class);
 
+  /**
+   * Create with configuration.
+   */
   public PostgresContainer(PostgresConfig config) {
     super(config);
   }
@@ -33,6 +44,7 @@ public class PostgresContainer extends DbContainer implements Container {
    * <p>
    * Expected that mode create will be best most of the time.
    */
+  @Override
   public boolean start() {
 
     String mode = config.getStartMode().toLowerCase().trim();
@@ -118,14 +130,14 @@ public class PostgresContainer extends DbContainer implements Container {
    * Return true if the database exists.
    */
   public boolean databaseExists() {
-    return !hasZeroRows(databaseExists(config.getDbName()));
+    return !hasZeroRows(databaseExists(dbConfig.getDbName()));
   }
 
   /**
    * Return true if the database user exists.
    */
   public boolean userExists() {
-    return !hasZeroRows(roleExists(config.getDbUser()));
+    return !hasZeroRows(roleExists(dbConfig.getDbUser()));
   }
 
   /**
@@ -136,7 +148,7 @@ public class PostgresContainer extends DbContainer implements Container {
       return false;
     }
     log.debug("create postgres user {}", config.containerName());
-    ProcessBuilder pb = createRole(config.getDbUser(), config.getDbPassword());
+    ProcessBuilder pb = createRole(dbConfig.getDbUser(), dbConfig.getDbPassword());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 2;
   }
@@ -150,8 +162,8 @@ public class PostgresContainer extends DbContainer implements Container {
     if (!databaseDefined() || (checkExists && databaseExists())) {
       return false;
     }
-    log.debug("create postgres database {} with owner {}", config.getDbName(), config.getDbUser());
-    ProcessBuilder pb = createDatabase(config.getDbName(), config.getDbUser());
+    log.debug("create postgres database {} with owner {}", dbConfig.getDbName(), dbConfig.getDbUser());
+    ProcessBuilder pb = createDatabase(dbConfig.getDbName(), dbConfig.getDbUser());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 2;
   }
@@ -161,7 +173,7 @@ public class PostgresContainer extends DbContainer implements Container {
    */
   public void createDatabaseExtensions() {
 
-    String dbExtn = config.getDbExtensions();
+    String dbExtn = dbConfig.getDbExtensions();
     if (isDefined(dbExtn)) {
       log.debug("create database extensions {}", dbExtn);
       String[] extns = dbExtn.split(",");
@@ -186,7 +198,7 @@ public class PostgresContainer extends DbContainer implements Container {
     args.add("-U");
     args.add("postgres");
     args.add("-d");
-    args.add(config.getDbName());
+    args.add(dbConfig.getDbName());
     args.add("-c");
     args.add("create extension if not exists " + extension);
 
@@ -200,8 +212,8 @@ public class PostgresContainer extends DbContainer implements Container {
     if (!databaseDefined() || !databaseExists()) {
       return false;
     }
-    log.debug("drop postgres database {}", config.getDbName());
-    ProcessBuilder pb = dropDatabase(config.getDbName());
+    log.debug("drop postgres database {}", dbConfig.getDbName());
+    ProcessBuilder pb = dropDatabase(dbConfig.getDbName());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 1;
   }
@@ -214,8 +226,8 @@ public class PostgresContainer extends DbContainer implements Container {
     if (!userDefined() || !userExists()) {
       return false;
     }
-    log.debug("drop postgres user {}", config.getDbUser());
-    ProcessBuilder pb = dropUser(config.getDbUser());
+    log.debug("drop postgres user {}", dbConfig.getDbUser());
+    ProcessBuilder pb = dropUser(dbConfig.getDbUser());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 1;
   }
@@ -313,13 +325,13 @@ public class PostgresContainer extends DbContainer implements Container {
     args.add("-p");
     args.add(config.getPort() + ":" + config.getInternalPort());
 
-    if (config.isInMemory() && config.getTmpfs() != null) {
+    if (dbConfig.isInMemory() && dbConfig.getTmpfs() != null) {
       args.add("--tmpfs");
-      args.add(config.getTmpfs());
+      args.add(dbConfig.getTmpfs());
     }
 
     args.add("-e");
-    args.add(config.getDbAdminPassword());
+    args.add(dbConfig.getDbAdminPassword());
     args.add("-d");
     args.add(config.getImage());
 
