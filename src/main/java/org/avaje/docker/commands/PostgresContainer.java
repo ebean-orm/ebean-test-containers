@@ -147,7 +147,7 @@ public class PostgresContainer extends DbContainer implements Container {
     if (!userDefined() || (checkExists && userExists())) {
       return false;
     }
-    log.debug("create postgres user {}", config.containerName());
+    log.debug("create postgres user {}", dbConfig.getDbUser());
     ProcessBuilder pb = createRole(dbConfig.getDbUser(), dbConfig.getDbPassword());
     List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
     return stdOutLines.size() == 2;
