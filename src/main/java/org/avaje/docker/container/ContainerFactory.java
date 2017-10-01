@@ -65,7 +65,7 @@ public class ContainerFactory {
   }
 
   /**
-   * Stop all containers.
+   * Stop all containers using the stopMode which defaults to also removing the containers.
    */
   public void stopContainers() {
     stopContainers(null);
@@ -78,9 +78,29 @@ public class ContainerFactory {
 
     for (Container container : containers) {
       if (logging != null) {
-        logging.accept(container.config().startDescription());
+        logging.accept(container.config().stopDescription());
       }
       container.stop();
+    }
+  }
+
+  /**
+   * Stop all containers (without removing the containers).
+   */
+  public void stopOnly() {
+    stopOnly(null);
+  }
+
+  /**
+   * Stop all the containers (without remove) with a consumer for logging stop descriptions.
+   */
+  public void stopOnly(Consumer<String> logging) {
+
+    for (Container container : containers) {
+      if (logging != null) {
+        logging.accept(container.config().stopDescription());
+      }
+      container.stopOnly();
     }
   }
 

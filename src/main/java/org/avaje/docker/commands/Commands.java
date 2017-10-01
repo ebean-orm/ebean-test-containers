@@ -39,7 +39,6 @@ public class Commands {
     if (isRunning(containerName)) {
       stop(containerName);
     }
-    log.debug("done");
   }
 
   /**
@@ -55,7 +54,6 @@ public class Commands {
     if (isRegistered(containerName)) {
       remove(containerName);
     }
-    log.debug("done");
   }
 
   /**

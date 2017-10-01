@@ -6,9 +6,6 @@ import org.avaje.docker.container.ContainerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.List;
 
 abstract class BaseContainer implements Container {
@@ -94,27 +91,28 @@ abstract class BaseContainer implements Container {
     String mode = config.getStopMode().toLowerCase().trim();
     switch (mode) {
       case "stop":
-        stop();
+        stopOnly();
         break;
       case "remove":
-        stopContainerRemove();
+        stopRemove();
         break;
       default:
-        stopContainer();
+        stopOnly();
     }
   }
 
   /**
    * Stop and remove the container effectively deleting the database.
    */
-  public void stopContainerRemove() {
+  public void stopRemove() {
     commands.stopRemove(config.containerName());
   }
 
   /**
-   * Stop the postgres container.
+   * Stop the container only (no remove).
    */
-  public void stopContainer() {
+  @Override
+  public void stopOnly() {
     commands.stopIfRunning(config.containerName());
   }
 

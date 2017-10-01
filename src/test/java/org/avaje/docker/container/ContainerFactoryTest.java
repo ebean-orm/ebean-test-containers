@@ -5,6 +5,8 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.util.Properties;
 
+import static org.junit.Assert.assertEquals;
+
 public class ContainerFactoryTest {
 
   @Test
@@ -33,10 +35,12 @@ public class ContainerFactoryTest {
 
     // for a DB container we can get JDBC URL & Connection
     String jdbcUrl = postgres.config().jdbcUrl();
+    assertEquals(jdbcUrl, "jdbc:postgresql://localhost:9823/test_db");
     Connection connection = postgres.config().createConnection();
     connection.close();
 
     // stop all containers
+    factory.stopOnly();
     factory.stopContainers();
   }
 

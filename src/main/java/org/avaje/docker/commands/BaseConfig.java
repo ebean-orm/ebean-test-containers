@@ -129,7 +129,10 @@ public abstract class BaseConfig implements ContainerConfig {
     port = prop(properties,"port", port);
     internalPort = prop(properties,"internalPort", internalPort);
 
+    startMode = properties.getProperty("startMode", startMode);
     startMode = prop(properties,"startMode", startMode);
+
+    stopMode = properties.getProperty("stopMode", stopMode);
     stopMode = prop(properties,"stopMode", stopMode);
 
     String maxVal = prop(properties, "maxReadyAttempts", null);
