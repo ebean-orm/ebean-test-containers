@@ -51,10 +51,10 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Maximum number of attempts to find the 'database ready to accept connections' log message in the container.
    * <p>
-   * 50 attempts equates to 5 seconds.
+   * 100 attempts equates to 10 seconds.
    * </p>
    */
-  protected int maxReadyAttempts = 50;
+  protected int maxReadyAttempts = 100;
 
   /**
    * Docker command.
