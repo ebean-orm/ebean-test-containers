@@ -33,11 +33,16 @@ abstract class BaseContainer implements Container {
 
   @Override
   public boolean start() {
+    return startWithConnectivity();
+  }
+
+  protected boolean startWithConnectivity() {
     startIfNeeded();
     if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
+      log.warn("Container {} failed to start - waiting for connectivity", config.containerName());
       return false;
     }
+    logStarted();
     return true;
   }
 
@@ -59,6 +64,13 @@ abstract class BaseContainer implements Container {
 
   void runContainer() {
     ProcessHandler.process(runProcess());
+  }
+
+  /**
+   * Return true if the docker container logs contain the match text.
+   */
+  boolean logsContain(String match) {
+    return commands.logsContain(config.containerName(), match);
   }
 
   abstract boolean checkConnectivity();
@@ -119,6 +131,29 @@ abstract class BaseContainer implements Container {
   protected ProcessBuilder createProcessBuilder(List<String> args) {
     ProcessBuilder pb = new ProcessBuilder();
     pb.command(args);
+    if (log.isDebugEnabled()) {
+      log.debug(String.join(" ", args));
+    }
     return pb;
+  }
+
+  /**
+   * Log a message for container starting or not.
+   */
+  boolean logStart(boolean started) {
+    if (started) {
+      logStarted();
+    } else {
+      logNotStarted();
+    }
+    return started;
+  }
+
+  void logStarted() {
+    log.info("Started container {} with port:{}", config.containerName(), config.getPort());
+  }
+
+  void logNotStarted() {
+    log.warn("Failed to start container {} with port {}", config.containerName(), config.getPort());
   }
 }

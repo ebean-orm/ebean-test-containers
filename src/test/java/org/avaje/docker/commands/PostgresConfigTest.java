@@ -10,7 +10,7 @@ import static org.junit.Assert.assertFalse;
 public class PostgresConfigTest {
 
   @Test
-  public void stopMode_global() throws Exception {
+  public void stopMode_global() {
 
     Properties properties = new Properties();
     properties.setProperty("stopMode", "remove");
@@ -20,7 +20,7 @@ public class PostgresConfigTest {
   }
 
   @Test
-  public void stopMode_defaultStop() throws Exception {
+  public void stopMode_defaultStop() {
 
     Properties properties = new Properties();
 
@@ -29,7 +29,7 @@ public class PostgresConfigTest {
   }
 
   @Test
-  public void stopMode_explicitlySet() throws Exception {
+  public void stopMode_explicitlySet() {
 
     Properties properties = new Properties();
     properties.setProperty("stopMode", "remove");
@@ -41,7 +41,7 @@ public class PostgresConfigTest {
 
 
   @Test
-  public void properties_default() throws Exception {
+  public void properties_default() {
 
     Properties properties = new Properties();
 
@@ -57,7 +57,7 @@ public class PostgresConfigTest {
   }
 
   @Test
-  public void properties_basic() throws Exception {
+  public void properties_basic() {
 
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");

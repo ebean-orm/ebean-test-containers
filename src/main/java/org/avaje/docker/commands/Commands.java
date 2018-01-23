@@ -95,6 +95,20 @@ public class Commands {
   }
 
   /**
+   * Return true if the logs of the container contain the match text.
+   */
+  public boolean logsContain(String containerName, String match) {
+    ProcessResult result = ProcessHandler.command(docker, "logs", containerName);
+    List<String> outLines = result.getStdOutLines();
+    for (String outLine : outLines) {
+      if (outLine.contains(match)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
    * Return the list of containers currently running.
    */
   private List<String> running() {

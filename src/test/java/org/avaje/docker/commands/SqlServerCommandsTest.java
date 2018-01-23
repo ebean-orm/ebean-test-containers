@@ -10,25 +10,25 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class PostgresCommandsTest {
+public class SqlServerCommandsTest {
 
   @Test
   public void basic() {
 
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("postgres.containerName", "junk_postgres");
-    properties.setProperty("postgres.port", "9823");
+    properties.setProperty("sqlserver.version", "2017-CU2");
+    properties.setProperty("sqlserver.containerName", "junk_sqlserver");
+    properties.setProperty("sqlserver.port", "9825");
 
-    properties.setProperty("postgres.dbExtensions", "hstore,pgcrypto");
-
-    properties.setProperty("postgres.dbName", "test_roberto");
-    properties.setProperty("postgres.dbUser", "test_robino");
+    properties.setProperty("sqlserver.dbName", "test_other");
+    properties.setProperty("sqlserver.dbUser", "test_robino");
+    properties.setProperty("sqlserver.startMode", "dropcreate");
+    //properties.setProperty("sqlserver.dbPassword", "test");
 
     ContainerFactory factory = new ContainerFactory(properties);
-    //factory.startContainers();
+    factory.startContainers();
 
-    Container container = factory.container("postgres");
+    Container container = factory.container("sqlserver");
     ContainerConfig config = container.config();
 
     config.setStartMode("dropCreate");
@@ -40,15 +40,11 @@ public class PostgresCommandsTest {
     config.setStartMode("create");
     container.start();
 
-    //String url = config.jdbcUrl();
-    //String url = "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;
-
     try {
       Connection connection = config.createConnection();
-      //Connection connection = DriverManager.getConnection(url, config.dbUser, config.dbPassword);
 
       exeSql(connection, "drop table if exists test_junk");
-      exeSql(connection, "create table test_junk (acol integer, map hstore)");
+      exeSql(connection, "create table test_junk (acol integer)");
       exeSql(connection, "insert into test_junk (acol) values (42)");
       exeSql(connection, "insert into test_junk (acol) values (43)");
 

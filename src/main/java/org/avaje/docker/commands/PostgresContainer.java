@@ -40,27 +40,6 @@ public class PostgresContainer extends DbContainer implements Container {
   }
 
   /**
-   * Start with a mode of 'create', 'dropCreate' or 'container'.
-   * <p>
-   * Expected that mode create will be best most of the time.
-   */
-  @Override
-  public boolean start() {
-
-    String mode = config.getStartMode().toLowerCase().trim();
-    switch (mode) {
-      case "create":
-        return startWithCreate();
-      case "dropcreate":
-        return startWithDropCreate();
-      case "container":
-        return startContainerOnly();
-      default:
-        return startWithCreate();
-    }
-  }
-
-  /**
    * Start the container and wait for it to be ready.
    * <p>
    * This checks if the container is already running.
@@ -69,6 +48,7 @@ public class PostgresContainer extends DbContainer implements Container {
    * Returns false if the wait for ready was unsuccessful.
    * </p>
    */
+  @Override
   public boolean startWithCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
@@ -78,7 +58,6 @@ public class PostgresContainer extends DbContainer implements Container {
     createUser(true);
     createDatabase(true);
     createDatabaseExtensions();
-
     if (!waitForConnectivity()) {
       log.warn("Failed waiting for connectivity");
       return false;
@@ -89,6 +68,7 @@ public class PostgresContainer extends DbContainer implements Container {
   /**
    * Start with a drop and create of the database and user.
    */
+  @Override
   public boolean startWithDropCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
@@ -96,12 +76,15 @@ public class PostgresContainer extends DbContainer implements Container {
       return false;
     }
 
-    dropDatabaseIfExists();
-    dropUserIfExists();
-    createUser(false);
-    createDatabase(false);
+    if (!dropDatabaseIfExists() || !dropUserIfExists()) {
+      // failed to drop existing db or user
+      return false;
+    }
+    if (!createUser(false) || !createDatabase(false)) {
+      // failed to create the db or user
+      return false;
+    }
     createDatabaseExtensions();
-
     if (!waitForConnectivity()) {
       log.warn("Failed waiting for connectivity");
       return false;
@@ -112,6 +95,7 @@ public class PostgresContainer extends DbContainer implements Container {
   /**
    * Start the container only without creating database, user, extensions etc.
    */
+  @Override
   public boolean startContainerOnly() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
@@ -144,13 +128,12 @@ public class PostgresContainer extends DbContainer implements Container {
    * Create the database user.
    */
   public boolean createUser(boolean checkExists) {
-    if (!userDefined() || (checkExists && userExists())) {
-      return false;
+    if (checkExists && userExists()) {
+      return true;
     }
     log.debug("create postgres user {}", dbConfig.getDbUser());
     ProcessBuilder pb = createRole(dbConfig.getDbUser(), dbConfig.getDbPassword());
-    List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
-    return stdOutLines.size() == 2;
+    return execute("CREATE ROLE", pb, "Failed to create database user");
   }
 
   /**
@@ -159,13 +142,12 @@ public class PostgresContainer extends DbContainer implements Container {
    * @param checkExists When true check the database doesn't already exists
    */
   public boolean createDatabase(boolean checkExists) {
-    if (!databaseDefined() || (checkExists && databaseExists())) {
-      return false;
+    if (checkExists && databaseExists()) {
+      return true;
     }
     log.debug("create postgres database {} with owner {}", dbConfig.getDbName(), dbConfig.getDbUser());
     ProcessBuilder pb = createDatabase(dbConfig.getDbName(), dbConfig.getDbUser());
-    List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
-    return stdOutLines.size() == 2;
+    return execute("CREATE DATABASE", pb, "Failed to create database with owner");
   }
 
   /**
@@ -209,27 +191,24 @@ public class PostgresContainer extends DbContainer implements Container {
    * Drop the database if it exists.
    */
   public boolean dropDatabaseIfExists() {
-    if (!databaseDefined() || !databaseExists()) {
-      return false;
+    if (!databaseExists()) {
+      return true;
     }
     log.debug("drop postgres database {}", dbConfig.getDbName());
     ProcessBuilder pb = dropDatabase(dbConfig.getDbName());
-    List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
-    return stdOutLines.size() == 1;
+    return execute("DROP DATABASE", pb, "Failed to drop database");
   }
 
   /**
    * Drop the database user if it exists.
    */
   public boolean dropUserIfExists() {
-
-    if (!userDefined() || !userExists()) {
-      return false;
+    if (!userExists()) {
+      return true;
     }
     log.debug("drop postgres user {}", dbConfig.getDbUser());
     ProcessBuilder pb = dropUser(dbConfig.getDbUser());
-    List<String> stdOutLines = ProcessHandler.process(pb).getStdOutLines();
-    return stdOutLines.size() == 1;
+    return execute("DROP ROLE", pb, "Failed to drop database user");
   }
 
   /**
@@ -332,15 +311,12 @@ public class PostgresContainer extends DbContainer implements Container {
 
     args.add("-e");
     args.add(dbConfig.getDbAdminPassword());
-    args.add("-d");
     args.add(config.getImage());
 
     return createProcessBuilder(args);
   }
 
   private ProcessBuilder pgIsReady() {
-
-    // not depending on locally installed pg_isready
 
     List<String> args = new ArrayList<>();
 
@@ -358,10 +334,7 @@ public class PostgresContainer extends DbContainer implements Container {
   }
 
   private boolean hasZeroRows(List<String> stdOutLines) {
-    if (stdOutLines.size() < 2) {
-      throw new RuntimeException("Unexpected results - lines:" + stdOutLines);
-    }
-    return stdOutLines.get(2).equals("(0 rows)");
+    return stdoutContains(stdOutLines, "(0 rows)");
   }
 
 }
