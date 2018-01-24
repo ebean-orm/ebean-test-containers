@@ -71,6 +71,38 @@ abstract class DbContainer extends BaseContainer implements Container {
    */
   protected abstract ProcessBuilder runProcess();
 
+  /**
+   * Return true when the database is ready to take commands.
+   */
+  protected abstract boolean isDatabaseReady();
+
+  /**
+   * Return true when the DB is ready for taking commands (like create database, user etc).
+   */
+  public boolean waitForDatabaseReady() {
+    try {
+      for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
+        if (isDatabaseReady()) {
+          return isDatabaseAdminReady();
+        }
+        Thread.sleep(100);
+      }
+      return false;
+
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return false;
+    }
+  }
+
+  /**
+   * Additionally check that the DB admin user can connection (sql server).
+   */
+  protected boolean isDatabaseAdminReady() {
+    // do nothing by default
+    return true;
+  }
+
   boolean checkConnectivity() {
     try {
       log.debug("checkConnectivity ... ");
@@ -83,14 +115,6 @@ abstract class DbContainer extends BaseContainer implements Container {
       log.trace("connection failed: " + e.getMessage());
       return false;
     }
-  }
-
-  boolean userDefined() {
-    return defined(dbConfig.getDbUser());
-  }
-
-  boolean databaseDefined() {
-    return defined(dbConfig.getDbName());
   }
 
   boolean defined(String val) {

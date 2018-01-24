@@ -220,31 +220,11 @@ public class PostgresContainer extends DbContainer implements Container {
    * @return True when we detect the database is ready (to create user and database etc).
    */
   public boolean isDatabaseReady() {
-
     ProcessBuilder pb = pgIsReady();
     try {
       ProcessResult result = ProcessHandler.process(pb.start());
       return result.success();
     } catch (IOException e) {
-      return false;
-    }
-  }
-
-  /**
-   * Return true when the DB is ready for taking commands (like create database, user etc).
-   */
-  public boolean waitForDatabaseReady() {
-    try {
-      for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
-        if (isDatabaseReady()) {
-          return true;
-        }
-        Thread.sleep(100);
-      }
-      return false;
-
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
       return false;
     }
   }

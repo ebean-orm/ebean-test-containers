@@ -48,9 +48,9 @@ abstract class BaseContainer implements Container {
 
   /**
    * Start the container checking if it is already running.
+   * Return true if the container is just being run.
    */
   void startIfNeeded() {
-
     if (!commands.isRunning(config.containerName())) {
       if (commands.isRegistered(config.containerName())) {
         commands.start(config.containerName());
@@ -79,6 +79,7 @@ abstract class BaseContainer implements Container {
    * Return true when we can make IP connections to the database (JDBC).
    */
   boolean waitForConnectivity() {
+    log.debug("waitForConnectivity {} ... ", config.containerName());
     for (int i = 0; i < 120; i++) {
       if (checkConnectivity()) {
         return true;

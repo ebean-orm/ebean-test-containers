@@ -31,6 +31,30 @@ public class SqlServerContainer extends DbContainer implements Container {
   }
 
   /**
+   * Check that we can connect to the DB using SA user.
+   */
+  @Override
+  protected boolean isDatabaseAdminReady() {
+    try {
+      for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
+        try {
+          if (hasOneRows(countDatabases())) {
+            return true;
+          }
+        } catch (CommandException e) {
+          // can't connect via SA user yet
+        }
+        Thread.sleep(100);
+      }
+      return false;
+
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return false;
+    }
+  }
+
+  /**
    * Start the container and wait for it to be ready.
    * <p>
    * This checks if the container is already running.
@@ -192,29 +216,9 @@ public class SqlServerContainer extends DbContainer implements Container {
     return execute(dropLogin(dbConfig.getDbUser()), "Failed to drop DB login");
   }
 
-
-  /**
-   * Return true when the DB is ready for taking commands (like create database, user etc).
-   */
-  public boolean waitForDatabaseReady() {
-
-    try {
-      for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
-        if (logsContain("SQL Server is now ready")) {
-          return true;
-        }
-        Thread.sleep(100);
-      }
-      return false;
-
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      return false;
-    }
-  }
-
-  private boolean hasZeroRows(ProcessBuilder pb) {
-    return hasZeroRows(ProcessHandler.process(pb).getStdOutLines());
+  @Override
+  protected boolean isDatabaseReady() {
+    return logsContain("SQL Server is now ready");
   }
 
   private ProcessBuilder dropDatabase(String dbName) {
@@ -255,6 +259,10 @@ public class SqlServerContainer extends DbContainer implements Container {
 
   private ProcessBuilder databaseExists(String dbName) {
     return sqlProcess("select 1 from sys.databases where name='" + dbName + "'");
+  }
+
+  private ProcessBuilder countDatabases() {
+    return sqlProcess("select count(*) from sys.databases");
   }
 
   private ProcessBuilder sqlProcess(String sql) {
@@ -304,11 +312,20 @@ public class SqlServerContainer extends DbContainer implements Container {
     return createProcessBuilder(args);
   }
 
+  private boolean hasZeroRows(ProcessBuilder pb) {
+    return hasZeroRows(ProcessHandler.process(pb).getStdOutLines());
+  }
+
+  private boolean hasOneRows(ProcessBuilder pb) {
+    return hasOneRows(ProcessHandler.process(pb).getStdOutLines());
+  }
+
   private boolean hasZeroRows(List<String> stdOutLines) {
-    if (stdOutLines.size() < 4) {
-      throw new RuntimeException("Unexpected results - lines:" + stdOutLines);
-    }
-    return stdOutLines.get(3).equals("(0 rows affected)");
+    return stdoutContains(stdOutLines, "(0 rows affected)");
+  }
+
+  private boolean hasOneRows(List<String> stdOutLines) {
+    return stdoutContains(stdOutLines, "(1 rows affected)");
   }
 
 }

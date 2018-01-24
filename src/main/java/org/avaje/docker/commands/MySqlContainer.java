@@ -17,6 +17,11 @@ public class MySqlContainer extends DbContainer implements Container {
   }
 
   @Override
+  protected boolean isDatabaseReady() {
+    return true;
+  }
+
+  @Override
   protected ProcessBuilder runProcess() {
 
     List<String> args = new ArrayList<>();

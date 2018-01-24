@@ -133,7 +133,7 @@ public abstract class DbConfig extends BaseConfig {
     this.dbExtensions = extensions;
     return this;
   }
-  
+
   public boolean isInMemory() {
     return inMemory;
   }
