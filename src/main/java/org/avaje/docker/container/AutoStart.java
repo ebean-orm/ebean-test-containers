@@ -18,15 +18,26 @@ public class AutoStart {
    * Search for docker-run.properties and start containers.
    */
   public static void run() {
+    new AutoStart().run(loadProps());
+  }
+
+  /**
+   * Search for docker-run.properties and stop all the containers.
+   */
+  public static void stop() {
+    new AutoStart().stop(loadProps());
+  }
+
+  private static Properties loadProps() {
+    Properties properties = new Properties();
     try (InputStream is = AutoStart.class.getResourceAsStream("/docker-run.properties")) {
       if (is != null) {
-        Properties properties = new Properties();
         properties.load(is);
-        new AutoStart().run(properties);
       }
     } catch (IOException e) {
       log.warn("failed to load docker-run.properties file", e);
     }
+    return properties;
   }
 
   /**
@@ -34,5 +45,12 @@ public class AutoStart {
    */
   private void run(Properties properties) {
     new ContainerFactory(properties).startContainers();
+  }
+
+  /**
+   * Start containers based on the given properties.
+   */
+  private void stop(Properties properties) {
+    new ContainerFactory(properties).stopContainers();
   }
 }

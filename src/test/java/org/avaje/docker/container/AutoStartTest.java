@@ -7,5 +7,6 @@ public class AutoStartTest {
   @Test
   public void test() {
     AutoStart.run();
+    AutoStart.stop();
   }
 }
