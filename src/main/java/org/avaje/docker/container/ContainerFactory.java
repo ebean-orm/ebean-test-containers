@@ -6,8 +6,10 @@ import org.avaje.docker.commands.PostgresContainer;
 import org.avaje.docker.commands.SqlServerContainer;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -19,12 +21,38 @@ public class ContainerFactory {
 
   private final List<Container> containers = new ArrayList<>();
 
+  private final Set<String> runWith = new HashSet<>();
+
+  private static String defaultRunWith() {
+    String runWith = System.getenv("DOCKER_RUN_WITH");
+    return System.getProperty("docker_run_with", runWith);
+  }
+
   /**
-   * Create given the properties.
+   * Create given properties and reading system and env properties for 'run with'.
    */
   public ContainerFactory(Properties properties) {
+    this(properties, defaultRunWith());
+  }
+
+  /**
+   * Create given the properties and runWith.
+   *
+   * @param properties The properties to configure the containers
+   * @param runWith    Comma delimited string with container to run
+   */
+  public ContainerFactory(Properties properties, String runWith) {
     this.properties = properties;
+    initRunWith(runWith);
     init();
+  }
+
+  private void initRunWith(String runWithOptions) {
+    if (runWithOptions != null) {
+      for (String value : runWithOptions.split(",")) {
+        runWith.add(value.trim().toLowerCase());
+      }
+    }
   }
 
   private void init() {
@@ -32,18 +60,30 @@ public class ContainerFactory {
     if (elasticVersion != null) {
       containers.add(ElasticContainer.create(elasticVersion, properties));
     }
-    String pgVersion = version("postgres");
+    String pgVersion = runWithVersion("postgres");
     if (pgVersion != null) {
       containers.add(PostgresContainer.create(pgVersion, properties));
     }
-    String mysqlVersion = version("mysql");
+    String mysqlVersion = runWithVersion("mysql");
     if (mysqlVersion != null) {
       containers.add(MySqlContainer.create(mysqlVersion, properties));
     }
-    String sqlServerVersion = version("sqlserver");
+    String sqlServerVersion = runWithVersion("sqlserver");
     if (sqlServerVersion != null) {
       containers.add(SqlServerContainer.create(sqlServerVersion, properties));
     }
+  }
+
+  /**
+   * Return the version if the container should be added.
+   * Filters out database containers using <code>runWith</code>.
+   */
+  String runWithVersion(String name) {
+    String version = version(name);
+    if (version == null) {
+      return null;
+    }
+    return (runWith.isEmpty() || runWith.contains(name)) ? version : null;
   }
 
   private String version(String prefix) {

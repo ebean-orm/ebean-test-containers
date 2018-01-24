@@ -6,8 +6,75 @@ import java.sql.Connection;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class ContainerFactoryTest {
+
+  @Test
+  public void runWith() {
+
+    Properties properties = new Properties();
+    properties.setProperty("postgres.version", "9.6");
+    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("sqlserver.version", "2017-CE");
+
+    ContainerFactory factory = new ContainerFactory(properties);
+
+    assertEquals("9.6", factory.runWithVersion("postgres"));
+    assertEquals("5.7", factory.runWithVersion("mysql"));
+    assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
+  }
+
+  @Test
+  public void runWith_specifiedWithComma() {
+
+    Properties properties = new Properties();
+    properties.setProperty("postgres.version", "9.6");
+    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("sqlserver.version", "2017-CE");
+
+    ContainerFactory factory = new ContainerFactory(properties, "sqlserver,mysql");
+
+    assertNull(factory.runWithVersion("postgres"));
+    assertEquals("5.7", factory.runWithVersion("mysql"));
+    assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
+  }
+
+  @Test
+  public void runWith_specifiedOne() {
+
+    Properties properties = new Properties();
+    properties.setProperty("postgres.version", "9.6");
+    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("sqlserver.version", "2017-CE");
+
+    ContainerFactory factory = new ContainerFactory(properties, "mysql");
+
+    assertEquals("5.7", factory.runWithVersion("mysql"));
+    assertNull(factory.runWithVersion("postgres"));
+    assertNull(factory.runWithVersion("sqlserver"));
+  }
+
+  @Test
+  public void runWith_specified_viaEnv() {
+
+    Properties properties = new Properties();
+    properties.setProperty("postgres.version", "9.6");
+    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("sqlserver.version", "2017-CE");
+
+    System.setProperty("docker_run_with", "mysql");
+    try {
+      ContainerFactory factory = new ContainerFactory(properties);
+
+      assertEquals("5.7", factory.runWithVersion("mysql"));
+      assertNull(factory.runWithVersion("postgres"));
+      assertNull(factory.runWithVersion("sqlserver"));
+
+    } finally {
+      System.clearProperty("docker_run_with");
+    }
+  }
 
   @Test
   public void create() throws Exception {

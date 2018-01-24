@@ -18,7 +18,7 @@ public class SqlServerCommandsTest {
     Properties properties = new Properties();
     properties.setProperty("sqlserver.version", "2017-CU2");
     properties.setProperty("sqlserver.containerName", "junk_sqlserver");
-    properties.setProperty("sqlserver.port", "9825");
+    properties.setProperty("sqlserver.port", "2433");
 
     properties.setProperty("sqlserver.dbName", "test_other");
     properties.setProperty("sqlserver.dbUser", "test_robino");
