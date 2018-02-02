@@ -46,7 +46,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * The mode used when stopping (stop, remove).
    */
-  protected String stopMode = "remove";
+  protected String stopMode = "stop";
 
   /**
    * Maximum number of attempts to find the 'database ready to accept connections' log message in the container.
@@ -111,6 +111,11 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   @Override
+  public Connection createAdminConnection() throws SQLException {
+    throw new IllegalStateException("Not valid for this type");
+  }
+
+  @Override
   public String jdbcUrl() {
     throw new IllegalStateException("Not valid for this type");
   }
@@ -118,7 +123,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Load configuration from properties.
    */
-  public BaseConfig withProperties(Properties properties) {
+  public BaseConfig setProperties(Properties properties) {
     if (properties == null) {
       return this;
     }
@@ -153,7 +158,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the container name.
    */
-  public BaseConfig withContainerName(String containerName) {
+  public BaseConfig setContainerName(String containerName) {
     this.containerName = containerName;
     return this;
   }
@@ -161,7 +166,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the exposed port.
    */
-  public BaseConfig withPort(String port) {
+  public BaseConfig setPort(String port) {
     this.port = port;
     return this;
   }
@@ -169,7 +174,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the internal (to the container) port.
    */
-  public BaseConfig withInternalPort(String internalPort) {
+  public BaseConfig setInternalPort(String internalPort) {
     this.internalPort = internalPort;
     return this;
   }
@@ -177,7 +182,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the docker image to use.
    */
-  public BaseConfig withImage(String image) {
+  public BaseConfig setImage(String image) {
     this.image = image;
     return this;
   }
@@ -186,7 +191,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the max attempts to wait for DB ready.
    */
-  public BaseConfig withMaxReadyAttempts(int maxReadyAttempts) {
+  public BaseConfig setMaxReadyAttempts(int maxReadyAttempts) {
     this.maxReadyAttempts = maxReadyAttempts;
     return this;
   }
@@ -194,7 +199,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the docker command to use (defaults to 'docker').
    */
-  public BaseConfig withDocker(String docker) {
+  public BaseConfig setDocker(String docker) {
     this.docker = docker;
     return this;
   }

@@ -18,6 +18,11 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Database admin password.
    */
+  private String dbAdminUser = "admin";
+
+  /**
+   * Database admin password.
+   */
   private String dbAdminPassword = "admin";
 
   /**
@@ -67,13 +72,20 @@ public abstract class DbConfig extends BaseConfig {
   }
 
   /**
+   * Return a Connection to the database using the admin user.
+   */
+  public Connection createAdminConnection() throws SQLException {
+    return DriverManager.getConnection(jdbcUrl(), getDbAdminUser(), getDbAdminPassword());
+  }
+
+  /**
    * Load configuration from properties.
    */
-  public DbConfig withProperties(Properties properties) {
+  public DbConfig setProperties(Properties properties) {
     if (properties == null) {
       return this;
     }
-    super.withProperties(properties);
+    super.setProperties(properties);
 
     inMemory = Boolean.parseBoolean(prop(properties, "inMemory", Boolean.toString(inMemory)));
     tmpfs = prop(properties, "tmpfs", tmpfs);
@@ -89,7 +101,15 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Set the password for the DB admin user.
    */
-  public DbConfig withAdminPassword(String adminPassword) {
+  public DbConfig setAdminUser(String dbAdminUser) {
+    this.dbAdminUser= dbAdminUser;
+    return this;
+  }
+
+  /**
+   * Set the password for the DB admin user.
+   */
+  public DbConfig setAdminPassword(String adminPassword) {
     this.dbAdminPassword = adminPassword;
     return this;
   }
@@ -97,7 +117,7 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Set the temp fs for in-memory use.
    */
-  public DbConfig withTmpfs(String tmpfs) {
+  public DbConfig setTmpfs(String tmpfs) {
     this.tmpfs = tmpfs;
     return this;
   }
@@ -105,7 +125,7 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Set the DB name.
    */
-  public DbConfig withDbName(String dbName) {
+  public DbConfig setDbName(String dbName) {
     this.dbName = dbName;
     return this;
   }
@@ -113,7 +133,7 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Set the DB user.
    */
-  public DbConfig withUser(String user) {
+  public DbConfig setUser(String user) {
     this.dbUser = user;
     return this;
   }
@@ -121,7 +141,7 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Set the DB password.
    */
-  public DbConfig withPassword(String password) {
+  public DbConfig setPassword(String password) {
     this.dbPassword = password;
     return this;
   }
@@ -140,6 +160,10 @@ public abstract class DbConfig extends BaseConfig {
 
   public String getTmpfs() {
     return tmpfs;
+  }
+
+  public String getDbAdminUser() {
+    return dbAdminUser;
   }
 
   public String getDbAdminPassword() {

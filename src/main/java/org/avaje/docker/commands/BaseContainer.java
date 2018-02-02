@@ -42,7 +42,6 @@ abstract class BaseContainer implements Container {
       log.warn("Container {} failed to start - waiting for connectivity", config.containerName());
       return false;
     }
-    logStarted();
     return true;
   }
 
@@ -51,14 +50,17 @@ abstract class BaseContainer implements Container {
    * Return true if the container is just being run.
    */
   void startIfNeeded() {
-    if (!commands.isRunning(config.containerName())) {
-      if (commands.isRegistered(config.containerName())) {
-        commands.start(config.containerName());
+    if (commands.isRunning(config.containerName())) {
+      logRunning();
+      return;
+    }
+    if (commands.isRegistered(config.containerName())) {
+      logStart();
+      commands.start(config.containerName());
 
-      } else {
-        log.debug("run {} container {}", config.platform(), config.containerName());
-        runContainer();
-      }
+    } else {
+      logRun();
+      runContainer();
     }
   }
 
@@ -71,6 +73,13 @@ abstract class BaseContainer implements Container {
    */
   boolean logsContain(String match) {
     return commands.logsContain(config.containerName(), match);
+  }
+
+  /**
+   * Return all the logs from the container (can be big, be careful).
+   */
+  List<String> logs() {
+    return commands.logs(config.containerName());
   }
 
   abstract boolean checkConnectivity();
@@ -139,22 +148,40 @@ abstract class BaseContainer implements Container {
   }
 
   /**
-   * Log a message for container starting or not.
+   * Log that the container is already running.
    */
-  boolean logStart(boolean started) {
-    if (started) {
-      logStarted();
-    } else {
+  void logRunning() {
+    log.info("Container {} already running with port:{}", config.containerName(), config.getPort());
+  }
+
+  /**
+   * Log that we are about to run an existing container.
+   */
+  void logRun() {
+    log.info("Run container {} with port:{}", config.containerName(), config.getPort());
+  }
+
+  /**
+   * Log that we are about to start a container.
+   */
+  void logStart() {
+    log.info("Start container {} with port:{}", config.containerName(), config.getPort());
+  }
+
+  /**
+   * Log that the container failed to start.
+   */
+  void logNotStarted() {
+    log.warn("Failed to start container {} with port {}", config.containerName(), config.getPort());
+  }
+
+  /**
+   * Log a message after the container has started or not.
+   */
+  boolean logStarted(boolean started) {
+    if (!started) {
       logNotStarted();
     }
     return started;
-  }
-
-  void logStarted() {
-    log.info("Started container {} with port:{}", config.containerName(), config.getPort());
-  }
-
-  void logNotStarted() {
-    log.warn("Failed to start container {} with port {}", config.containerName(), config.getPort());
   }
 }

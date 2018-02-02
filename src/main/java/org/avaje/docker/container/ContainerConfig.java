@@ -24,9 +24,14 @@ public interface ContainerConfig {
   String jdbcUrl();
 
   /**
-   * Return a DB connection or null if not a database container.
+   * Return a DB connection.
    */
   Connection createConnection() throws SQLException;
+
+  /**
+   * Return a DB connection using the admin user.
+   */
+  Connection createAdminConnection() throws SQLException;
 
   /**
    * Set the start mode.  One of create, dropCreate, or container [only].

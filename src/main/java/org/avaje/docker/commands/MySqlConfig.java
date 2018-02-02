@@ -6,12 +6,12 @@ public class MySqlConfig extends DbConfig {
 
   public MySqlConfig(String version, Properties properties) {
     this(version);
-    withProperties(properties);
+    setProperties(properties);
   }
 
   public MySqlConfig(String version) {
     super("mysql", "4306", "3306", version);
-    this.withTmpfs("/var/lib/mysql:rw");
+    this.setTmpfs("/var/lib/mysql:rw");
   }
 
   public String jdbcUrl() {

@@ -6,7 +6,7 @@ public class PostgresConfig extends DbConfig {
 
   public PostgresConfig(String version, Properties properties) {
     this(version);
-    withProperties(properties);
+    setProperties(properties);
   }
 
   public PostgresConfig(String version) {

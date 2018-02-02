@@ -2,6 +2,7 @@ package org.avaje.docker.container;
 
 import org.avaje.docker.commands.ElasticContainer;
 import org.avaje.docker.commands.MySqlContainer;
+import org.avaje.docker.commands.OracleContainer;
 import org.avaje.docker.commands.PostgresContainer;
 import org.avaje.docker.commands.SqlServerContainer;
 
@@ -71,6 +72,10 @@ public class ContainerFactory {
     String sqlServerVersion = runWithVersion("sqlserver");
     if (sqlServerVersion != null) {
       containers.add(SqlServerContainer.create(sqlServerVersion, properties));
+    }
+    String oracleVersion = runWithVersion("oracle");
+    if (oracleVersion != null) {
+      containers.add(OracleContainer.create(oracleVersion, properties));
     }
   }
 

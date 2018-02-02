@@ -17,13 +17,18 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   @Override
-  void logStarted() {
-    log.info("Started container {} with port:{} dbName:{} dbUser:{}", config.containerName(), config.getPort(), dbConfig.getDbName(), dbConfig.getDbUser());
+  void logRun() {
+    log.info("Run container {} with port:{} dbName:{} dbUser:{} mode:{}", config.containerName(), config.getPort(), dbConfig.getDbName(), dbConfig.getDbUser(), dbConfig.getStartMode());
+  }
+
+  @Override
+  void logStart() {
+    log.info("Start container {} with port:{} dbName:{} dbUser:{} mode:{}", config.containerName(), config.getPort(), dbConfig.getDbName(), dbConfig.getDbUser(), dbConfig.getStartMode());
   }
 
   @Override
   public boolean start() {
-    return logStart(startForMode());
+    return logStarted(startForMode());
   }
 
   /**
@@ -103,10 +108,20 @@ abstract class DbContainer extends BaseContainer implements Container {
     return true;
   }
 
+  /**
+   * Check connectivity via trying to make a JDBC connection.
+   */
   boolean checkConnectivity() {
+    return checkConnectivity(false);
+  }
+
+  /**
+   * Check connectivity using admin user or dbUser.
+   */
+  boolean checkConnectivity(boolean useAdmin) {
     try {
       log.debug("checkConnectivity ... ");
-      Connection connection = config.createConnection();
+      Connection connection = useAdmin ? config.createAdminConnection() : config.createConnection();
       connection.close();
       log.debug("connectivity confirmed ");
       return true;
