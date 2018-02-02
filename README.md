@@ -1,8 +1,54 @@
 # docker-commands
-Ability to control docker containers. e.g. Postgres running as docker container for testing 
+Ability to control docker containers. e.g. Postgres running as docker container for testing.
+
+The issues this solves for us is to:
+- create databases and database users as needed
+- wait for databases to be in ready state 
+
+
+The needs of this project are primarily driven by the needs/desires of using docker
+containers to make testing nice for Ebean ORM - https://ebean-orm.github.io/
+
+
+## Supported Containers
+
+- Postgres 
+- MySql 
+- SqlServer (via https://hub.docker.com/r/microsoft/mssql-server-linux/)
+- Oracle (via https://hub.docker.com/r/sath89/oracle-12c/)
+- ElasticSearch 
+
+
+
+
+## Programmatic use
+We can programmatically create the containers.
+```java
+
+String version = "9.6";
+PostgresConfig config = new PostgresConfig(version);
+// set some configuration options
+config.setContainerName("junk_postgres");
+config.setPort("9823");
+config.setDbUser("rob");
+
+PostgresContainer container = new PostgresContainer(config);
+
+// start creating the DB and User if required
+container.startWithCreate();
+
+// start dropping and re-creating the DB and User if required
+container.startWithDropCreate();
+
+// stop the container
+container.stopOnly();
+```
 
 
 ## AutoStart use
+Alternatively we can get them to run via `AutoRun`. This is a good approach
+when we want to start multiple containers (like Postgres + ElasticSearch).
+
 1. Add a docker-run.properties 
 2. Execute AutoStart.run()
 
@@ -17,43 +63,5 @@ postgres.dbName=junk_db
 postgres.dbUser=rob
 postgres.dbExtensions=hstore,pgcrypto
 postgres.port=6432
-
-```
-
-## ContainerFactory use
-
-Example use of ContainerFactory.
-
-```java
-
-    Properties properties = new Properties();
-    properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("postgres.containerName", "junk_postgres");
-    properties.setProperty("postgres.port", "9823");
-
-    properties.setProperty("elastic.version", "5.6.0");
-    properties.setProperty("elastic.port", "9201");
-
-//    properties.setProperty("mysql.version", "5.7");
-//    properties.setProperty("mysql.containerName", "temp_mysql");
-//    properties.setProperty("mysql.port", "7306");
-
-
-    ContainerFactory factory = new ContainerFactory(properties);
-
-    // start all containers
-    factory.startContainers();
-
-    // get a container
-    Container postgres = factory.container("postgres");
-
-    // for a DB container we can get JDBC URL & Connection
-    String jdbcUrl = postgres.config().jdbcUrl();
-    Connection connection = postgres.config().createConnection();
-    connection.close();
-
-    // stop all containers
-    factory.stopContainers();
-
 
 ```
