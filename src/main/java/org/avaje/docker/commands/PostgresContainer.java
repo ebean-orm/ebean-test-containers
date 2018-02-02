@@ -50,6 +50,7 @@ public class PostgresContainer extends DbContainer implements Container {
    */
   @Override
   public boolean startWithCreate() {
+    startMode = Mode.Create;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());
@@ -70,6 +71,7 @@ public class PostgresContainer extends DbContainer implements Container {
    */
   @Override
   public boolean startWithDropCreate() {
+    startMode = Mode.DropCreate;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());
@@ -97,6 +99,7 @@ public class PostgresContainer extends DbContainer implements Container {
    */
   @Override
   public boolean startContainerOnly() {
+    startMode = Mode.Container;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());

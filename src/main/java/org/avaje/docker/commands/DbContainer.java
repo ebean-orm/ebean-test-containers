@@ -9,21 +9,36 @@ import java.util.List;
 
 abstract class DbContainer extends BaseContainer implements Container {
 
+  enum Mode {
+    Create,
+    DropCreate,
+    Container
+  }
+
   final DbConfig dbConfig;
+
+  Mode startMode;
 
   DbContainer(DbConfig config) {
     super(config);
     this.dbConfig = config;
   }
 
+  /**
+   * Log that the container is already running.
+   */
+  void logRunning() {
+    log.info("Container {} running with {} mode:{}", config.containerName(), dbConfig.summary(), startMode);
+  }
+
   @Override
   void logRun() {
-    log.info("Run container {} with port:{} dbName:{} dbUser:{} mode:{}", config.containerName(), config.getPort(), dbConfig.getDbName(), dbConfig.getDbUser(), dbConfig.getStartMode());
+    log.info("Run container {} with {} mode:{}", config.containerName(), dbConfig.summary(), startMode);
   }
 
   @Override
   void logStart() {
-    log.info("Start container {} with port:{} dbName:{} dbUser:{} mode:{}", config.containerName(), config.getPort(), dbConfig.getDbName(), dbConfig.getDbUser(), dbConfig.getStartMode());
+    log.info("Start container {} with {} mode:{}", config.containerName(), dbConfig.summary(), startMode);
   }
 
   @Override
@@ -54,6 +69,7 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Start the DB container ensuring the DB and user exist creating them if necessary.
    */
   public boolean startWithCreate() {
+    startMode = Mode.Create;
     return startWithConnectivity();
   }
 
@@ -61,6 +77,7 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Start the DB container ensuring the DB and user are dropped and then created.
    */
   public boolean startWithDropCreate() {
+    startMode = Mode.DropCreate;
     return startWithConnectivity();
   }
 
@@ -68,6 +85,7 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Start the container only doing nothing to ensure the DB or user exist.
    */
   public boolean startContainerOnly() {
+    startMode = Mode.Container;
     return startWithConnectivity();
   }
 
