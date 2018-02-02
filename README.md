@@ -65,3 +65,9 @@ postgres.dbExtensions=hstore,pgcrypto
 postgres.port=6432
 
 ```
+
+## Ebean ORM use
+
+We use `ebean-docker-run` (https://github.com/ebean-orm/ebean-docker-run) ... to hook into the
+Ebean lifecycle and automatically start the docker containers as needed (prior to running tests etc).
+
