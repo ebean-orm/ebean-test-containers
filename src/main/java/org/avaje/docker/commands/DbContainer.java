@@ -12,7 +12,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   enum Mode {
     Create,
     DropCreate,
-    Container
+    ContainerOnly
   }
 
   final DbConfig dbConfig;
@@ -82,11 +82,21 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   /**
-   * Start the container only doing nothing to ensure the DB or user exist.
+   * Start the container only without creating database, user, extensions etc.
    */
   public boolean startContainerOnly() {
-    startMode = Mode.Container;
-    return startWithConnectivity();
+    startMode = Mode.ContainerOnly;
+    startIfNeeded();
+    if (!waitForDatabaseReady()) {
+      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
+      return false;
+    }
+
+    if (!waitForConnectivity()) {
+      log.warn("Failed waiting for connectivity");
+      return false;
+    }
+    return true;
   }
 
   /**
@@ -161,6 +171,18 @@ abstract class DbContainer extends BaseContainer implements Container {
     List<String> outLines = ProcessHandler.process(pb).getStdOutLines();
     if (!stdoutContains(outLines, expectedLine)) {
       log.error(errorMessage + " stdOut:" + outLines + " Expected message:" + expectedLine);
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * Execute looking for expected message in stdout.
+   */
+  boolean executeWithout(String errorMatch, ProcessBuilder pb, String errorMessage) {
+    List<String> outLines = ProcessHandler.process(pb).getStdOutLines();
+    if (stdoutContains(outLines, errorMatch)) {
+      log.error(errorMessage + " stdOut:" + outLines);
       return false;
     }
     return true;

@@ -20,11 +20,11 @@ public class MySqlContainerTest {
 
     MySqlContainer container = new MySqlContainer(config);
 
-//    container.startWithCreate();
-//    container.startContainerOnly();
+    container.startWithCreate();
+    container.startContainerOnly();
     container.startWithDropCreate();
 
-    //container.stopOnly();
+    container.stopOnly();
   }
 
   @Test

@@ -98,13 +98,20 @@ public class Commands {
    * Return true if the logs of the container contain the match text.
    */
   public boolean logsContain(String containerName, String match) {
-    List<String> outLines = logs(containerName);
-    for (String outLine : outLines) {
-      if (outLine.contains(match)) {
-        return true;
-      }
-    }
-    return false;
+    return logsContain(containerName, match, null);
+  }
+
+  public boolean logsContain(String containerName, String match, String clearMatch) {
+    List<String> matchLines = logsWithMatch(containerName, match, clearMatch);
+    return !matchLines.isEmpty();
+  }
+
+  /**
+   * Return true if the logs of the container contain the match text.
+   */
+  public List<String> logsWithMatch(String containerName, String match, String clearMatch) {
+    ProcessResult result = ProcessHandler.matchCommand(match, clearMatch, docker, "logs", containerName);
+    return result.getStdOutLines();
   }
 
   /**

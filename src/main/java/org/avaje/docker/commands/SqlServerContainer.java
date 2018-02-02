@@ -119,25 +119,6 @@ public class SqlServerContainer extends DbContainer implements Container {
   }
 
   /**
-   * Start the container only without creating database, user, extensions etc.
-   */
-  @Override
-  public boolean startContainerOnly() {
-    startMode = Mode.Container;
-    startIfNeeded();
-    if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
-      return false;
-    }
-
-    if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
-      return false;
-    }
-    return true;
-  }
-
-  /**
    * Return true if the database exists.
    */
   public boolean databaseExists() {

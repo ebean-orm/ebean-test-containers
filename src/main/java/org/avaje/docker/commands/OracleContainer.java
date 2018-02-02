@@ -162,26 +162,6 @@ public class OracleContainer extends DbContainer implements Container {
     return dropCreateUser();
   }
 
-  /**
-   * Start the container only without creating database, user, extensions etc.
-   */
-  @Override
-  public boolean startContainerOnly() {
-    startMode = Mode.Container;
-    startIfNeeded();
-    if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
-      return false;
-    }
-
-    if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
-      return false;
-    }
-    return true;
-  }
-
-
   private boolean dropCreateUser() {
 
     log.info("Drop and create database user {}", dbConfig.getDbUser());

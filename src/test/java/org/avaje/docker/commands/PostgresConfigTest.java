@@ -25,7 +25,7 @@ public class PostgresConfigTest {
     Properties properties = new Properties();
 
     PostgresConfig config = new PostgresConfig("9.6", properties);
-    assertEquals(config.getStopMode(), "remove");
+    assertEquals(config.getStopMode(), "stop");
   }
 
   @Test

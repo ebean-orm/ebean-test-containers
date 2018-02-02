@@ -17,10 +17,29 @@ public class ProcessHandler {
 
   private static final Logger log = LoggerFactory.getLogger(ProcessHandler.class);
 
-  private final Process process;
+  private final ProcessBuilder builder;
 
-  private ProcessHandler(Process process) {
-    this.process = process;
+  private Process process;
+
+  private List<String> stdOutLines = new ArrayList<>();
+  private List<String> stdErrLines = new ArrayList<>();
+
+  private String match;
+  private String clearMatch;
+
+
+  private ProcessHandler(ProcessBuilder builder, String match, String clearMatch) {
+    this.builder = builder;
+    this.match = match;
+    this.clearMatch = clearMatch;
+  }
+
+  private void start() throws IOException {
+    process = builder.start();
+  }
+
+  public static ProcessResult matchCommand(String match, String clearMatch, String... command) {
+    return process(new ProcessBuilder(command), match, clearMatch);
   }
 
   /**
@@ -30,12 +49,18 @@ public class ProcessHandler {
     return process(new ProcessBuilder(command));
   }
 
+  public static ProcessResult process(ProcessBuilder pb) {
+    return process(pb, null, null);
+  }
+
   /**
    * Process a command.
    */
-  public static ProcessResult process(ProcessBuilder pb) {
+  private static ProcessResult process(ProcessBuilder pb, String match, String clearMatch) {
     try {
-      ProcessResult result = process(pb.start());
+      ProcessHandler handler = new ProcessHandler(pb, match, clearMatch);
+      handler.start();
+      ProcessResult result = handler.read();
       if (!result.success()) {
         throw new CommandException("command failed: " + result.getStdErrLines(), result);
       }
@@ -46,25 +71,18 @@ public class ProcessHandler {
     }
   }
 
-  public static ProcessResult process(Process process) {
-    return new ProcessHandler(process).read();
-  }
-
   private ProcessResult read() {
 
     try {
       BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
       BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
-      List<String> stdOutLines = new ArrayList<>();
-      List<String> stdErrLines = new ArrayList<>();
-
       String s;
       while ((s = stdError.readLine()) != null) {
-        stdErrLines.add(s);
+        processLine(s, stdErrLines);
       }
       while ((s = stdInput.readLine()) != null) {
-        stdOutLines.add(s);
+        processLine(s, stdOutLines);
       }
 
       int result = process.waitFor();
@@ -76,6 +94,21 @@ public class ProcessHandler {
 
     } catch (IOException | InterruptedException e) {
       throw new RuntimeException(e);
+    }
+  }
+
+  private void processLine(String s, List<String> lines) {
+    if (clearMatch != null && s.contains(clearMatch)) {
+      stdOutLines.clear();
+      stdErrLines.clear();
+    } else {
+      if (match != null) {
+        if (s.contains(match)) {
+          stdOutLines.add(s);
+        }
+      } else {
+        lines.add(s);
+      }
     }
   }
 

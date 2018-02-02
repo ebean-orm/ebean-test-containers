@@ -95,25 +95,6 @@ public class PostgresContainer extends DbContainer implements Container {
   }
 
   /**
-   * Start the container only without creating database, user, extensions etc.
-   */
-  @Override
-  public boolean startContainerOnly() {
-    startMode = Mode.Container;
-    startIfNeeded();
-    if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());
-      return false;
-    }
-
-    if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
-      return false;
-    }
-    return true;
-  }
-
-  /**
    * Return true if the database exists.
    */
   public boolean databaseExists() {
@@ -223,11 +204,9 @@ public class PostgresContainer extends DbContainer implements Container {
    * @return True when we detect the database is ready (to create user and database etc).
    */
   public boolean isDatabaseReady() {
-    ProcessBuilder pb = pgIsReady();
     try {
-      ProcessResult result = ProcessHandler.process(pb.start());
-      return result.success();
-    } catch (IOException e) {
+      return ProcessHandler.process(pgIsReady()).success();
+    } catch (RuntimeException e) {
       return false;
     }
   }
