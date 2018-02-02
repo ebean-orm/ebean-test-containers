@@ -9,11 +9,26 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class MySqlCommandsTest {
+public class MySqlContainerTest {
 
   @Test
-  public void basic() throws InterruptedException {
+  public void start() {
 
+    MySqlConfig config = new MySqlConfig("5.7");
+    config.setContainerName("temp_mysql");
+    config.setPort("7306");
+
+    MySqlContainer container = new MySqlContainer(config);
+
+//    container.startWithCreate();
+//    container.startContainerOnly();
+    container.startWithDropCreate();
+
+    //container.stopOnly();
+  }
+
+  @Test
+  public void viaContainerFactory() {
 
     Properties properties = new Properties();
     properties.setProperty("mysql.version", "5.7");

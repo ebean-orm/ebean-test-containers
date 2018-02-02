@@ -93,6 +93,7 @@ public abstract class DbConfig extends BaseConfig {
     dbUser = prop(properties, "dbUser", dbUser);
     dbPassword = prop(properties, "dbPassword", dbPassword);
     dbExtensions = prop(properties, "dbExtensions", dbExtensions);
+    dbAdminUser = prop(properties, "dbAdminUser", dbAdminUser);
     dbAdminPassword = prop(properties, "dbAdminPassword", dbAdminPassword);
 
     return this;
