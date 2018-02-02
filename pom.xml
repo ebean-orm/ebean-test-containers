@@ -10,7 +10,7 @@
 
   <groupId>org.avaje.docker</groupId>
   <artifactId>docker-commands</artifactId>
-  <version>1.4.2-SNAPSHOT</version>
+  <version>1.5.1-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:avaje/docker-commands.git</developerConnection>
