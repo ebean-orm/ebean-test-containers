@@ -30,7 +30,6 @@ public class OracleConfig extends DbConfig {
   }
 
   public String jdbcUrl() {
-    //jdbc:oracle:thin:@localhost:1521:XE
     return "jdbc:oracle:thin:@localhost:" + getPort() + ":" + getDbName();
   }
 

@@ -170,7 +170,7 @@ public class OracleContainer extends DbContainer implements Container {
         runSql(connection, "drop user " + dbConfig.getDbUser() + " cascade");
       }
       runSql(connection, "create user " + dbConfig.getDbUser() + " identified by " + dbConfig.getDbPassword());
-      runSql(connection, "grant create view, connect, resource, unlimited tablespace to " + dbConfig.getDbUser());
+      runSql(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getDbUser());
     });
     return true;
   }
@@ -184,7 +184,7 @@ public class OracleContainer extends DbContainer implements Container {
     sqlProcess(connection -> {
       if (!userExists(connection)) {
         runSql(connection, "create user " + dbConfig.getDbUser() + " identified by " + dbConfig.getDbPassword());
-        runSql(connection, "grant connect, resource, unlimited tablespace to " + dbConfig.getDbUser());
+        runSql(connection, "grant connect, resource, create view, unlimited tablespaceto " + dbConfig.getDbUser());
       }
     });
     return true;
