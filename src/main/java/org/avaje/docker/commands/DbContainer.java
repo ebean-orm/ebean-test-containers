@@ -168,7 +168,7 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Execute looking for expected message in stdout.
    */
   boolean execute(String expectedLine, ProcessBuilder pb, String errorMessage) {
-    List<String> outLines = ProcessHandler.process(pb).getStdOutLines();
+    List<String> outLines = ProcessHandler.process(pb).getOutLines();
     if (!stdoutContains(outLines, expectedLine)) {
       log.error(errorMessage + " stdOut:" + outLines + " Expected message:" + expectedLine);
       return false;
@@ -180,7 +180,7 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Execute looking for expected message in stdout.
    */
   boolean executeWithout(String errorMatch, ProcessBuilder pb, String errorMessage) {
-    List<String> outLines = ProcessHandler.process(pb).getStdOutLines();
+    List<String> outLines = ProcessHandler.process(pb).getOutLines();
     if (stdoutContains(outLines, errorMatch)) {
       log.error(errorMessage + " stdOut:" + outLines);
       return false;
@@ -204,7 +204,7 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Execute expecting no output to stdout.
    */
   boolean execute(ProcessBuilder pb, String errorMessage) {
-    List<String> outLines = ProcessHandler.process(pb).getStdOutLines();
+    List<String> outLines = ProcessHandler.process(pb).getOutLines();
     if (!outLines.isEmpty()) {
       log.error(errorMessage + " stdOut:" + outLines);
       return false;

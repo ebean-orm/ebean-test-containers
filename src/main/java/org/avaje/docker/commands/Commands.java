@@ -111,7 +111,7 @@ public class Commands {
    */
   public List<String> logsWithMatch(String containerName, String match, String clearMatch) {
     ProcessResult result = ProcessHandler.matchCommand(match, clearMatch, docker, "logs", containerName);
-    return result.getStdOutLines();
+    return result.getOutLines();
   }
 
   /**
@@ -119,7 +119,7 @@ public class Commands {
    */
   public List<String> logs(String containerName) {
     ProcessResult result = ProcessHandler.command(docker, "logs", containerName);
-    return result.getStdOutLines();
+    return result.getOutLines();
   }
 
   /**
@@ -127,7 +127,7 @@ public class Commands {
    */
   private List<String> running() {
     ProcessResult result = ProcessHandler.command(docker, "ps", "--format", "{{.Names}}");
-    return result.getStdOutLines();
+    return result.getOutLines();
   }
 
   /**
@@ -135,7 +135,7 @@ public class Commands {
    */
   private List<String> registered() {
     ProcessResult result = ProcessHandler.command(docker, "ps", "-a", "--format", "{{.Names}}");
-    return result.getStdOutLines();
+    return result.getOutLines();
   }
 
 
@@ -175,7 +175,7 @@ public class Commands {
     } else {
       result = ProcessHandler.command(docker, "logs", containerName);
     }
-    return result.getStdOutLines();
+    return result.getOutLines();
   }
 
 }

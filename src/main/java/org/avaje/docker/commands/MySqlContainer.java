@@ -136,7 +136,7 @@ public class MySqlContainer extends DbContainer implements Container {
   }
 
   private boolean contains(ProcessBuilder pb, String match) {
-    List<String> outLines = ProcessHandler.process(pb).getStdOutLines();
+    List<String> outLines = ProcessHandler.process(pb).getOutLines();
     return stdoutContains(outLines, match);
   }
 

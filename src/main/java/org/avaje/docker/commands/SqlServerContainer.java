@@ -298,11 +298,11 @@ public class SqlServerContainer extends DbContainer implements Container {
   }
 
   private boolean hasZeroRows(ProcessBuilder pb) {
-    return hasZeroRows(ProcessHandler.process(pb).getStdOutLines());
+    return hasZeroRows(ProcessHandler.process(pb).getOutLines());
   }
 
   private boolean hasOneRows(ProcessBuilder pb) {
-    return hasOneRows(ProcessHandler.process(pb).getStdOutLines());
+    return hasOneRows(ProcessHandler.process(pb).getOutLines());
   }
 
   private boolean hasZeroRows(List<String> stdOutLines) {

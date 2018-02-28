@@ -7,17 +7,16 @@ import java.util.List;
  */
 public class ProcessResult {
 
-  final int result;
-  final List<String> stdOutLines;
-  final List<String> stdErrLines;
+  private final int result;
+
+  private final List<String> out;
 
   /**
    * Create with the result exit code and std out and err content.
    */
-  public ProcessResult(int result, List<String> stdOutLines, List<String> stdErrLines) {
+  public ProcessResult(int result, List<String> out) {
     this.result = result;
-    this.stdOutLines = stdOutLines;
-    this.stdErrLines = stdErrLines;
+    this.out = out;
   }
 
   /**
@@ -28,45 +27,24 @@ public class ProcessResult {
   }
 
   /**
-   * Return the exit result code.
-   */
-  public int getResult() {
-    return result;
-  }
-
-  /**
    * Return the STD OUT lines.
    */
-  public List<String> getStdOutLines() {
-    return stdOutLines;
+  public List<String> getOutLines() {
+    return out;
   }
 
   /**
-   * Return the STD ERR lines.
+   * Return all the stdOut and stdErr content (merged).
    */
-  public List<String> getStdErrLines() {
-    return stdErrLines;
-  }
-
-  /**
-   * Return all the STD OUT content.
-   */
-  public String stdOut() {
-    return lines(stdOutLines);
-  }
-
-  /**
-   * Return all the STD err content.
-   */
-  public String stdErr() {
-    return lines(stdErrLines);
+  private String out() {
+    return lines(out);
   }
 
   /**
    * Return debug output.
    */
   public String debug() {
-    return "exit:" + result + "\n out:" + stdOut() + "\n err:" + stdErr();
+    return "exit:" + result + "\n out:" + out(); // + "\n err:" + stdErr();
   }
 
   private String lines(List<String> lines) {
@@ -79,6 +57,5 @@ public class ProcessResult {
     }
     return sb.toString();
   }
-
 
 }

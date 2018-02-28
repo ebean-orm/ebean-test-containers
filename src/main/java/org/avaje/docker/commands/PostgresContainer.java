@@ -1,12 +1,10 @@
 package org.avaje.docker.commands;
 
 import org.avaje.docker.commands.process.ProcessHandler;
-import org.avaje.docker.commands.process.ProcessResult;
 import org.avaje.docker.container.Container;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -212,7 +210,7 @@ public class PostgresContainer extends DbContainer implements Container {
   }
 
   private boolean hasZeroRows(ProcessBuilder pb) {
-    return hasZeroRows(ProcessHandler.process(pb).getStdOutLines());
+    return hasZeroRows(ProcessHandler.process(pb).getOutLines());
   }
 
   private ProcessBuilder dropDatabase(String dbName) {
