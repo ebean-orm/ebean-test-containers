@@ -35,23 +35,7 @@ public class SqlServerContainer extends DbContainer implements Container {
    */
   @Override
   protected boolean isDatabaseAdminReady() {
-    try {
-      for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
-        try {
-          if (hasOneRows(countDatabases())) {
-            return true;
-          }
-        } catch (CommandException e) {
-          // can't connect via SA user yet
-        }
-        Thread.sleep(100);
-      }
-      return false;
-
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      return false;
-    }
+    return hasOneRows(countDatabases());
   }
 
   /**

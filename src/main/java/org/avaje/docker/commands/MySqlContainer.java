@@ -23,6 +23,14 @@ public class MySqlContainer extends DbContainer implements Container {
   }
 
   /**
+   * Check that we can execute admin commands.
+   */
+  @Override
+  protected boolean isDatabaseAdminReady() {
+    return execute("Database", showDatabases());
+  }
+
+  /**
    * Start the container and wait for it to be ready.
    * <p>
    * This checks if the container is already running.
@@ -142,6 +150,10 @@ public class MySqlContainer extends DbContainer implements Container {
 
   private ProcessBuilder createDatabase(String dbName) {
     return sqlProcess("create database " + dbName, false);
+  }
+
+  private ProcessBuilder showDatabases() {
+    return sqlProcess("show databases", false);
   }
 
   private ProcessBuilder dbExists(String dbName) {

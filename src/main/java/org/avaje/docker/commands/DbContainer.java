@@ -110,30 +110,50 @@ abstract class DbContainer extends BaseContainer implements Container {
   protected abstract boolean isDatabaseReady();
 
   /**
-   * Return true when the DB is ready for taking commands (like create database, user etc).
+   * Return true when the database is ready to take admin commands.
    */
-  public boolean waitForDatabaseReady() {
-    try {
-      for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
-        if (isDatabaseReady()) {
-          return isDatabaseAdminReady();
-        }
-        Thread.sleep(100);
-      }
-      return false;
-
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      return false;
-    }
+  protected boolean isDatabaseAdminReady() {
+    return true;
   }
 
   /**
-   * Additionally check that the DB admin user can connection (sql server).
+   * Return true when the DB is ready for taking commands (like create database, user etc).
    */
-  protected boolean isDatabaseAdminReady() {
-    // do nothing by default
-    return true;
+  public boolean waitForDatabaseReady() {
+    return waitLoopDatabaseReady() && waitLoopAdminReady();
+  }
+
+  private boolean waitLoopDatabaseReady() {
+    for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
+      if (isDatabaseReady()) {
+        return true;
+      }
+      pause();
+    }
+    return false;
+  }
+
+  private boolean waitLoopAdminReady() {
+    for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
+      try {
+        if (isDatabaseAdminReady()) {
+          return true;
+        }
+        pause();
+      } catch (CommandException e) {
+        pause();
+        return false;
+      }
+    }
+    return false;
+  }
+
+  void pause() {
+    try {
+      Thread.sleep(100);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
   }
 
   /**
@@ -165,12 +185,21 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   /**
+   * Execute looking for expected message in stdout with no error logging.
+   */
+  boolean execute(String expectedLine, ProcessBuilder pb) {
+    return execute(expectedLine, pb, null);
+  }
+
+  /**
    * Execute looking for expected message in stdout.
    */
   boolean execute(String expectedLine, ProcessBuilder pb, String errorMessage) {
     List<String> outLines = ProcessHandler.process(pb).getOutLines();
     if (!stdoutContains(outLines, expectedLine)) {
-      log.error(errorMessage + " stdOut:" + outLines + " Expected message:" + expectedLine);
+      if (errorMessage != null) {
+        log.error(errorMessage + " stdOut:" + outLines + " Expected message:" + expectedLine);
+      }
       return false;
     }
     return true;

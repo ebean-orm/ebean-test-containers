@@ -24,7 +24,7 @@ public class MySqlContainerTest {
     container.startContainerOnly();
     container.startWithDropCreate();
 
-    container.stopOnly();
+    container.stopRemove();
   }
 
   @Test
