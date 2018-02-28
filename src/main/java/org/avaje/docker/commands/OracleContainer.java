@@ -63,6 +63,11 @@ public class OracleContainer extends DbContainer implements Container {
   }
 
   @Override
+  protected boolean isDatabaseAdminReady() {
+    return true;
+  }
+
+  @Override
   boolean checkConnectivity() {
     return checkConnectivity(true);
   }

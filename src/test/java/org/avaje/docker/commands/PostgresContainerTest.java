@@ -15,12 +15,13 @@ public class PostgresContainerTest {
   @Test
   public void start() {
 
-    PostgresConfig config = new PostgresConfig("9.6");
-    config.setContainerName("junk_postgres");
+    PostgresConfig config = new PostgresConfig("10.1");
+    config.setContainerName("junk_postgres10");
     config.setPort("9823");
 
     PostgresContainer container = new PostgresContainer(config);
 
+//    container.stopRemove();
     container.startWithCreate();
     container.startContainerOnly();
     container.startWithDropCreate();
@@ -32,8 +33,8 @@ public class PostgresContainerTest {
   public void viaContainerFactory() {
 
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("postgres.containerName", "junk_postgres");
+    properties.setProperty("postgres.version", "10.1");
+    properties.setProperty("postgres.containerName", "junk_postgres10");
     properties.setProperty("postgres.port", "9823");
 
     properties.setProperty("postgres.dbExtensions", "hstore,pgcrypto");

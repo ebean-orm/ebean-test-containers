@@ -92,6 +92,11 @@ public class PostgresContainer extends DbContainer implements Container {
     return true;
   }
 
+  @Override
+  protected boolean isDatabaseAdminReady() {
+    return execute("datname", showDatabases());
+  }
+
   /**
    * Return true if the database exists.
    */
@@ -235,6 +240,10 @@ public class PostgresContainer extends DbContainer implements Container {
 
   private ProcessBuilder databaseExists(String dbName) {
     return sqlProcess("select 1 from pg_database where datname = '" + dbName + "'");
+  }
+
+  private ProcessBuilder showDatabases() {
+    return sqlProcess("select datname from pg_database");
   }
 
   private ProcessBuilder sqlProcess(String sql) {

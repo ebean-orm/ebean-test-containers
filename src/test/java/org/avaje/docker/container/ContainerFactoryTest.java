@@ -80,8 +80,8 @@ public class ContainerFactoryTest {
   public void create() throws Exception {
 
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("postgres.containerName", "junk_postgres");
+    properties.setProperty("postgres.version", "10.1");
+    properties.setProperty("postgres.containerName", "junk_postgres10");
     properties.setProperty("postgres.port", "9823");
 
     properties.setProperty("elastic.version", "5.6.0");

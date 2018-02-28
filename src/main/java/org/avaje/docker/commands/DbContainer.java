@@ -113,9 +113,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   /**
    * Return true when the database is ready to take admin commands.
    */
-  protected boolean isDatabaseAdminReady() {
-    return true;
-  }
+  protected abstract boolean isDatabaseAdminReady();
 
   /**
    * Return true when the DB is ready for taking commands (like create database, user etc).
