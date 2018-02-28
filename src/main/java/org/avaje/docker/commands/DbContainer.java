@@ -6,6 +6,7 @@ import org.avaje.docker.container.Container;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.function.BooleanSupplier;
 
 abstract class DbContainer extends BaseContainer implements Container {
 
@@ -120,35 +121,25 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Return true when the DB is ready for taking commands (like create database, user etc).
    */
   public boolean waitForDatabaseReady() {
-    return waitLoopDatabaseReady() && waitLoopAdminReady();
+    return conditionLoop(this::isDatabaseReady)
+      && conditionLoop(this::isDatabaseAdminReady);
   }
 
-  private boolean waitLoopDatabaseReady() {
-    for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
-      if (isDatabaseReady()) {
-        return true;
-      }
-      pause();
-    }
-    return false;
-  }
-
-  private boolean waitLoopAdminReady() {
+  private boolean conditionLoop(BooleanSupplier condition) {
     for (int i = 0; i < config.getMaxReadyAttempts(); i++) {
       try {
-        if (isDatabaseAdminReady()) {
+        if (condition.getAsBoolean()) {
           return true;
         }
         pause();
       } catch (CommandException e) {
         pause();
-        return false;
       }
     }
     return false;
   }
 
-  void pause() {
+  private void pause() {
     try {
       Thread.sleep(100);
     } catch (InterruptedException e) {

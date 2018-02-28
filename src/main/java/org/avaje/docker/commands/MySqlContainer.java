@@ -44,7 +44,7 @@ public class MySqlContainer extends DbContainer implements Container {
     startMode = Mode.Create;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());
+      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
       return false;
     }
     createDatabase(true);
@@ -64,7 +64,7 @@ public class MySqlContainer extends DbContainer implements Container {
     startMode = Mode.DropCreate;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for postgres container {}", config.containerName());
+      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
       return false;
     }
 
