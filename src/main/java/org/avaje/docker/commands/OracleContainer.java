@@ -189,7 +189,7 @@ public class OracleContainer extends DbContainer implements Container {
     sqlProcess(connection -> {
       if (!userExists(connection)) {
         runSql(connection, "create user " + dbConfig.getDbUser() + " identified by " + dbConfig.getDbPassword());
-        runSql(connection, "grant connect, resource, create view, unlimited tablespaceto " + dbConfig.getDbUser());
+        runSql(connection, "grant connect, resource, create view, unlimited tablespace to " + dbConfig.getDbUser());
       }
     });
     return true;
