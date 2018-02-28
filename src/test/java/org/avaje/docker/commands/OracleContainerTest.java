@@ -16,6 +16,7 @@ public class OracleContainerTest {
   public void start() {
 
     OracleConfig config = new OracleConfig("latest");
+    //config.setPort("15221");
     OracleContainer container = new OracleContainer(config);
 
     container.startWithCreate();

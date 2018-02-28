@@ -51,16 +51,33 @@ abstract class BaseContainer implements Container {
    */
   void startIfNeeded() {
     if (commands.isRunning(config.containerName())) {
+      checkPort(true);
       logRunning();
       return;
     }
+
     if (commands.isRegistered(config.containerName())) {
+      checkPort(false);
       logStart();
       commands.start(config.containerName());
 
     } else {
       logRun();
       runContainer();
+    }
+  }
+
+  private void checkPort(boolean isRunning) {
+    String portBindings = commands.registeredPortMatch(config.containerName(), config.getPort());
+    if (portBindings != null) {
+      String msg = "The existing port bindings [" + portBindings + "] for this docker container [" + config.containerName()
+        + "] don't match the configured port [" + config.getPort()
+        + "] so it seems the port has changed? Maybe look to remove the container first if you want to use the new port via:";
+      if (isRunning) {
+        msg += "    docker stop " + config.containerName();
+      }
+      msg += "    docker rm " + config.containerName();
+      throw new IllegalStateException(msg);
     }
   }
 

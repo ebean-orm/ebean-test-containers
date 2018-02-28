@@ -138,6 +138,26 @@ public class Commands {
     return result.getOutLines();
   }
 
+  /**
+   * Check if the port matches the existing port bindings and if not return the existing port bindings.
+   */
+  public String registeredPortMatch(String containerName, String matchPort) {
+    ProcessResult result = ProcessHandler.command(docker, "container", "inspect", containerName, "--format={{.HostConfig.PortBindings}}");
+    List<String> outLines = result.getOutLines();
+    for (String outLine : outLines) {
+      if (outLine.startsWith("map")) {
+        if (outLine.contains("{ " + matchPort + "}")) {
+          // port matching all good
+          return null;
+        } else {
+          // mismatch - return all the PortBindings to include in exception message
+          return outLine;
+        }
+      }
+    }
+    // container doesn't exist
+    return null;
+  }
 
   /**
    * Return true if the container logs contains the logMessage.
