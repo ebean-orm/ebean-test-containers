@@ -202,7 +202,8 @@ public class SqlServerContainer extends DbContainer implements Container {
 
   @Override
   protected boolean isDatabaseReady() {
-    return logsContain("SQL Server is now ready");
+    // odd, no real shutdown log message for sql server?
+    return commands.logsContain(config.containerName(), "SQL Server is now ready", "Microsoft SQL Server");
   }
 
   private ProcessBuilder dropDatabase(String dbName) {

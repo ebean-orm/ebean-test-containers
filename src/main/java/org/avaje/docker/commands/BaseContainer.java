@@ -33,7 +33,7 @@ abstract class BaseContainer implements Container {
 
   @Override
   public boolean start() {
-    return startWithConnectivity();
+    return logStarted(startWithConnectivity());
   }
 
   protected boolean startWithConnectivity() {
@@ -71,8 +71,8 @@ abstract class BaseContainer implements Container {
   /**
    * Return true if the docker container logs contain the match text.
    */
-  boolean logsContain(String match) {
-    return commands.logsContain(config.containerName(), match);
+  boolean logsContain(String match, String clearMatch) {
+    return commands.logsContain(config.containerName(), match, clearMatch);
   }
 
   /**
@@ -176,11 +176,20 @@ abstract class BaseContainer implements Container {
   }
 
   /**
+   * Log that the container has started.
+   */
+  void logStarted() {
+    log.debug("Container {} ready with port {}", config.containerName(), config.getPort());
+  }
+
+  /**
    * Log a message after the container has started or not.
    */
   boolean logStarted(boolean started) {
     if (!started) {
       logNotStarted();
+    } else {
+      logStarted();
     }
     return started;
   }

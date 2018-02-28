@@ -93,7 +93,7 @@ abstract class DbContainer extends BaseContainer implements Container {
     }
 
     if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
+      log.warn("Failed waiting for connectivity for {}", config.containerName());
       return false;
     }
     return true;
@@ -148,10 +148,10 @@ abstract class DbContainer extends BaseContainer implements Container {
    */
   boolean checkConnectivity(boolean useAdmin) {
     try {
-      log.debug("checkConnectivity ... ");
+      log.debug("checkConnectivity on {} ... ", config.containerName);
       Connection connection = useAdmin ? config.createAdminConnection() : config.createConnection();
       connection.close();
-      log.debug("connectivity confirmed ");
+      log.debug("connectivity confirmed for {}", config.containerName);
       return true;
 
     } catch (SQLException e) {

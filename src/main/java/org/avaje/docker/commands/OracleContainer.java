@@ -116,7 +116,7 @@ public class OracleContainer extends DbContainer implements Container {
 
   @Override
   protected boolean isDatabaseReady() {
-    return logsContain("Database ready to use.");
+    return logsContain("Database ready to use.", "Database closed");
   }
 
   /**
