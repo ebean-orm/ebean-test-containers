@@ -18,6 +18,7 @@ public class PostgresContainerTest {
     PostgresConfig config = new PostgresConfig("10.1");
     config.setContainerName("junk_postgres10");
     config.setPort("9823");
+    config.setExtensions(" hstore, , pgcrypto ");
 
     PostgresContainer container = new PostgresContainer(config);
 

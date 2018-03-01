@@ -157,7 +157,7 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Set the DB extensions to install (Postgres hstore, pgcrypto etc)
    */
-  public DbConfig withExtensions(String extensions) {
+  public DbConfig setExtensions(String extensions) {
     this.dbExtensions = extensions;
     return this;
   }

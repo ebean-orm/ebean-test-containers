@@ -147,7 +147,10 @@ public class PostgresContainer extends DbContainer implements Container {
       log.debug("create database extensions {}", dbExtn);
       String[] extns = dbExtn.split(",");
       for (String extension : extns) {
-        ProcessHandler.process(createDatabaseExtension(extension));
+        extension = extension.trim();
+        if (!extension.isEmpty()) {
+          ProcessHandler.process(createDatabaseExtension(extension));
+        }
       }
     }
   }
