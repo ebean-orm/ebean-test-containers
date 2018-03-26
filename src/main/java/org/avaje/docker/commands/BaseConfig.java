@@ -54,7 +54,7 @@ public abstract class BaseConfig implements ContainerConfig {
    * 100 attempts equates to 10 seconds.
    * </p>
    */
-  protected int maxReadyAttempts = 100;
+  protected int maxReadyAttempts = 300;
 
   /**
    * Docker command.
