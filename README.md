@@ -1,4 +1,9 @@
-# docker-commands
+# History
+
+Note that this project has been moved and renamed from avaje/docker-commands to ebean-orm/ebean-test-docker.
+
+
+# ebean-test-docker
 Ability to control docker containers. e.g. Postgres running as docker container for testing.
 
 The issues this solves for us is to:
