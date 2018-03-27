@@ -13,7 +13,7 @@
   <version>1.5.9-SNAPSHOT</version>
 
   <scm>
-    <developerConnection>scm:git:git@github.com:avaje/docker-commands.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:ebean-orm/ebean-test-docker.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
