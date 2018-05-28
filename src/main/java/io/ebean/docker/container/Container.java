@@ -25,4 +25,9 @@ public interface Container {
    */
   void stopOnly();
 
+  /**
+   * Return true if the container is running.
+   */
+  boolean isRunning();
+
 }

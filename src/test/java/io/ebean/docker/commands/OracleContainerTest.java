@@ -3,6 +3,7 @@ package io.ebean.docker.commands;
 import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -12,6 +13,7 @@ import java.util.Properties;
 
 public class OracleContainerTest {
 
+  @Ignore
   @Test
   public void start() {
 
@@ -27,6 +29,7 @@ public class OracleContainerTest {
     //container.stopOnly();
   }
 
+  @Ignore
   @Test
   public void viaContainerFactory() {
 

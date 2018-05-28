@@ -49,6 +49,11 @@ public abstract class BaseConfig implements ContainerConfig {
   protected String stopMode = "stop";
 
   /**
+   * Set when we want to automatically stop or remove the container via JVM shutdown hook.
+   */
+  protected String shutdownMode;
+
+  /**
    * Maximum number of attempts to find the 'database ready to accept connections' log message in the container.
    * <p>
    * 100 attempts equates to 10 seconds.
@@ -102,6 +107,11 @@ public abstract class BaseConfig implements ContainerConfig {
     this.stopMode = stopMode;
   }
 
+  @Override
+  public void setShutdownMode(String shutdownMode) {
+    this.shutdownMode = shutdownMode;
+  }
+
   /**
    * Return a Connection to the database (make sure you close it).
    */
@@ -129,16 +139,19 @@ public abstract class BaseConfig implements ContainerConfig {
     }
     docker = properties.getProperty("docker", docker);
 
-    containerName = prop(properties,"containerName", containerName);
-    image = prop(properties,"image", image);
-    port = prop(properties,"port", port);
-    internalPort = prop(properties,"internalPort", internalPort);
+    containerName = prop(properties, "containerName", containerName);
+    image = prop(properties, "image", image);
+    port = prop(properties, "port", port);
+    internalPort = prop(properties, "internalPort", internalPort);
 
     startMode = properties.getProperty("startMode", startMode);
-    startMode = prop(properties,"startMode", startMode);
+    startMode = prop(properties, "startMode", startMode);
 
     stopMode = properties.getProperty("stopMode", stopMode);
-    stopMode = prop(properties,"stopMode", stopMode);
+    stopMode = prop(properties, "stopMode", stopMode);
+
+    shutdownMode = properties.getProperty("shutdown", shutdownMode);
+    shutdownMode = prop(properties, "shutdown", shutdownMode);
 
     String maxVal = prop(properties, "maxReadyAttempts", null);
     if (maxVal != null) {
@@ -152,7 +165,7 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   protected String prop(Properties properties, String key, String defaultValue) {
-    return properties.getProperty(platform+"."+key, defaultValue);
+    return properties.getProperty(platform + "." + key, defaultValue);
   }
 
   /**
@@ -232,4 +245,7 @@ public abstract class BaseConfig implements ContainerConfig {
     return docker;
   }
 
+  public String shutdownMode() {
+    return shutdownMode;
+  }
 }

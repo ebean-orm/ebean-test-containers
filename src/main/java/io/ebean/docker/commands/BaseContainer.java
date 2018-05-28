@@ -1,8 +1,8 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.commands.process.ProcessHandler;
-import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.Container;
+import io.ebean.docker.container.ContainerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,47 @@ abstract class BaseContainer implements Container {
 
   @Override
   public boolean start() {
-    return logStarted(startWithConnectivity());
+    return shutdownHook(logStarted(startWithConnectivity()));
+  }
+
+  public boolean isRunning() {
+    return commands.isRunning(config.containerName());
+  }
+
+  private class Hook extends Thread {
+
+    private final String mode;
+
+    Hook(String mode) {
+      this.mode = mode;
+    }
+
+    @Override
+    public void run() {
+      if ("remove".equalsIgnoreCase(mode)) {
+        stopRemove();
+      } else {
+        stopOnly();
+      }
+    }
+  }
+
+  /**
+   * Register a JVM Shutdown hook to stop the container with the given mode.
+   *
+   * @param mode If "remove" then stop and remove the container and otherwise just stop the container.
+   */
+  public void registerShutdownHook(String mode) {
+    Runtime.getRuntime().addShutdownHook(new Hook(mode));
+  }
+
+  protected boolean shutdownHook(boolean started) {
+
+    String mode = config.shutdownMode();
+    if (mode != null) {
+      registerShutdownHook(mode);
+    }
+    return started;
   }
 
   protected boolean startWithConnectivity() {

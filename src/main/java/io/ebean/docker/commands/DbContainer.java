@@ -29,22 +29,27 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Log that the container is already running.
    */
   void logRunning() {
-    log.info("Container {} running with {} mode:{}", config.containerName(), dbConfig.summary(), startMode);
+    log.info("Container {} running with {} mode:{} shutdown:{}", config.containerName(), dbConfig.summary(), startMode, logShutdown());
   }
 
   @Override
   void logRun() {
-    log.info("Run container {} with {} mode:{}", config.containerName(), dbConfig.summary(), startMode);
+    log.info("Run container {} with {} mode:{} shutdown:{}", config.containerName(), dbConfig.summary(), startMode, logShutdown());
   }
 
   @Override
   void logStart() {
-    log.info("Start container {} with {} mode:{}", config.containerName(), dbConfig.summary(), startMode);
+    log.info("Start container {} with {} mode:{} shutdown:{}", config.containerName(), dbConfig.summary(), startMode, logShutdown());
   }
+
+  private String logShutdown() {
+    return dbConfig.shutdownMode == null ? "" : dbConfig.shutdownMode;
+  }
+
 
   @Override
   public boolean start() {
-    return logStarted(startForMode());
+    return shutdownHook(logStarted(startForMode()));
   }
 
   /**

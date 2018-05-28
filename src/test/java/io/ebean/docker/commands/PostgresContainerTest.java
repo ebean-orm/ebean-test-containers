@@ -10,6 +10,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import static org.junit.Assert.assertTrue;
+
 public class PostgresContainerTest {
 
   @Test
@@ -27,6 +29,8 @@ public class PostgresContainerTest {
     container.startContainerOnly();
     container.startWithDropCreate();
 
+    assertTrue(container.isRunning());
+    container.registerShutdownHook("stop");
     //container.stopOnly();
   }
 
