@@ -70,7 +70,7 @@ abstract class BaseContainer implements Container {
   protected boolean shutdownHook(boolean started) {
 
     String mode = config.shutdownMode();
-    if (mode != null) {
+    if (mode != null && !mode.equalsIgnoreCase("none")) {
       registerShutdownHook(mode);
     }
     return started;
