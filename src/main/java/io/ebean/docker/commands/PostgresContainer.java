@@ -100,26 +100,36 @@ public class PostgresContainer extends DbContainer implements Container {
   /**
    * Return true if the database exists.
    */
-  public boolean databaseExists() {
-    return !hasZeroRows(databaseExists(dbConfig.getDbName()));
+  public boolean databaseExists(String dbName) {
+    return !hasZeroRows(databaseExistsFor(dbName));
   }
 
   /**
    * Return true if the database user exists.
    */
-  public boolean userExists() {
-    return !hasZeroRows(roleExists(dbConfig.getDbUser()));
+  public boolean userExists(String dbUser) {
+    return !hasZeroRows(roleExistsFor(dbUser));
   }
 
   /**
    * Create the database user.
    */
   public boolean createUser(boolean checkExists) {
-    if (checkExists && userExists()) {
+    String extraDbUser = dbConfig.getExtraDbUser();
+    if (isDefined(extraDbUser) && (!checkExists || !userExists(extraDbUser))) {
+      if (!createUser(extraDbUser, getWithDefault(dbConfig.getExtraDbPassword(), dbConfig.getDbPassword()))) {
+        log.error("Failed to create extra database user " + extraDbUser);
+      }
+    }
+    if (checkExists && userExists(dbConfig.getDbUser())) {
       return true;
     }
-    log.debug("create postgres user {}", dbConfig.getDbUser());
-    ProcessBuilder pb = createRole(dbConfig.getDbUser(), dbConfig.getDbPassword());
+    return createUser(dbConfig.getDbUser(), dbConfig.getDbPassword());
+  }
+
+  private boolean createUser(String user, String pwd) {
+    log.debug("create postgres user {}", user);
+    ProcessBuilder pb = createRole(user, pwd);
     return execute("CREATE ROLE", pb, "Failed to create database user");
   }
 
@@ -129,12 +139,27 @@ public class PostgresContainer extends DbContainer implements Container {
    * @param checkExists When true check the database doesn't already exists
    */
   public boolean createDatabase(boolean checkExists) {
-    if (checkExists && databaseExists()) {
+    String extraDb = dbConfig.getExtraDb();
+    if (isDefined(extraDb) && (!checkExists || !databaseExists(extraDb))) {
+      String extraUser = getWithDefault(dbConfig.getExtraDbUser(), dbConfig.getDbUser());
+      if (!createDatabase(extraDb, extraUser)) {
+        log.error("Failed to create extra database " + extraDb);
+      }
+    }
+    if (checkExists && databaseExists(dbConfig.getDbName())) {
       return true;
     }
-    log.debug("create postgres database {} with owner {}", dbConfig.getDbName(), dbConfig.getDbUser());
-    ProcessBuilder pb = createDatabase(dbConfig.getDbName(), dbConfig.getDbUser());
+    return createDatabase(dbConfig.getDbName(), dbConfig.getDbUser());
+  }
+
+  private boolean createDatabase(String dbName, String dbUser) {
+    log.debug("create postgres database {} with owner {}", dbName, dbUser);
+    ProcessBuilder pb = createDb(dbName, dbUser);
     return execute("CREATE DATABASE", pb, "Failed to create database with owner");
+  }
+
+  private String getWithDefault(String value, String defaultValue) {
+    return value == null ? defaultValue : value;
   }
 
   /**
@@ -145,12 +170,19 @@ public class PostgresContainer extends DbContainer implements Container {
     String dbExtn = dbConfig.getDbExtensions();
     if (isDefined(dbExtn)) {
       log.debug("create database extensions {}", dbExtn);
-      String[] extns = dbExtn.split(",");
-      for (String extension : extns) {
-        extension = extension.trim();
-        if (!extension.isEmpty()) {
-          ProcessHandler.process(createDatabaseExtension(extension));
-        }
+      if (isDefined(dbConfig.getExtraDb())) {
+        createDatabaseExtensionsFor(dbExtn, dbConfig.getExtraDb());
+      }
+      createDatabaseExtensionsFor(dbExtn, dbConfig.getDbName());
+    }
+  }
+
+  private void createDatabaseExtensionsFor(String dbExtn, String dbName) {
+    String[] extns = dbExtn.split(",");
+    for (String extension : extns) {
+      extension = extension.trim();
+      if (!extension.isEmpty()) {
+        ProcessHandler.process(createDatabaseExtension(extension, dbName));
       }
     }
   }
@@ -159,7 +191,7 @@ public class PostgresContainer extends DbContainer implements Container {
     return value != null && !value.isEmpty();
   }
 
-  private ProcessBuilder createDatabaseExtension(String extension) {
+  private ProcessBuilder createDatabaseExtension(String extension, String dbName) {
     //docker exec -i ut_postgres psql -U postgres -d test_db -c "create extension if not exists pgcrypto";
     List<String> args = new ArrayList<>();
     args.add(config.docker);
@@ -170,7 +202,7 @@ public class PostgresContainer extends DbContainer implements Container {
     args.add("-U");
     args.add("postgres");
     args.add("-d");
-    args.add(dbConfig.getDbName());
+    args.add(dbName);
     args.add("-c");
     args.add("create extension if not exists " + extension);
 
@@ -181,23 +213,39 @@ public class PostgresContainer extends DbContainer implements Container {
    * Drop the database if it exists.
    */
   public boolean dropDatabaseIfExists() {
-    if (!databaseExists()) {
-      return true;
+    String extraDb = dbConfig.getExtraDb();
+    if (isDefined(extraDb) && !dropDatabaseIfExists(extraDb)) {
+      log.error("Failed to drop extra database " + extraDb);
     }
-    log.debug("drop postgres database {}", dbConfig.getDbName());
-    ProcessBuilder pb = dropDatabase(dbConfig.getDbName());
-    return execute("DROP DATABASE", pb, "Failed to drop database");
+    return dropDatabaseIfExists(dbConfig.getDbName());
+  }
+
+  private boolean dropDatabaseIfExists(String dbName) {
+    if (databaseExists(dbName)) {
+      log.debug("drop postgres database {}", dbName);
+      ProcessBuilder pb = dropDatabase(dbName);
+      return execute("DROP DATABASE", pb, "Failed to drop database");
+    }
+    return true;
   }
 
   /**
    * Drop the database user if it exists.
    */
   public boolean dropUserIfExists() {
-    if (!userExists()) {
+    String extraDbUser = dbConfig.getExtraDbUser();
+    if (isDefined(extraDbUser) && !dropUserIfExists(extraDbUser)) {
+      log.error("Failed to drop extra database user " + extraDbUser);
+    }
+    return dropUserIfExists(dbConfig.getDbUser());
+  }
+
+  private boolean dropUserIfExists(String dbUser) {
+    if (!userExists(dbUser)) {
       return true;
     }
-    log.debug("drop postgres user {}", dbConfig.getDbUser());
-    ProcessBuilder pb = dropUser(dbConfig.getDbUser());
+    log.debug("drop postgres user {}", dbUser);
+    ProcessBuilder pb = dropUser(dbUser);
     return execute("DROP ROLE", pb, "Failed to drop database user");
   }
 
@@ -229,7 +277,7 @@ public class PostgresContainer extends DbContainer implements Container {
     return sqlProcess("drop role if exists " + dbUser);
   }
 
-  private ProcessBuilder createDatabase(String dbName, String roleName) {
+  private ProcessBuilder createDb(String dbName, String roleName) {
     return sqlProcess("create database " + dbName + " with owner " + roleName);
   }
 
@@ -237,11 +285,11 @@ public class PostgresContainer extends DbContainer implements Container {
     return sqlProcess("create role " + roleName + " password '" + pass + "' login");//alter role " + roleName + " login;");
   }
 
-  private ProcessBuilder roleExists(String roleName) {
+  private ProcessBuilder roleExistsFor(String roleName) {
     return sqlProcess("select rolname from pg_roles where rolname = '" + roleName + "'");
   }
 
-  private ProcessBuilder databaseExists(String dbName) {
+  private ProcessBuilder databaseExistsFor(String dbName) {
     return sqlProcess("select 1 from pg_database where datname = '" + dbName + "'");
   }
 

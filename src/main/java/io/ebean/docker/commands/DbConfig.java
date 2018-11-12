@@ -26,6 +26,13 @@ public abstract class DbConfig extends BaseConfig {
   private String dbAdminPassword = "admin";
 
   /**
+   * An additional database.
+   */
+  private String extraDb;
+  private String extraDbUser;
+  private String extraDbPassword;
+
+  /**
    * Database name to use.
    */
   private String dbName = "test_db";
@@ -103,6 +110,9 @@ public abstract class DbConfig extends BaseConfig {
     dbAdminUser = prop(properties, "dbAdminUser", dbAdminUser);
     dbAdminPassword = prop(properties, "dbAdminPassword", dbAdminPassword);
 
+    extraDb = prop(properties, "extraDb", extraDb);
+    extraDbUser = prop(properties, "extraDbUser", extraDbUser);
+    extraDbPassword = prop(properties, "extraDbPassword", extraDbPassword);
     return this;
   }
 
@@ -162,6 +172,32 @@ public abstract class DbConfig extends BaseConfig {
     return this;
   }
 
+  /**
+   * Set the name of an extra database to create.
+   */
+  public DbConfig setExtraDb(String extraDb) {
+    this.extraDb = extraDb;
+    return this;
+  }
+
+  /**
+   * Set the name of an extra user to create. If an extra database is also created this would be the
+   * owner of that extra database.
+   */
+  public DbConfig setExtraDbUser(String extraDbUser) {
+    this.extraDbUser = extraDbUser;
+    return this;
+  }
+
+  /**
+   * Set the password for an extra user. If nothing is set this would default to be the same as
+   * the main users password.
+   */
+  public DbConfig setExtraDbPassword(String extraDbPassword) {
+    this.extraDbPassword = extraDbPassword;
+    return this;
+  }
+
   public boolean isInMemory() {
     return inMemory;
   }
@@ -194,4 +230,15 @@ public abstract class DbConfig extends BaseConfig {
     return dbExtensions;
   }
 
+  public String getExtraDb() {
+    return extraDb;
+  }
+
+  public String getExtraDbUser() {
+    return extraDbUser;
+  }
+
+  public String getExtraDbPassword() {
+    return extraDbPassword;
+  }
 }

@@ -21,6 +21,10 @@ public class PostgresContainerTest {
     config.setContainerName("junk_postgres10");
     config.setPort("9823");
     config.setExtensions(" hstore, , pgcrypto ");
+    config.setUser("main_user");
+    config.setDbName("main_db");
+    config.setExtraDbUser("extra_user");
+    config.setExtraDb("extra_db");
 
     PostgresContainer container = new PostgresContainer(config);
 
