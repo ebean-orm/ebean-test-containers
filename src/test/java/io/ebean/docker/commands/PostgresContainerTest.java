@@ -23,8 +23,8 @@ public class PostgresContainerTest {
     config.setExtensions(" hstore, , pgcrypto ");
     config.setUser("main_user");
     config.setDbName("main_db");
-    config.setExtraDbUser("extra_user");
-    config.setExtraDb("extra_db");
+//    config.setExtraDbUser("extra_user");
+    config.setExtraDb("extra");
 
     PostgresContainer container = new PostgresContainer(config);
 

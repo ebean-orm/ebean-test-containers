@@ -115,7 +115,7 @@ public class PostgresContainer extends DbContainer implements Container {
    * Create the database user.
    */
   public boolean createUser(boolean checkExists) {
-    String extraDbUser = dbConfig.getExtraDbUser();
+    String extraDbUser = getExtraDbUser();
     if (isDefined(extraDbUser) && (!checkExists || !userExists(extraDbUser))) {
       if (!createUser(extraDbUser, getWithDefault(dbConfig.getExtraDbPassword(), dbConfig.getDbPassword()))) {
         log.error("Failed to create extra database user " + extraDbUser);
@@ -125,6 +125,17 @@ public class PostgresContainer extends DbContainer implements Container {
       return true;
     }
     return createUser(dbConfig.getDbUser(), dbConfig.getDbPassword());
+  }
+
+  /**
+   * Maybe return an extra user to create.
+   * <p>
+   * The extra user will default to be the same as the extraDB if that is defined.
+   * Additionally we don't create an extra user IF it is the same as the main db user.
+   */
+  private String getExtraDbUser() {
+    String extraUser = getWithDefault(dbConfig.getExtraDbUser(), dbConfig.getExtraDb());
+    return extraUser != null && !extraUser.equals(dbConfig.getDbUser()) ? extraUser : null;
   }
 
   private boolean createUser(String user, String pwd) {
@@ -141,7 +152,7 @@ public class PostgresContainer extends DbContainer implements Container {
   public boolean createDatabase(boolean checkExists) {
     String extraDb = dbConfig.getExtraDb();
     if (isDefined(extraDb) && (!checkExists || !databaseExists(extraDb))) {
-      String extraUser = getWithDefault(dbConfig.getExtraDbUser(), dbConfig.getDbUser());
+      String extraUser = getWithDefault(getExtraDbUser(), dbConfig.getDbUser());
       if (!createDatabase(extraDb, extraUser)) {
         log.error("Failed to create extra database " + extraDb);
       }
@@ -233,7 +244,7 @@ public class PostgresContainer extends DbContainer implements Container {
    * Drop the database user if it exists.
    */
   public boolean dropUserIfExists() {
-    String extraDbUser = dbConfig.getExtraDbUser();
+    String extraDbUser = getExtraDbUser();
     if (isDefined(extraDbUser) && !dropUserIfExists(extraDbUser)) {
       log.error("Failed to drop extra database user " + extraDbUser);
     }
