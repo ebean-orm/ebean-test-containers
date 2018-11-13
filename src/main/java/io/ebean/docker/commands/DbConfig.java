@@ -31,6 +31,7 @@ public abstract class DbConfig extends BaseConfig {
   private String extraDb;
   private String extraDbUser;
   private String extraDbPassword;
+  private String extraDbInitSqlFile;
 
   /**
    * Database name to use.
@@ -51,6 +52,11 @@ public abstract class DbConfig extends BaseConfig {
    * Comma delimited list of database extensions required (hstore, pgcrypto etc).
    */
   private String dbExtensions;
+
+  /**
+   * SQL file executed against the database after it has been created.
+   */
+  private String dbInitSqlFile;
 
   /**
    * Set to true to run in-memory mode.
@@ -113,6 +119,7 @@ public abstract class DbConfig extends BaseConfig {
     extraDb = prop(properties, "extraDb", extraDb);
     extraDbUser = prop(properties, "extraDbUser", extraDbUser);
     extraDbPassword = prop(properties, "extraDbPassword", extraDbPassword);
+    extraDbInitSqlFile = prop(properties, "extraDbInitSqlFile", extraDbInitSqlFile);
     return this;
   }
 
@@ -173,6 +180,14 @@ public abstract class DbConfig extends BaseConfig {
   }
 
   /**
+   * Set the SQL file to execute after creating the database.
+   */
+  public DbConfig setDbInitSqlFile(String dbInitSqlFile) {
+    this.dbInitSqlFile = dbInitSqlFile;
+    return this;
+  }
+
+  /**
    * Set the name of an extra database to create.
    */
   public DbConfig setExtraDb(String extraDb) {
@@ -195,6 +210,14 @@ public abstract class DbConfig extends BaseConfig {
    */
   public DbConfig setExtraDbPassword(String extraDbPassword) {
     this.extraDbPassword = extraDbPassword;
+    return this;
+  }
+
+  /**
+   * Set a file to execute after creating the extra database.
+   */
+  public DbConfig setExtraDbInitSqlFile(String extraDbInitSqlFile) {
+    this.extraDbInitSqlFile = extraDbInitSqlFile;
     return this;
   }
 
@@ -230,6 +253,10 @@ public abstract class DbConfig extends BaseConfig {
     return dbExtensions;
   }
 
+  public String getDbInitSqlFile() {
+    return dbInitSqlFile;
+  }
+
   public String getExtraDb() {
     return extraDb;
   }
@@ -240,5 +267,9 @@ public abstract class DbConfig extends BaseConfig {
 
   public String getExtraDbPassword() {
     return extraDbPassword;
+  }
+
+  public String getExtraDbInitSqlFile() {
+    return extraDbInitSqlFile;
   }
 }

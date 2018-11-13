@@ -5,6 +5,9 @@ import io.ebean.docker.container.Container;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -139,7 +142,6 @@ public class PostgresContainer extends DbContainer implements Container {
   }
 
   private boolean createUser(String user, String pwd) {
-    log.debug("create postgres user {}", user);
     ProcessBuilder pb = createRole(user, pwd);
     return execute("CREATE ROLE", pb, "Failed to create database user");
   }
@@ -153,20 +155,100 @@ public class PostgresContainer extends DbContainer implements Container {
     String extraDb = dbConfig.getExtraDb();
     if (isDefined(extraDb) && (!checkExists || !databaseExists(extraDb))) {
       String extraUser = getWithDefault(getExtraDbUser(), dbConfig.getDbUser());
-      if (!createDatabase(extraDb, extraUser)) {
+      if (!createDatabase(extraDb, extraUser, dbConfig.getExtraDbInitSqlFile())) {
         log.error("Failed to create extra database " + extraDb);
       }
     }
     if (checkExists && databaseExists(dbConfig.getDbName())) {
       return true;
     }
-    return createDatabase(dbConfig.getDbName(), dbConfig.getDbUser());
+    return createDatabase(dbConfig.getDbName(), dbConfig.getDbUser(), dbConfig.getDbInitSqlFile());
   }
 
-  private boolean createDatabase(String dbName, String dbUser) {
-    log.debug("create postgres database {} with owner {}", dbName, dbUser);
+  private void runExtraDbInitSql(String dbName, String dbUser, String initSqlFile) {
+    if (isDefined(initSqlFile)) {
+      File file = new File(initSqlFile);
+      if (!file.exists()) {
+        file = checkFileResource(initSqlFile);
+      }
+      if (file == null) {
+        log.error("Could not find init SQL file for database " + dbName + ". No file exists at location or resource path for: " + initSqlFile);
+      } else {
+        runSqlFile(file, dbUser, dbName);
+      }
+    }
+  }
+
+  private File checkFileResource(String sqlFile) {
+    try {
+      if (!sqlFile.startsWith("/")) {
+        sqlFile = "/" + sqlFile;
+      }
+      URL resource = getClass().getResource(sqlFile);
+      if (resource != null) {
+        File file = Paths.get(resource.toURI()).toFile();
+        if (file.exists()) {
+          return file;
+        }
+      }
+    } catch (Exception e) {
+      log.error("Failed to obtain File from resource for init SQL file: " + sqlFile, e);
+    }
+    // not found
+    return null;
+  }
+
+  private void runSqlFile(File file, String dbUser, String dbName) {
+
+    String fullPath = file.getAbsolutePath();
+    if (copyFileToContainer(fullPath, file.getName())) {
+      String containerFilePath = "/tmp/" + file.getName();
+      ProcessBuilder pb = sqlFileProcess(dbUser, dbName, containerFilePath);
+      executeWithout("ERROR", pb, "Error executing init sql file: " + fullPath);
+    }
+  }
+
+  private ProcessBuilder sqlFileProcess(String dbUser, String dbName, String containerFilePath) {
+    List<String> args = new ArrayList<>();
+    args.add(config.docker);
+    args.add("exec");
+    args.add("-i");
+    args.add(config.containerName());
+    args.add("psql");
+    args.add("-U");
+    args.add(dbUser);
+    args.add("-d");
+    args.add(dbName);
+    args.add("-f");
+    args.add(containerFilePath);
+    return createProcessBuilder(args);
+  }
+
+  private boolean copyFileToContainer(String sourcePath, String fileName) {
+    ProcessBuilder pb = copyFileToContainerProcess(sourcePath, fileName);
+    return execute(pb, "Failed to copy file " + fileName + " to container");
+  }
+
+  private ProcessBuilder copyFileToContainerProcess(String sourcePath, String fileName) {
+
+    //docker cp /tmp/init-file.sql ut_postgres:/tmp/init-file.sql
+    String dest = config.containerName() + ":/tmp/" + fileName;
+
+    List<String> args = new ArrayList<>();
+    args.add(config.docker);
+    args.add("cp");
+    args.add(sourcePath);
+    args.add(dest);
+    return createProcessBuilder(args);
+  }
+
+  private boolean createDatabase(String dbName, String dbUser, String initSqlFile) {
     ProcessBuilder pb = createDb(dbName, dbUser);
-    return execute("CREATE DATABASE", pb, "Failed to create database with owner");
+    if (execute("CREATE DATABASE", pb, "Failed to create database with owner")) {
+      runExtraDbInitSql(dbName, dbUser, initSqlFile);
+      return true;
+    }
+    return false;
   }
 
   private String getWithDefault(String value, String defaultValue) {
@@ -180,7 +262,6 @@ public class PostgresContainer extends DbContainer implements Container {
 
     String dbExtn = dbConfig.getDbExtensions();
     if (isDefined(dbExtn)) {
-      log.debug("create database extensions {}", dbExtn);
       if (isDefined(dbConfig.getExtraDb())) {
         createDatabaseExtensionsFor(dbExtn, dbConfig.getExtraDb());
       }
@@ -233,7 +314,6 @@ public class PostgresContainer extends DbContainer implements Container {
 
   private boolean dropDatabaseIfExists(String dbName) {
     if (databaseExists(dbName)) {
-      log.debug("drop postgres database {}", dbName);
       ProcessBuilder pb = dropDatabase(dbName);
       return execute("DROP DATABASE", pb, "Failed to drop database");
     }
@@ -255,7 +335,6 @@ public class PostgresContainer extends DbContainer implements Container {
     if (!userExists(dbUser)) {
       return true;
     }
-    log.debug("drop postgres user {}", dbUser);
     ProcessBuilder pb = dropUser(dbUser);
     return execute("DROP ROLE", pb, "Failed to drop database user");
   }
@@ -319,7 +398,6 @@ public class PostgresContainer extends DbContainer implements Container {
     args.add("postgres");
     args.add("-c");
     args.add(sql);
-
     return createProcessBuilder(args);
   }
 
