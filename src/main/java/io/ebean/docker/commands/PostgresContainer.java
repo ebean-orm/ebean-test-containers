@@ -120,14 +120,14 @@ public class PostgresContainer extends DbContainer implements Container {
   public boolean createUser(boolean checkExists) {
     String extraDbUser = getExtraDbUser();
     if (isDefined(extraDbUser) && (!checkExists || !userExists(extraDbUser))) {
-      if (!createUser(extraDbUser, getWithDefault(dbConfig.getExtraDbPassword(), dbConfig.getDbPassword()))) {
+      if (!createUser(extraDbUser, getWithDefault(dbConfig.getExtraDbPassword(), dbConfig.getPassword()))) {
         log.error("Failed to create extra database user " + extraDbUser);
       }
     }
-    if (checkExists && userExists(dbConfig.getDbUser())) {
+    if (checkExists && userExists(dbConfig.getUsername())) {
       return true;
     }
-    return createUser(dbConfig.getDbUser(), dbConfig.getDbPassword());
+    return createUser(dbConfig.getUsername(), dbConfig.getPassword());
   }
 
   /**
@@ -138,7 +138,7 @@ public class PostgresContainer extends DbContainer implements Container {
    */
   private String getExtraDbUser() {
     String extraUser = getWithDefault(dbConfig.getExtraDbUser(), dbConfig.getExtraDb());
-    return extraUser != null && !extraUser.equals(dbConfig.getDbUser()) ? extraUser : null;
+    return extraUser != null && !extraUser.equals(dbConfig.getUsername()) ? extraUser : null;
   }
 
   private boolean createUser(String user, String pwd) {
@@ -154,7 +154,7 @@ public class PostgresContainer extends DbContainer implements Container {
   public boolean createDatabase(boolean checkExists) {
     String extraDb = dbConfig.getExtraDb();
     if (isDefined(extraDb) && (!checkExists || !databaseExists(extraDb))) {
-      String extraUser = getWithDefault(getExtraDbUser(), dbConfig.getDbUser());
+      String extraUser = getWithDefault(getExtraDbUser(), dbConfig.getUsername());
       if (!createDatabase(extraDb, extraUser, dbConfig.getExtraDbInitSqlFile())) {
         log.error("Failed to create extra database " + extraDb);
       }
@@ -162,7 +162,7 @@ public class PostgresContainer extends DbContainer implements Container {
     if (checkExists && databaseExists(dbConfig.getDbName())) {
       return true;
     }
-    return createDatabase(dbConfig.getDbName(), dbConfig.getDbUser(), dbConfig.getDbInitSqlFile());
+    return createDatabase(dbConfig.getDbName(), dbConfig.getUsername(), dbConfig.getDbInitSqlFile());
   }
 
   private void runExtraDbInitSql(String dbName, String dbUser, String initSqlFile) {
@@ -260,7 +260,7 @@ public class PostgresContainer extends DbContainer implements Container {
    */
   public void createDatabaseExtensions() {
 
-    String dbExtn = dbConfig.getDbExtensions();
+    String dbExtn = dbConfig.getExtensions();
     if (isDefined(dbExtn)) {
       if (isDefined(dbConfig.getExtraDb())) {
         createDatabaseExtensionsFor(dbExtn, dbConfig.getExtraDb());
@@ -328,7 +328,7 @@ public class PostgresContainer extends DbContainer implements Container {
     if (isDefined(extraDbUser) && !dropUserIfExists(extraDbUser)) {
       log.error("Failed to drop extra database user " + extraDbUser);
     }
-    return dropUserIfExists(dbConfig.getDbUser());
+    return dropUserIfExists(dbConfig.getUsername());
   }
 
   private boolean dropUserIfExists(String dbUser) {
@@ -419,7 +419,7 @@ public class PostgresContainer extends DbContainer implements Container {
     }
 
     args.add("-e");
-    args.add(dbConfig.getDbAdminPassword());
+    args.add(dbConfig.getAdminPassword());
     args.add(config.getImage());
 
     return createProcessBuilder(args);

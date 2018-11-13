@@ -86,7 +86,7 @@ public class MySqlContainer extends DbContainer implements Container {
   private void dropDatabaseIfExists() {
     if (databaseExists()) {
       log.debug("drop database {}", dbConfig.getDbName());
-      exec(sqlProcess("drop database "+dbConfig.getDbName(), false), "Failed to drop database");
+      exec(sqlProcess("drop database " + dbConfig.getDbName(), false), "Failed to drop database");
     }
   }
 
@@ -95,8 +95,8 @@ public class MySqlContainer extends DbContainer implements Container {
    */
   private void dropUserIfExists() {
     if (userExists()) {
-      log.debug("drop user {}", dbConfig.getDbUser());
-      exec(sqlProcess("drop user '"+dbConfig.getDbUser()+"'@'%'", false), "Failed to drop user");
+      log.debug("drop user {}", dbConfig.getUsername());
+      exec(sqlProcess("drop user '" + dbConfig.getUsername() + "'@'%'", false), "Failed to drop user");
     }
   }
 
@@ -107,8 +107,8 @@ public class MySqlContainer extends DbContainer implements Container {
     if (checkExists && userExists()) {
       return true;
     }
-    log.debug("create postgres user {}", dbConfig.getDbUser());
-    createUser(dbConfig.getDbUser(), dbConfig.getDbPassword());
+    log.debug("create postgres user {}", dbConfig.getUsername());
+    createUser(dbConfig.getUsername(), dbConfig.getPassword());
     return true;
   }
 
@@ -117,7 +117,7 @@ public class MySqlContainer extends DbContainer implements Container {
     ProcessBuilder pb = sqlProcess("create user '" + dbUser + "'@'%' identified by '" + dbPassword + "'", false);
     exec(pb, "Failed to create user");
 
-    pb = sqlProcess("grant all on "+dbConfig.getDbName()+".* to '"+dbUser+"'@'%'", false);
+    pb = sqlProcess("grant all on " + dbConfig.getDbName() + ".* to '" + dbUser + "'@'%'", false);
     exec(pb, "Failed to create user");
   }
 
@@ -136,7 +136,7 @@ public class MySqlContainer extends DbContainer implements Container {
 
   private boolean userExists() {
 
-    return contains(dbUserExists(dbConfig.getDbUser()), dbConfig.getDbUser());
+    return contains(dbUserExists(dbConfig.getUsername()), dbConfig.getUsername());
   }
 
   private boolean databaseExists() {
@@ -157,11 +157,11 @@ public class MySqlContainer extends DbContainer implements Container {
   }
 
   private ProcessBuilder dbExists(String dbName) {
-    return sqlProcess("show databases like '" + dbName+"'", false);
+    return sqlProcess("show databases like '" + dbName + "'", false);
   }
 
   private ProcessBuilder dbUserExists(String dbUser) {
-    return sqlProcess("select User from user where User = '" + dbUser+"'", true);
+    return sqlProcess("select User from user where User = '" + dbUser + "'", true);
   }
 
   private ProcessBuilder sqlProcess(String sql, boolean withMysql) {
@@ -172,7 +172,7 @@ public class MySqlContainer extends DbContainer implements Container {
     args.add(config.containerName());
     args.add("mysql");
     args.add("-uroot");
-    args.add("-p"+dbConfig.getDbAdminPassword());
+    args.add("-p" + dbConfig.getAdminPassword());
     if (withMysql) {
       args.add("mysql");
     }
@@ -195,9 +195,9 @@ public class MySqlContainer extends DbContainer implements Container {
     args.add("-p");
     args.add(config.getPort() + ":" + config.getInternalPort());
 
-    if (defined(dbConfig.getDbAdminPassword())) {
+    if (defined(dbConfig.getAdminPassword())) {
       args.add("-e");
-      args.add("MYSQL_ROOT_PASSWORD=" + dbConfig.getDbAdminPassword());
+      args.add("MYSQL_ROOT_PASSWORD=" + dbConfig.getAdminPassword());
     }
     args.add(config.getImage());
 

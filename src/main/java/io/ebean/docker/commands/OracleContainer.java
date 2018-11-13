@@ -169,13 +169,13 @@ public class OracleContainer extends DbContainer implements Container {
 
   private boolean dropCreateUser() {
 
-    log.info("Drop and create database user {}", dbConfig.getDbUser());
+    log.info("Drop and create database user {}", dbConfig.getUsername());
     sqlProcess(connection -> {
       if (userExists(connection)) {
-        runSql(connection, "drop user " + dbConfig.getDbUser() + " cascade");
+        runSql(connection, "drop user " + dbConfig.getUsername() + " cascade");
       }
-      runSql(connection, "create user " + dbConfig.getDbUser() + " identified by " + dbConfig.getDbPassword());
-      runSql(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getDbUser());
+      runSql(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
+      runSql(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getUsername());
     });
     return true;
   }
@@ -185,11 +185,11 @@ public class OracleContainer extends DbContainer implements Container {
    * Create the database user.
    */
   public boolean createUserIfNeeded() {
-    log.info("Create database user {} if not exists", dbConfig.getDbUser());
+    log.info("Create database user {} if not exists", dbConfig.getUsername());
     sqlProcess(connection -> {
       if (!userExists(connection)) {
-        runSql(connection, "create user " + dbConfig.getDbUser() + " identified by " + dbConfig.getDbPassword());
-        runSql(connection, "grant connect, resource, create view, unlimited tablespace to " + dbConfig.getDbUser());
+        runSql(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
+        runSql(connection, "grant connect, resource, create view, unlimited tablespace to " + dbConfig.getUsername());
       }
     });
     return true;
@@ -202,7 +202,7 @@ public class OracleContainer extends DbContainer implements Container {
       String sql = "select count(*) from dba_users where lower(username) = ?";
       log.debug("execute: " + sql);
       statement = connection.prepareStatement(sql);
-      statement.setString(1, dbConfig.getDbUser().toLowerCase());
+      statement.setString(1, dbConfig.getUsername().toLowerCase());
       resultSet = statement.executeQuery();
 
       if (resultSet.next()) {

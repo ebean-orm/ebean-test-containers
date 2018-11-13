@@ -113,14 +113,14 @@ public class SqlServerContainer extends DbContainer implements Container {
    * Return true if the database user exists.
    */
   public boolean loginExists() {
-    return !hasZeroRows(loginExists(dbConfig.getDbUser()));
+    return !hasZeroRows(loginExists(dbConfig.getUsername()));
   }
 
   /**
    * Return true if the database user exists.
    */
   public boolean userExists() {
-    return !hasZeroRows(userExists(dbConfig.getDbUser(), dbConfig.getDbName()));
+    return !hasZeroRows(userExists(dbConfig.getUsername(), dbConfig.getDbName()));
   }
 
   /**
@@ -130,8 +130,8 @@ public class SqlServerContainer extends DbContainer implements Container {
     if (checkExists && loginExists()) {
       return true;
     }
-    log.debug("create login {}", dbConfig.getDbUser());
-    return execute(createLogin(dbConfig.getDbUser(), dbConfig.getDbPassword()), "Failed to create DB login");
+    log.debug("create login {}", dbConfig.getUsername());
+    return execute(createLogin(dbConfig.getUsername(), dbConfig.getPassword()), "Failed to create DB login");
   }
 
   /**
@@ -141,10 +141,10 @@ public class SqlServerContainer extends DbContainer implements Container {
     if (checkExists && userExists()) {
       return true;
     }
-    log.debug("create user {}", dbConfig.getDbUser());
-    boolean success = execute(createUser(dbConfig.getDbUser(), dbConfig.getDbUser(), dbConfig.getDbName()), "Failed to create DB user");
+    log.debug("create user {}", dbConfig.getUsername());
+    boolean success = execute(createUser(dbConfig.getUsername(), dbConfig.getUsername(), dbConfig.getDbName()), "Failed to create DB user");
     if (success) {
-      success = execute(grantDbOwner(dbConfig.getDbUser(), dbConfig.getDbName()), "Failed to grant DB owner to user");
+      success = execute(grantDbOwner(dbConfig.getUsername(), dbConfig.getDbName()), "Failed to grant DB owner to user");
     }
     return success;
   }
@@ -180,8 +180,8 @@ public class SqlServerContainer extends DbContainer implements Container {
     if (!loginExists()) {
       return true;
     }
-    log.debug("drop login {}", dbConfig.getDbUser());
-    return execute(dropLogin(dbConfig.getDbUser()), "Failed to drop DB login");
+    log.debug("drop login {}", dbConfig.getUsername());
+    return execute(dropLogin(dbConfig.getUsername()), "Failed to drop DB login");
   }
 
   @Override
@@ -252,7 +252,7 @@ public class SqlServerContainer extends DbContainer implements Container {
     args.add("-U");
     args.add("sa");
     args.add("-P");
-    args.add(dbConfig.getDbAdminPassword());
+    args.add(dbConfig.getAdminPassword());
     args.add("-Q");
     args.add(sql);
 
@@ -275,7 +275,7 @@ public class SqlServerContainer extends DbContainer implements Container {
     args.add("ACCEPT_EULA=Y");
 
     args.add("-e");
-    args.add("SA_PASSWORD=" + dbConfig.getDbAdminPassword());//+"'");
+    args.add("SA_PASSWORD=" + dbConfig.getAdminPassword());
     args.add(config.getImage());
 
     return createProcessBuilder(args);

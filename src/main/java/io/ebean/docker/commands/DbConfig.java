@@ -18,12 +18,12 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Database admin password.
    */
-  private String dbAdminUser = "admin";
+  private String adminUsername = "admin";
 
   /**
    * Database admin password.
    */
-  private String dbAdminPassword = "admin";
+  private String adminPassword = "admin";
 
   /**
    * An additional database.
@@ -41,17 +41,17 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Database user to use.
    */
-  private String dbUser = "test_user";
+  private String username = "test_user";
 
   /**
    * Database password for the user.
    */
-  private String dbPassword = "test";
+  private String password = "test";
 
   /**
    * Comma delimited list of database extensions required (hstore, pgcrypto etc).
    */
-  private String dbExtensions;
+  private String extensions;
 
   /**
    * SQL file executed against the database after it has been created.
@@ -73,14 +73,14 @@ public abstract class DbConfig extends BaseConfig {
    */
   @Override
   public String startDescription() {
-    return "starting " + platform + " container:" + containerName + " port:" + port + " db:" + dbName + " user:" + dbUser + " extensions:" + dbExtensions + " startMode:" + startMode;
+    return "starting " + platform + " container:" + containerName + " port:" + port + " db:" + dbName + " user:" + username + " extensions:" + extensions + " startMode:" + startMode;
   }
 
   /**
    * Return summary of the port db name and other details.
    */
   public String summary() {
-    return "port:" + port + " db:" + dbName + " user:" + dbUser;
+    return "port:" + port + " db:" + dbName + " user:" + username;
   }
 
   /**
@@ -88,14 +88,14 @@ public abstract class DbConfig extends BaseConfig {
    */
   @Override
   public Connection createConnection() throws SQLException {
-    return DriverManager.getConnection(jdbcUrl(), getDbUser(), getDbPassword());
+    return DriverManager.getConnection(jdbcUrl(), getUsername(), getPassword());
   }
 
   /**
    * Return a Connection to the database using the admin user.
    */
   public Connection createAdminConnection() throws SQLException {
-    return DriverManager.getConnection(jdbcUrl(), getDbAdminUser(), getDbAdminPassword());
+    return DriverManager.getConnection(jdbcUrl(), getAdminUsername(), getAdminPassword());
   }
 
   /**
@@ -110,16 +110,16 @@ public abstract class DbConfig extends BaseConfig {
     inMemory = Boolean.parseBoolean(prop(properties, "inMemory", Boolean.toString(inMemory)));
     tmpfs = prop(properties, "tmpfs", tmpfs);
     dbName = prop(properties, "dbName", dbName);
-    dbUser = prop(properties, "dbUser", dbUser);
-    dbPassword = prop(properties, "dbPassword", dbPassword);
-    dbExtensions = prop(properties, "dbExtensions", dbExtensions);
-    dbAdminUser = prop(properties, "dbAdminUser", dbAdminUser);
-    dbAdminPassword = prop(properties, "dbAdminPassword", dbAdminPassword);
+    username = prop(properties, "username", username);
+    password = prop(properties, "password", password);
+    extensions = prop(properties, "extensions", extensions);
+    adminUsername = prop(properties, "adminUsername", adminUsername);
+    adminPassword = prop(properties, "adminPassword", adminPassword);
 
-    extraDb = prop(properties, "extraDb", extraDb);
-    extraDbUser = prop(properties, "extraDbUser", extraDbUser);
-    extraDbPassword = prop(properties, "extraDbPassword", extraDbPassword);
-    extraDbInitSqlFile = prop(properties, "extraDbInitSqlFile", extraDbInitSqlFile);
+    extraDb = prop(properties, "extraDb.dbName", prop(properties, "extraDb", extraDb));
+    extraDbUser = prop(properties, "extraDb.username", extraDbUser);
+    extraDbPassword = prop(properties, "extraDb.password", extraDbPassword);
+    extraDbInitSqlFile = prop(properties, "extraDb.initSqlFile", extraDbInitSqlFile);
     return this;
   }
 
@@ -127,7 +127,7 @@ public abstract class DbConfig extends BaseConfig {
    * Set the password for the DB admin user.
    */
   public DbConfig setAdminUser(String dbAdminUser) {
-    this.dbAdminUser= dbAdminUser;
+    this.adminUsername = dbAdminUser;
     return this;
   }
 
@@ -135,7 +135,7 @@ public abstract class DbConfig extends BaseConfig {
    * Set the password for the DB admin user.
    */
   public DbConfig setAdminPassword(String adminPassword) {
-    this.dbAdminPassword = adminPassword;
+    this.adminPassword = adminPassword;
     return this;
   }
 
@@ -159,7 +159,7 @@ public abstract class DbConfig extends BaseConfig {
    * Set the DB user.
    */
   public DbConfig setUser(String user) {
-    this.dbUser = user;
+    this.username = user;
     return this;
   }
 
@@ -167,7 +167,7 @@ public abstract class DbConfig extends BaseConfig {
    * Set the DB password.
    */
   public DbConfig setPassword(String password) {
-    this.dbPassword = password;
+    this.password = password;
     return this;
   }
 
@@ -175,7 +175,7 @@ public abstract class DbConfig extends BaseConfig {
    * Set the DB extensions to install (Postgres hstore, pgcrypto etc)
    */
   public DbConfig setExtensions(String extensions) {
-    this.dbExtensions = extensions;
+    this.extensions = extensions;
     return this;
   }
 
@@ -229,28 +229,28 @@ public abstract class DbConfig extends BaseConfig {
     return tmpfs;
   }
 
-  public String getDbAdminUser() {
-    return dbAdminUser;
+  public String getAdminUsername() {
+    return adminUsername;
   }
 
-  public String getDbAdminPassword() {
-    return dbAdminPassword;
+  public String getAdminPassword() {
+    return adminPassword;
   }
 
   public String getDbName() {
     return dbName;
   }
 
-  public String getDbUser() {
-    return dbUser;
+  public String getUsername() {
+    return username;
   }
 
-  public String getDbPassword() {
-    return dbPassword;
+  public String getPassword() {
+    return password;
   }
 
-  public String getDbExtensions() {
-    return dbExtensions;
+  public String getExtensions() {
+    return extensions;
   }
 
   public String getDbInitSqlFile() {

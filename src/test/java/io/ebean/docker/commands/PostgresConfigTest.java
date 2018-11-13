@@ -50,9 +50,9 @@ public class PostgresConfigTest {
     assertEquals(config.getPort(), "6432");
     assertEquals(config.getImage(), "postgres:9.6");
     assertEquals(config.getDbName(), "test_db");
-    assertEquals(config.getDbUser(), "test_user");
-    assertEquals(config.getDbPassword(), "test");
-    assertEquals(config.getDbAdminPassword(), "admin");
+    assertEquals(config.getUsername(), "test_user");
+    assertEquals(config.getPassword(), "test");
+    assertEquals(config.getAdminPassword(), "admin");
     assertFalse(config.isInMemory());
   }
 
@@ -73,9 +73,9 @@ public class PostgresConfigTest {
     assertEquals(config.getPort(), "9823");
     assertEquals(config.getImage(), "postgres:9.6");
     assertEquals(config.getDbName(), "baz");
-    assertEquals(config.getDbUser(), "foo");
-    assertEquals(config.getDbPassword(), "bar");
-    assertEquals(config.getDbAdminPassword(), "bat");
+    assertEquals(config.getUsername(), "foo");
+    assertEquals(config.getPassword(), "bar");
+    assertEquals(config.getAdminPassword(), "bat");
     assertFalse(config.isInMemory());
   }
 
