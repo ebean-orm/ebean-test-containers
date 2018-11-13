@@ -10,11 +10,11 @@
 
   <groupId>io.ebean.test</groupId>
   <artifactId>ebean-test-docker</artifactId>
-  <version>1.5.11</version>
+  <version>1.5.12-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:ebean-orm/ebean-test-docker.git</developerConnection>
-    <tag>ebean-test-docker-1.5.11</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <dependencies>
