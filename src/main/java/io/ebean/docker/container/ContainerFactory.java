@@ -1,6 +1,7 @@
 package io.ebean.docker.container;
 
 import io.ebean.docker.commands.ElasticContainer;
+import io.ebean.docker.commands.HanaContainer;
 import io.ebean.docker.commands.MySqlContainer;
 import io.ebean.docker.commands.OracleContainer;
 import io.ebean.docker.commands.PostgresContainer;
@@ -76,6 +77,10 @@ public class ContainerFactory {
     String oracleVersion = runWithVersion("oracle");
     if (oracleVersion != null) {
       containers.add(OracleContainer.create(oracleVersion, properties));
+    }
+    String hanaVersion = runWithVersion("hana");
+    if (hanaVersion != null) {
+      containers.add(HanaContainer.create(hanaVersion, properties));
     }
   }
 

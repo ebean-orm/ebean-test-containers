@@ -1,5 +1,6 @@
 package io.ebean.docker.container;
 
+import org.hamcrest.CoreMatchers;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -7,6 +8,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assume.assumeThat;
 
 public class ContainerFactoryTest {
 
@@ -26,18 +28,39 @@ public class ContainerFactoryTest {
   }
 
   @Test
+  public void runWithHana() {
+
+    assumeThat(System.getProperty("os.name").toLowerCase(), CoreMatchers.containsString("linux"));
+
+    Properties properties = new Properties();
+    properties.setProperty("postgres.version", "9.6");
+    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("sqlserver.version", "2017-CE");
+    properties.setProperty("hana.version", "2.00.033.00.20180925.2");
+
+    ContainerFactory factory = new ContainerFactory(properties);
+
+    assertEquals("9.6", factory.runWithVersion("postgres"));
+    assertEquals("5.7", factory.runWithVersion("mysql"));
+    assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
+    assertEquals("2.00.033.00.20180925.2", factory.runWithVersion("hana"));
+  }
+
+  @Test
   public void runWith_specifiedWithComma() {
 
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
     properties.setProperty("mysql.version", "5.7");
     properties.setProperty("sqlserver.version", "2017-CE");
+    properties.setProperty("hana.version", "2.00.033.00.20180925.2");
 
     ContainerFactory factory = new ContainerFactory(properties, "sqlserver,mysql");
 
     assertNull(factory.runWithVersion("postgres"));
     assertEquals("5.7", factory.runWithVersion("mysql"));
     assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
+    assertNull(factory.runWithVersion("hana"));
   }
 
   @Test
@@ -47,12 +70,14 @@ public class ContainerFactoryTest {
     properties.setProperty("postgres.version", "9.6");
     properties.setProperty("mysql.version", "5.7");
     properties.setProperty("sqlserver.version", "2017-CE");
+    properties.setProperty("hana.version", "2.00.033.00.20180925.2");
 
     ContainerFactory factory = new ContainerFactory(properties, "mysql");
 
     assertEquals("5.7", factory.runWithVersion("mysql"));
     assertNull(factory.runWithVersion("postgres"));
     assertNull(factory.runWithVersion("sqlserver"));
+    assertNull(factory.runWithVersion("hana"));
   }
 
   @Test
@@ -62,6 +87,7 @@ public class ContainerFactoryTest {
     properties.setProperty("postgres.version", "9.6");
     properties.setProperty("mysql.version", "5.7");
     properties.setProperty("sqlserver.version", "2017-CE");
+    properties.setProperty("hana.version", "2.00.033.00.20180925.2");
 
     System.setProperty("docker_run_with", "mysql");
     try {
@@ -70,6 +96,7 @@ public class ContainerFactoryTest {
       assertEquals("5.7", factory.runWithVersion("mysql"));
       assertNull(factory.runWithVersion("postgres"));
       assertNull(factory.runWithVersion("sqlserver"));
+      assertNull(factory.runWithVersion("hana"));
 
     } finally {
       System.clearProperty("docker_run_with");
@@ -90,7 +117,6 @@ public class ContainerFactoryTest {
 //    properties.setProperty("mysql.version", "5.7");
 //    properties.setProperty("mysql.containerName", "temp_mysql");
 //    properties.setProperty("mysql.port", "7306");
-
 
     ContainerFactory factory = new ContainerFactory(properties);
 
