@@ -270,12 +270,16 @@ public class PostgresContainer extends DbContainer implements Container {
   }
 
   private void createDatabaseExtensionsFor(String dbExtn, String dbName) {
-    String[] extns = dbExtn.split(",");
-    for (String extension : extns) {
+
+    List<String> extensions = new ArrayList<>();
+    for (String extension : dbExtn.split(",")) {
       extension = extension.trim();
       if (!extension.isEmpty()) {
-        ProcessHandler.process(createDatabaseExtension(extension, dbName));
+        extensions.add(extension);
       }
+    }
+    if (!extensions.isEmpty()) {
+      ProcessHandler.process(createDatabaseExtension(extensions, dbName));
     }
   }
 
@@ -283,7 +287,7 @@ public class PostgresContainer extends DbContainer implements Container {
     return value != null && !value.isEmpty();
   }
 
-  private ProcessBuilder createDatabaseExtension(String extension, String dbName) {
+  private ProcessBuilder createDatabaseExtension(List<String> extensions, String dbName) {
     //docker exec -i ut_postgres psql -U postgres -d test_db -c "create extension if not exists pgcrypto";
     List<String> args = new ArrayList<>();
     args.add(config.docker);
@@ -295,8 +299,10 @@ public class PostgresContainer extends DbContainer implements Container {
     args.add("postgres");
     args.add("-d");
     args.add(dbName);
-    args.add("-c");
-    args.add("create extension if not exists " + extension);
+    for (String extension : extensions) {
+      args.add("-c");
+      args.add("create extension if not exists " + extension);
+    }
 
     return createProcessBuilder(args);
   }
