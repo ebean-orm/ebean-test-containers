@@ -64,9 +64,9 @@ public class PostgresConfigTest {
     properties.setProperty("postgres.containerName", "junk_postgres");
     properties.setProperty("postgres.port", "9823");
     properties.setProperty("postgres.dbName", "baz");
-    properties.setProperty("postgres.dbUser", "foo");
-    properties.setProperty("postgres.dbPassword", "bar");
-    properties.setProperty("postgres.dbAdminPassword", "bat");
+    properties.setProperty("postgres.username", "foo");
+    properties.setProperty("postgres.password", "bar");
+    properties.setProperty("postgres.adminPassword", "bat");
 
     PostgresConfig config = new PostgresConfig("9.6", properties);
     assertEquals(config.containerName(), "junk_postgres");

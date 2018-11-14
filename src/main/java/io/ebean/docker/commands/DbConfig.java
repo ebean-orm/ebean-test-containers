@@ -56,7 +56,7 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * SQL file executed against the database after it has been created.
    */
-  private String dbInitSqlFile;
+  private String initSqlFile;
 
   /**
    * Set to true to run in-memory mode.
@@ -115,6 +115,7 @@ public abstract class DbConfig extends BaseConfig {
     extensions = prop(properties, "extensions", extensions);
     adminUsername = prop(properties, "adminUsername", adminUsername);
     adminPassword = prop(properties, "adminPassword", adminPassword);
+    initSqlFile = prop(properties, "initSqlFile", initSqlFile);
 
     extraDb = prop(properties, "extraDb.dbName", prop(properties, "extraDb", extraDb));
     extraDbUser = prop(properties, "extraDb.username", extraDbUser);
@@ -182,8 +183,8 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Set the SQL file to execute after creating the database.
    */
-  public DbConfig setDbInitSqlFile(String dbInitSqlFile) {
-    this.dbInitSqlFile = dbInitSqlFile;
+  public DbConfig setInitSqlFile(String initSqlFile) {
+    this.initSqlFile = initSqlFile;
     return this;
   }
 
@@ -221,6 +222,14 @@ public abstract class DbConfig extends BaseConfig {
     return this;
   }
 
+  /**
+   * Set to true to run using in memory storage for data via tmpfs.
+   */
+  public DbConfig setInMemory(boolean inMemory) {
+    this.inMemory = inMemory;
+    return this;
+  }
+
   public boolean isInMemory() {
     return inMemory;
   }
@@ -253,8 +262,8 @@ public abstract class DbConfig extends BaseConfig {
     return extensions;
   }
 
-  public String getDbInitSqlFile() {
-    return dbInitSqlFile;
+  public String getInitSqlFile() {
+    return initSqlFile;
   }
 
   public String getExtraDb() {

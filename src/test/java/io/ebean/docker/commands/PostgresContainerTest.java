@@ -21,16 +21,17 @@ public class PostgresContainerTest {
     config.setContainerName("junk_postgres10");
     config.setPort("9823");
     config.setExtensions(" hstore, , pgcrypto ");
+    config.setInMemory(true);
     config.setUser("main_user");
     config.setDbName("main_db");
-    config.setDbInitSqlFile("init-main-database.sql");
+    config.setInitSqlFile("init-main-database.sql");
 //    config.setExtraDbUser("extra_user");
     config.setExtraDb("extra");
     config.setExtraDbInitSqlFile("init-extra-database.sql");
 
     PostgresContainer container = new PostgresContainer(config);
 
-//    container.stopRemove();
+    container.stopRemove();
     container.startWithCreate();
     container.startContainerOnly();
     container.startWithDropCreate();
@@ -48,10 +49,10 @@ public class PostgresContainerTest {
     properties.setProperty("postgres.containerName", "junk_postgres10");
     properties.setProperty("postgres.port", "9823");
 
-    properties.setProperty("postgres.dbExtensions", "hstore,pgcrypto");
+    properties.setProperty("postgres.extensions", "hstore,pgcrypto");
 
     properties.setProperty("postgres.dbName", "test_roberto");
-    properties.setProperty("postgres.dbUser", "test_robino");
+    properties.setProperty("postgres.username", "test_robino");
 
     ContainerFactory factory = new ContainerFactory(properties);
     //factory.startContainers();

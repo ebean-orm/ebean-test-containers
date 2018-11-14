@@ -162,7 +162,7 @@ public class PostgresContainer extends DbContainer implements Container {
     if (checkExists && databaseExists(dbConfig.getDbName())) {
       return true;
     }
-    return createDatabase(dbConfig.getDbName(), dbConfig.getUsername(), dbConfig.getDbInitSqlFile());
+    return createDatabase(dbConfig.getDbName(), dbConfig.getUsername(), dbConfig.getInitSqlFile());
   }
 
   private void runExtraDbInitSql(String dbName, String dbUser, String initSqlFile) {
