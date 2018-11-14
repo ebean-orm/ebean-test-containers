@@ -63,6 +63,11 @@ public abstract class DbConfig extends BaseConfig {
    */
   private boolean inMemory;
 
+  /**
+   * If true we ONLY check the existence of the DB and if present we skip the
+   * other usual checks (does user exist, create extensions if not exists etc).
+   */
+  private boolean fastStartMode;
 
   DbConfig(String platform, String port, String internalPort, String version) {
     super(platform, port, internalPort, version);
@@ -108,6 +113,8 @@ public abstract class DbConfig extends BaseConfig {
     super.setProperties(properties);
 
     inMemory = Boolean.parseBoolean(prop(properties, "inMemory", Boolean.toString(inMemory)));
+    fastStartMode = Boolean.parseBoolean(prop(properties, "fastStartMode", Boolean.toString(inMemory)));
+
     tmpfs = prop(properties, "tmpfs", tmpfs);
     dbName = prop(properties, "dbName", dbName);
     username = prop(properties, "username", username);
@@ -145,6 +152,14 @@ public abstract class DbConfig extends BaseConfig {
    */
   public DbConfig setTmpfs(String tmpfs) {
     this.tmpfs = tmpfs;
+    return this;
+  }
+
+  /**
+   * Set to true to use fast start mode.
+   */
+  public DbConfig setFastStartMode(boolean fastStartMode) {
+    this.fastStartMode = fastStartMode;
     return this;
   }
 
@@ -280,5 +295,9 @@ public abstract class DbConfig extends BaseConfig {
 
   public String getExtraDbInitSqlFile() {
     return extraDbInitSqlFile;
+  }
+
+  public boolean isFastStartMode() {
+    return fastStartMode;
   }
 }

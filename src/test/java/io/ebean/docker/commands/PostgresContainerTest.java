@@ -22,6 +22,7 @@ public class PostgresContainerTest {
     config.setPort("9823");
     config.setExtensions(" hstore, , pgcrypto ");
     config.setInMemory(true);
+    config.setFastStartMode(true);
     config.setUser("main_user");
     config.setDbName("main_db");
     config.setInitSqlFile("init-main-database.sql");

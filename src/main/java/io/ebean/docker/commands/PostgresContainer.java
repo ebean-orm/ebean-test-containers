@@ -52,7 +52,11 @@ public class PostgresContainer extends DbContainer implements Container {
   @Override
   public boolean startWithCreate() {
     startMode = Mode.Create;
-    startIfNeeded();
+    if (startIfNeeded() && fastStart()) {
+      // container was running, fast start enabled and passed
+      // so skip the usual checks for user, extensions and connectivity
+      return true;
+    }
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
       return false;
@@ -65,6 +69,23 @@ public class PostgresContainer extends DbContainer implements Container {
       return false;
     }
     return true;
+  }
+
+  /**
+   * If we are using FastStartMode just check is the DB exists and if so assume it is all created correctly.
+   * <p>
+   * This should only be used with Mode.Create and when the container is already running.
+   */
+  private boolean fastStart() {
+    if (!dbConfig.isFastStartMode()) {
+      return false;
+    }
+    try {
+      return databaseExists(dbConfig.getDbName());
+    } catch (CommandException e) {
+      log.debug("failed fast start check - using normal startup");
+      return false;
+    }
   }
 
   /**

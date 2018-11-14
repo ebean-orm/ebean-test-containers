@@ -87,13 +87,13 @@ abstract class BaseContainer implements Container {
 
   /**
    * Start the container checking if it is already running.
-   * Return true if the container is just being run.
+   * Return true if the container is already running.
    */
-  void startIfNeeded() {
+  boolean startIfNeeded() {
     if (commands.isRunning(config.containerName())) {
       checkPort(true);
       logRunning();
-      return;
+      return true;
     }
 
     if (commands.isRegistered(config.containerName())) {
@@ -105,6 +105,7 @@ abstract class BaseContainer implements Container {
       logRun();
       runContainer();
     }
+    return false;
   }
 
   private void checkPort(boolean isRunning) {
