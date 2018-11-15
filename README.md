@@ -22,6 +22,7 @@ containers to make testing nice for Ebean ORM - https://ebean-orm.github.io/
 - SqlServer (via https://hub.docker.com/r/microsoft/mssql-server-linux/)
 - Oracle (via https://hub.docker.com/r/sath89/oracle-12c/)
 - ElasticSearch 
+- HANA (via https://store.docker.com/images/sap-hana-express-edition)
 
 
 
