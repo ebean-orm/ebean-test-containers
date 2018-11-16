@@ -36,14 +36,14 @@ public class ContainerFactoryTest {
     properties.setProperty("postgres.version", "9.6");
     properties.setProperty("mysql.version", "5.7");
     properties.setProperty("sqlserver.version", "2017-CE");
-    properties.setProperty("hana.version", "2.00.033.00.20180925.2");
+    //properties.setProperty("hana.version", "2.00.033.00.20180925.2");
 
     ContainerFactory factory = new ContainerFactory(properties);
 
     assertEquals("9.6", factory.runWithVersion("postgres"));
     assertEquals("5.7", factory.runWithVersion("mysql"));
     assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
-    assertEquals("2.00.033.00.20180925.2", factory.runWithVersion("hana"));
+    //assertEquals("2.00.033.00.20180925.2", factory.runWithVersion("hana"));
   }
 
   @Test
