@@ -1,8 +1,14 @@
 package io.ebean.docker.commands;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeThat;
+import io.ebean.docker.commands.process.ProcessHandler;
+import io.ebean.docker.container.Container;
+import io.ebean.docker.container.ContainerConfig;
+import io.ebean.docker.container.ContainerFactory;
+import org.hamcrest.CoreMatchers;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -20,15 +26,9 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-
-import io.ebean.docker.commands.process.ProcessHandler;
-import io.ebean.docker.container.Container;
-import io.ebean.docker.container.ContainerConfig;
-import io.ebean.docker.container.ContainerFactory;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeThat;
 
 public class HanaContainerTest {
 
@@ -86,10 +86,13 @@ public class HanaContainerTest {
     });
   }
 
+  // Setting ignore only because running this test takes a bit too long
+  @Ignore
   @Test
   public void start() {
 
     assumeThat(System.getProperty("os.name").toLowerCase(), CoreMatchers.containsString("linux"));
+    //System.setProperty("hana.agreeToSapLicense", "true");
 
     HanaConfig config = new HanaConfig("2.00.033.00.20180925.2");
     config.setPort("39117");
@@ -111,10 +114,13 @@ public class HanaContainerTest {
     container.stopRemove();
   }
 
+  // Setting ignore only because running this test takes a bit too long
+  @Ignore
   @Test
   public void viaContainerFactory() {
 
     assumeThat(System.getProperty("os.name").toLowerCase(), CoreMatchers.containsString("linux"));
+    //System.setProperty("hana.agreeToSapLicense", "true");
 
     Properties properties = new Properties();
     properties.setProperty("hana.version", "2.00.033.00.20180925.2");
@@ -205,6 +211,6 @@ public class HanaContainerTest {
 
   private void cleanupContainer(HanaConfig config) {
     ProcessHandler.command(config.getDocker(), "exec", "-i", config.containerName(), "bash", "-c",
-        "rm -rf /hana/mounts/*");
+      "rm -rf /hana/mounts/*");
   }
 }
