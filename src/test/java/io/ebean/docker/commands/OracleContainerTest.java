@@ -57,8 +57,7 @@ public class OracleContainerTest {
     config.setStartMode("create");
     container.start();
 
-    try {
-      Connection connection = config.createConnection();
+    try(Connection connection = config.createConnection()) {
       exeSql(connection, "create table test_junk (acol integer)");
       exeSql(connection, "insert into test_junk (acol) values (42)");
       exeSql(connection, "insert into test_junk (acol) values (43)");
@@ -69,10 +68,9 @@ public class OracleContainerTest {
 
     } catch (SQLException e) {
       throw new RuntimeException(e);
-
-    } finally {
-      //container.stop();
     }
+
+    //container.stop();
   }
 
   private void exeSql(Connection connection, String sql) throws SQLException {
