@@ -67,6 +67,10 @@ public class PostgresConfigTest {
     properties.setProperty("postgres.username", "foo");
     properties.setProperty("postgres.password", "bar");
     properties.setProperty("postgres.adminPassword", "bat");
+    properties.setProperty("postgres.initSqlFile", "init.sql");
+    properties.setProperty("postgres.seedSqlFile", "seed.sql");
+    properties.setProperty("postgres.extraDb.initSqlFile", "extra_init.sql");
+    properties.setProperty("postgres.extraDb.seedSqlFile", "extra_seed.sql");
 
     PostgresConfig config = new PostgresConfig("9.6", properties);
     assertEquals(config.containerName(), "junk_postgres");
@@ -76,6 +80,13 @@ public class PostgresConfigTest {
     assertEquals(config.getUsername(), "foo");
     assertEquals(config.getPassword(), "bar");
     assertEquals(config.getAdminPassword(), "bat");
+
+    assertEquals(config.getInitSqlFile(), "init.sql");
+    assertEquals(config.getSeedSqlFile(), "seed.sql");
+    assertEquals(config.getExtraDbInitSqlFile(), "extra_init.sql");
+    assertEquals(config.getExtraDbSeedSqlFile(), "extra_seed.sql");
+
+    assertFalse(config.isFastStartMode());
     assertFalse(config.isInMemory());
   }
 

@@ -26,9 +26,12 @@ public class PostgresContainerTest {
     config.setUser("main_user");
     config.setDbName("main_db");
     config.setInitSqlFile("init-main-database.sql");
+    config.setSeedSqlFile("seed-main-database.sql");
+
 //    config.setExtraDbUser("extra_user");
     config.setExtraDb("extra");
     config.setExtraDbInitSqlFile("init-extra-database.sql");
+    config.setExtraDbSeedSqlFile("seed-extra-database.sql");
 
     PostgresContainer container = new PostgresContainer(config);
 

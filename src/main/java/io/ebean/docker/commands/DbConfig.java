@@ -32,6 +32,7 @@ public abstract class DbConfig extends BaseConfig {
   private String extraDbUser;
   private String extraDbPassword;
   private String extraDbInitSqlFile;
+  private String extraDbSeedSqlFile;
 
   /**
    * Database name to use.
@@ -57,6 +58,11 @@ public abstract class DbConfig extends BaseConfig {
    * SQL file executed against the database after it has been created.
    */
   private String initSqlFile;
+
+  /**
+   * SQL file executed against the database after initSqlFile.
+   */
+  private String seedSqlFile;
 
   /**
    * Set to true to run in-memory mode.
@@ -113,7 +119,7 @@ public abstract class DbConfig extends BaseConfig {
     super.setProperties(properties);
 
     inMemory = Boolean.parseBoolean(prop(properties, "inMemory", Boolean.toString(inMemory)));
-    fastStartMode = Boolean.parseBoolean(prop(properties, "fastStartMode", Boolean.toString(inMemory)));
+    fastStartMode = Boolean.parseBoolean(prop(properties, "fastStartMode", Boolean.toString(fastStartMode)));
 
     tmpfs = prop(properties, "tmpfs", tmpfs);
     dbName = prop(properties, "dbName", dbName);
@@ -123,11 +129,13 @@ public abstract class DbConfig extends BaseConfig {
     adminUsername = prop(properties, "adminUsername", adminUsername);
     adminPassword = prop(properties, "adminPassword", adminPassword);
     initSqlFile = prop(properties, "initSqlFile", initSqlFile);
+    seedSqlFile = prop(properties, "seedSqlFile", seedSqlFile);
 
     extraDb = prop(properties, "extraDb.dbName", prop(properties, "extraDb", extraDb));
     extraDbUser = prop(properties, "extraDb.username", extraDbUser);
     extraDbPassword = prop(properties, "extraDb.password", extraDbPassword);
     extraDbInitSqlFile = prop(properties, "extraDb.initSqlFile", extraDbInitSqlFile);
+    extraDbSeedSqlFile = prop(properties, "extraDb.seedSqlFile", extraDbSeedSqlFile);
     return this;
   }
 
@@ -204,6 +212,14 @@ public abstract class DbConfig extends BaseConfig {
   }
 
   /**
+   * Set the SQL file to execute after creating the database and initSqlFile.
+   */
+  public DbConfig setSeedSqlFile(String seedSqlFile) {
+    this.seedSqlFile = seedSqlFile;
+    return this;
+  }
+
+  /**
    * Set the name of an extra database to create.
    */
   public DbConfig setExtraDb(String extraDb) {
@@ -234,6 +250,14 @@ public abstract class DbConfig extends BaseConfig {
    */
   public DbConfig setExtraDbInitSqlFile(String extraDbInitSqlFile) {
     this.extraDbInitSqlFile = extraDbInitSqlFile;
+    return this;
+  }
+
+  /**
+   * Set a file to execute after creating the extra database.
+   */
+  public DbConfig setExtraDbSeedSqlFile(String extraDbSeedSqlFile) {
+    this.extraDbSeedSqlFile = extraDbSeedSqlFile;
     return this;
   }
 
@@ -281,6 +305,10 @@ public abstract class DbConfig extends BaseConfig {
     return initSqlFile;
   }
 
+  public String getSeedSqlFile() {
+    return seedSqlFile;
+  }
+
   public String getExtraDb() {
     return extraDb;
   }
@@ -295,6 +323,10 @@ public abstract class DbConfig extends BaseConfig {
 
   public String getExtraDbInitSqlFile() {
     return extraDbInitSqlFile;
+  }
+
+  public String getExtraDbSeedSqlFile() {
+    return extraDbSeedSqlFile;
   }
 
   public boolean isFastStartMode() {

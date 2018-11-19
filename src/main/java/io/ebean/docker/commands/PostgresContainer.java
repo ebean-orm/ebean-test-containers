@@ -176,24 +176,24 @@ public class PostgresContainer extends DbContainer implements Container {
     String extraDb = dbConfig.getExtraDb();
     if (isDefined(extraDb) && (!checkExists || !databaseExists(extraDb))) {
       String extraUser = getWithDefault(getExtraDbUser(), dbConfig.getUsername());
-      if (!createDatabase(extraDb, extraUser, dbConfig.getExtraDbInitSqlFile())) {
+      if (!createDatabase(extraDb, extraUser, dbConfig.getExtraDbInitSqlFile(), dbConfig.getExtraDbSeedSqlFile())) {
         log.error("Failed to create extra database " + extraDb);
       }
     }
     if (checkExists && databaseExists(dbConfig.getDbName())) {
       return true;
     }
-    return createDatabase(dbConfig.getDbName(), dbConfig.getUsername(), dbConfig.getInitSqlFile());
+    return createDatabase(dbConfig.getDbName(), dbConfig.getUsername(), dbConfig.getInitSqlFile(), dbConfig.getSeedSqlFile());
   }
 
-  private void runExtraDbInitSql(String dbName, String dbUser, String initSqlFile) {
-    if (isDefined(initSqlFile)) {
-      File file = new File(initSqlFile);
+  private void runExtraDbInitSql(String dbName, String dbUser, String sqlFile) {
+    if (isDefined(sqlFile)) {
+      File file = new File(sqlFile);
       if (!file.exists()) {
-        file = checkFileResource(initSqlFile);
+        file = checkFileResource(sqlFile);
       }
       if (file == null) {
-        log.error("Could not find init SQL file for database " + dbName + ". No file exists at location or resource path for: " + initSqlFile);
+        log.error("Could not find SQL file for database " + dbName + ". No file exists at location or resource path for: " + sqlFile);
       } else {
         runSqlFile(file, dbUser, dbName);
       }
@@ -263,10 +263,11 @@ public class PostgresContainer extends DbContainer implements Container {
     return createProcessBuilder(args);
   }
 
-  private boolean createDatabase(String dbName, String dbUser, String initSqlFile) {
+  private boolean createDatabase(String dbName, String dbUser, String initSqlFile, String seedSqlFile) {
     ProcessBuilder pb = createDb(dbName, dbUser);
     if (execute("CREATE DATABASE", pb, "Failed to create database with owner")) {
       runExtraDbInitSql(dbName, dbUser, initSqlFile);
+      runExtraDbInitSql(dbName, dbUser, seedSqlFile);
       return true;
     }
     return false;
