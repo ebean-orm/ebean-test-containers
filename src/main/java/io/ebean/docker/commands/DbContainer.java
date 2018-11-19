@@ -3,8 +3,12 @@ package io.ebean.docker.commands;
 import io.ebean.docker.commands.process.ProcessHandler;
 import io.ebean.docker.container.Container;
 
+import java.io.File;
+import java.net.URL;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -120,6 +124,10 @@ abstract class DbContainer extends BaseContainer implements Container {
    */
   protected abstract boolean isDatabaseAdminReady();
 
+  protected void executeSqlFile(String dbUser, String dbName, String containerFilePath) {
+    throw new RuntimeException("executeSqlFile is Not implemented for this platform - Postgres only at this stage");
+  }
+
   /**
    * Return true when the DB is ready for taking commands (like create database, user etc).
    */
@@ -176,6 +184,71 @@ abstract class DbContainer extends BaseContainer implements Container {
 
   boolean defined(String val) {
     return val != null && !val.trim().isEmpty();
+  }
+
+  void runDbSqlFile(String dbName, String dbUser, String sqlFile) {
+    if (defined(sqlFile)) {
+      File file = getResourceOrFile(sqlFile);
+      if (file != null) {
+        runSqlFile(file, dbUser, dbName);
+      }
+    }
+  }
+
+  void runSqlFile(File file, String dbUser, String dbName) {
+    if (copyFileToContainer(file)) {
+      String containerFilePath = "/tmp/" + file.getName();
+      executeSqlFile(dbUser, dbName, containerFilePath);
+    }
+  }
+
+  File getResourceOrFile(String sqlFile) {
+
+    File file = new File(sqlFile);
+    if (!file.exists()) {
+      file = checkFileResource(sqlFile);
+    }
+    if (file == null) {
+      log.error("Could not find SQL file. No file exists at location or resource path for: " + sqlFile);
+    }
+    return file;
+  }
+
+  private File checkFileResource(String sqlFile) {
+    try {
+      if (!sqlFile.startsWith("/")) {
+        sqlFile = "/" + sqlFile;
+      }
+      URL resource = getClass().getResource(sqlFile);
+      if (resource != null) {
+        File file = Paths.get(resource.toURI()).toFile();
+        if (file.exists()) {
+          return file;
+        }
+      }
+    } catch (Exception e) {
+      log.error("Failed to obtain File from resource for init SQL file: " + sqlFile, e);
+    }
+    // not found
+    return null;
+  }
+
+  boolean copyFileToContainer(File sourceFile) {
+    ProcessBuilder pb = copyFileToContainerProcess(sourceFile);
+    return execute(pb, "Failed to copy file " + sourceFile.getAbsolutePath() + " to container");
+  }
+
+  private ProcessBuilder copyFileToContainerProcess(File sourceFile) {
+
+    //docker cp /tmp/init-file.sql ut_postgres:/tmp/init-file.sql
+    String dest = config.containerName() + ":/tmp/" + sourceFile.getName();
+
+    List<String> args = new ArrayList<>();
+    args.add(config.docker);
+    args.add("cp");
+    args.add(sourceFile.getAbsolutePath());
+    args.add(dest);
+    return createProcessBuilder(args);
   }
 
   /**

@@ -9,6 +9,6 @@
     <appender-ref ref="STDOUT"/>
   </root>
 
-  <logger name="io.ebean" level="DEBUG"/>
+  <logger name="io.ebean" level="TRACE"/>
 
 </configuration>
