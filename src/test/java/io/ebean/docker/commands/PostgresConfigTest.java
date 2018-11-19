@@ -6,6 +6,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class PostgresConfigTest {
 
@@ -53,6 +54,7 @@ public class PostgresConfigTest {
     assertEquals(config.getUsername(), "test_user");
     assertEquals(config.getPassword(), "test");
     assertEquals(config.getAdminPassword(), "admin");
+    assertTrue(config.isFastStartMode());
     assertFalse(config.isInMemory());
   }
 
@@ -67,6 +69,8 @@ public class PostgresConfigTest {
     properties.setProperty("postgres.username", "foo");
     properties.setProperty("postgres.password", "bar");
     properties.setProperty("postgres.adminPassword", "bat");
+    properties.setProperty("postgres.fastStartMode", "false");
+
     properties.setProperty("postgres.initSqlFile", "init.sql");
     properties.setProperty("postgres.seedSqlFile", "seed.sql");
     properties.setProperty("postgres.extraDb.initSqlFile", "extra_init.sql");
