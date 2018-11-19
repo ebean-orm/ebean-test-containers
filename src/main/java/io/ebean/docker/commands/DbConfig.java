@@ -73,7 +73,7 @@ public abstract class DbConfig extends BaseConfig {
    * If true we ONLY check the existence of the DB and if present we skip the
    * other usual checks (does user exist, create extensions if not exists etc).
    */
-  private boolean fastStartMode;
+  private boolean fastStartMode = true;
 
   DbConfig(String platform, String port, String internalPort, String version) {
     super(platform, port, internalPort, version);
