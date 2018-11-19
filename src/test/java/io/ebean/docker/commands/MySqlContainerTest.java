@@ -17,6 +17,7 @@ public class MySqlContainerTest {
     MySqlConfig config = new MySqlConfig("5.7");
     config.setContainerName("temp_mysql");
     config.setPort("7306");
+    config.setFastStartMode(true);
 
     MySqlContainer container = new MySqlContainer(config);
 
