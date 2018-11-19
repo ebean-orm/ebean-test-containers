@@ -50,7 +50,11 @@ public class SqlServerContainer extends DbContainer implements Container {
   @Override
   public boolean startWithCreate() {
     startMode = Mode.Create;
-    startIfNeeded();
+    if (startIfNeeded() &&  fastStart()) {
+      // container was running, fast start enabled and passed
+      // so skip the usual checks for user, extensions and connectivity
+      return true;
+    }
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
       return false;
@@ -100,6 +104,11 @@ public class SqlServerContainer extends DbContainer implements Container {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public boolean isFastStartDatabaseExists() {
+    return databaseExists();
   }
 
   /**

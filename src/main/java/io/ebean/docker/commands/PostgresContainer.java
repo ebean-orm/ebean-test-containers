@@ -69,23 +69,6 @@ public class PostgresContainer extends DbContainer implements Container {
   }
 
   /**
-   * If we are using FastStartMode just check is the DB exists and if so assume it is all created correctly.
-   * <p>
-   * This should only be used with Mode.Create and when the container is already running.
-   */
-  private boolean fastStart() {
-    if (!dbConfig.isFastStartMode()) {
-      return false;
-    }
-    try {
-      return databaseExists(dbConfig.getDbName());
-    } catch (CommandException e) {
-      log.debug("failed fast start check - using normal startup");
-      return false;
-    }
-  }
-
-  /**
    * Start with a drop and create of the database and user.
    */
   @Override
@@ -116,6 +99,11 @@ public class PostgresContainer extends DbContainer implements Container {
   @Override
   protected boolean isDatabaseAdminReady() {
     return execute("datname", showDatabases());
+  }
+
+  @Override
+  protected boolean isFastStartDatabaseExists() {
+    return databaseExists(dbConfig.getDbName());
   }
 
   /**

@@ -110,6 +110,28 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   /**
+   * If we are using FastStartMode just check is the DB exists and if so assume it is all created correctly.
+   * <p>
+   * This should only be used with Mode.Create and when the container is already running.
+   */
+  protected boolean fastStart() {
+    if (!dbConfig.isFastStartMode()) {
+      return false;
+    }
+    try {
+      return isFastStartDatabaseExists();
+    } catch (CommandException e) {
+      log.debug("failed fast start check - using normal startup");
+      return false;
+    }
+  }
+
+  protected boolean isFastStartDatabaseExists() {
+    // return false as by default it is not supported
+    return false;
+  }
+
+  /**
    * Return the ProcessBuilder used to execute the container run command.
    */
   protected abstract ProcessBuilder runProcess();

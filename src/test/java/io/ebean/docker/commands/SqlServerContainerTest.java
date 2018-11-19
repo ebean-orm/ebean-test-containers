@@ -16,6 +16,8 @@ public class SqlServerContainerTest {
   public void start() {
 
     SqlServerConfig config = new SqlServerConfig("2017-CU4");
+    config.setFastStartMode(true);
+
     SqlServerContainer container = new SqlServerContainer(config);
 
     container.startWithCreate();
