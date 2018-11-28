@@ -12,7 +12,6 @@ import java.util.Properties;
 /**
  * Commands for controlling a postgres docker container.
  * <p>
- * <p>
  * References:
  * </p>
  * <ul>
@@ -326,7 +325,7 @@ public class PostgresContainer extends DbContainer implements Container {
   }
 
   private ProcessBuilder createRole(String roleName, String pass) {
-    return sqlProcess("create role " + roleName + " password '" + pass + "' login");//alter role " + roleName + " login;");
+    return sqlProcess("create role " + roleName + " password '" + pass + "' login createrole");
   }
 
   private ProcessBuilder roleExistsFor(String roleName) {
