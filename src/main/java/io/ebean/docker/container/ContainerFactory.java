@@ -5,6 +5,7 @@ import io.ebean.docker.commands.HanaContainer;
 import io.ebean.docker.commands.MySqlContainer;
 import io.ebean.docker.commands.OracleContainer;
 import io.ebean.docker.commands.PostgresContainer;
+import io.ebean.docker.commands.RedisContainer;
 import io.ebean.docker.commands.SqlServerContainer;
 
 import java.util.ArrayList;
@@ -61,6 +62,10 @@ public class ContainerFactory {
     String elasticVersion = version("elastic");
     if (elasticVersion != null) {
       containers.add(ElasticContainer.create(elasticVersion, properties));
+    }
+    String redisVersion = version("redis");
+    if (redisVersion != null) {
+      containers.add(RedisContainer.create(redisVersion, properties));
     }
     String pgVersion = runWithVersion("postgres");
     if (pgVersion != null) {

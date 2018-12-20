@@ -165,7 +165,8 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   protected String prop(Properties properties, String key, String defaultValue) {
-    return properties.getProperty(platform + "." + key, defaultValue);
+    String val = properties.getProperty("ebean.test." + platform + "." + key, defaultValue);
+    return properties.getProperty(platform + "." + key, val);
   }
 
   /**

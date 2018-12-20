@@ -114,6 +114,10 @@ public class ContainerFactoryTest {
     properties.setProperty("elastic.version", "5.6.0");
     properties.setProperty("elastic.port", "9201");
 
+    properties.setProperty("redis.version", "latest");
+    properties.setProperty("redis.port", "9911");
+    properties.setProperty("redis.containerName", "junk_redis");
+
 //    properties.setProperty("mysql.version", "5.7");
 //    properties.setProperty("mysql.containerName", "temp_mysql");
 //    properties.setProperty("mysql.port", "7306");
