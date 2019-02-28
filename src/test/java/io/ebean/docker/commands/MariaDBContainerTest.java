@@ -9,17 +9,17 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class MySqlContainerTest {
+public class MariaDBContainerTest {
 
   @Test
   public void start() {
 
-    MySqlConfig config = new MySqlConfig("5.7");
-    config.setContainerName("temp_mysql");
-    config.setPort("7306");
+    MariaDBConfig config = new MariaDBConfig("latest");
+    config.setContainerName("temp_mariadb");
+    config.setPort("8306");
     config.setFastStartMode(true);
 
-    MySqlContainer container = new MySqlContainer(config);
+    MariaDBContainer container = new MariaDBContainer(config);
 
     container.startWithCreate();
     container.startContainerOnly();
@@ -32,18 +32,18 @@ public class MySqlContainerTest {
   public void viaContainerFactory() {
 
     Properties properties = new Properties();
-    properties.setProperty("mysql.version", "5.7");
-    properties.setProperty("mysql.containerName", "temp_mysql");
-    properties.setProperty("mysql.port", "7306");
+    properties.setProperty("mariadb.version", "10.4");
+    properties.setProperty("mariadb.containerName", "temp_mariadb");
+    properties.setProperty("mariadb.port", "8306");
 
-    properties.setProperty("mysql.name", "test_roberto");
-    properties.setProperty("mysql.user", "test_robino");
+    properties.setProperty("mariadb.name", "test_roberto");
+    properties.setProperty("mariadb.user", "test_robino");
 
     ContainerFactory factory = new ContainerFactory(properties);
 
     factory.startContainers(s -> System.out.println(">> " + s));
 
-    ContainerConfig config = factory.config("mysql");
+    ContainerConfig config = factory.config("mariadb");
 
     try {
       Connection connection = config.createConnection();
@@ -65,6 +65,7 @@ public class MySqlContainerTest {
 
   private void exeSql(Connection connection, String sql) throws SQLException {
     try (PreparedStatement st = connection.prepareStatement(sql)) {
+      System.out.println("executed " + sql);
       st.execute();
     }
   }

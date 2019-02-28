@@ -14,6 +14,13 @@ public class MySqlConfig extends DbConfig {
     this.setTmpfs("/var/lib/mysql:rw");
   }
 
+  /**
+   * Expose for MariaDB config.
+   */
+  protected MySqlConfig(String platform, String port, String internalPort, String version) {
+    super(platform, port, internalPort, version);
+  }
+
   public String jdbcUrl() {
     return "jdbc:mysql://localhost:" + getPort() + "/" + getDbName();
   }

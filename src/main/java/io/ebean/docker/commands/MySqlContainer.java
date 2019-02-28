@@ -116,7 +116,7 @@ public class MySqlContainer extends DbContainer implements Container {
     if (checkExists && userExists()) {
       return true;
     }
-    log.debug("create postgres user {}", dbConfig.getUsername());
+    log.debug("create user {}", dbConfig.getUsername());
     createUser(dbConfig.getUsername(), dbConfig.getPassword());
     return true;
   }
@@ -135,7 +135,7 @@ public class MySqlContainer extends DbContainer implements Container {
     if (checkExists && databaseExists()) {
       return;
     }
-    log.debug("create mysql database {}", dbConfig.getDbName());
+    log.debug("create database {}", dbConfig.getDbName());
     exec(createDatabase(dbConfig.getDbName()), "Failed to create database");
   }
 
@@ -187,7 +187,6 @@ public class MySqlContainer extends DbContainer implements Container {
     }
     args.add("-e");
     args.add(sql);
-//    args.add("\""+sql+"\"");
 
     return createProcessBuilder(args);
   }
