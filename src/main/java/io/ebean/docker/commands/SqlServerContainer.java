@@ -285,6 +285,18 @@ public class SqlServerContainer extends DbContainer implements Container {
 
     args.add("-e");
     args.add("SA_PASSWORD=" + dbConfig.getAdminPassword());
+
+    if (config.isDefaultCollation()) {
+      // do nothing, use server default
+    } else if (config.isExplicitCollation()) {
+      args.add("-e");
+      args.add("MSSQL_COLLATION=" + dbConfig.getCollation());
+    } else {
+      // use case sensitive collation by default
+      args.add("-e");
+      args.add("MSSQL_COLLATION=Latin1_General_100_BIN2");
+    }
+
     args.add(config.getImage());
 
     return createProcessBuilder(args);

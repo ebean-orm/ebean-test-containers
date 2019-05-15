@@ -286,7 +286,7 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   public boolean isExplicitCollation() {
-    return characterSet != null || collation != null;
+    return collation != null || characterSet != null;
   }
 
   public boolean isDefaultCollation() {
