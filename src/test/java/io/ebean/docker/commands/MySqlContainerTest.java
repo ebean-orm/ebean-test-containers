@@ -2,6 +2,7 @@ package io.ebean.docker.commands;
 
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -10,6 +11,51 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class MySqlContainerTest {
+
+  @Ignore
+  @Test
+  public void start_when_explicitCollation() {
+
+    MySqlConfig config = new MySqlConfig("5.7");
+    config.setContainerName("temp_mysql");
+    config.setPort("7306");
+    config.setCharacterSet("utf8mb4");
+    config.setCollation("utf8mb4_unicode_ci");
+
+    MySqlContainer container = new MySqlContainer(config);
+
+    container.startWithCreate();
+    container.stopRemove();
+  }
+
+  @Ignore
+  @Test
+  public void start_when_noCollation() {
+
+    MySqlConfig config = new MySqlConfig("5.7");
+    config.setContainerName("temp_mysql");
+    config.setPort("7306");
+
+    MySqlContainer container = new MySqlContainer(config);
+
+    container.startWithCreate();
+    container.stopRemove();
+  }
+
+  @Ignore
+  @Test
+  public void start_when_defaultCollation() {
+
+    MySqlConfig config = new MySqlConfig("5.7");
+    config.setContainerName("temp_mysql");
+    config.setPort("7306");
+    config.setCollation("default");
+
+    MySqlContainer container = new MySqlContainer(config);
+
+    container.startWithCreate();
+    container.stopRemove();
+  }
 
   @Test
   public void start() {

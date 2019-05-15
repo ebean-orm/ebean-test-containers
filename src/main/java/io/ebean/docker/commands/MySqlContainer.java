@@ -209,6 +209,23 @@ public class MySqlContainer extends DbContainer implements Container {
     }
     args.add(config.getImage());
 
+    if (config.isDefaultCollation()) {
+      // leaving it as mysql server default
+
+    } else if (config.isExplicitCollation()) {
+      String characterSet = config.getCharacterSet();
+      if (characterSet != null) {
+        args.add("--character-set-server=" + characterSet);
+      }
+      String collation = config.getCollation();
+      if (collation != null) {
+        args.add("--collation-server=" + collation);
+      }
+    } else {
+      args.add("--character-set-server=utf8mb4");
+      args.add("--collation-server=utf8mb4_bin");
+    }
+
     return createProcessBuilder(args);
   }
 

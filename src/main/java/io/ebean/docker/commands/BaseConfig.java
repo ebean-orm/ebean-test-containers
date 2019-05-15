@@ -54,6 +54,16 @@ public abstract class BaseConfig implements ContainerConfig {
   protected String shutdownMode;
 
   /**
+   * The character set to use.
+   */
+  protected String characterSet;
+
+  /**
+   * The collation to use.
+   */
+  protected String collation;
+
+  /**
    * Maximum number of attempts to find the 'database ready to accept connections' log message in the container.
    * <p>
    * 100 attempts equates to 10 seconds.
@@ -143,6 +153,8 @@ public abstract class BaseConfig implements ContainerConfig {
     image = prop(properties, "image", image);
     port = prop(properties, "port", port);
     internalPort = prop(properties, "internalPort", internalPort);
+    characterSet = prop(properties, "characterSet", characterSet);
+    collation = prop(properties, "collation", collation);
 
     startMode = properties.getProperty("startMode", startMode);
     startMode = prop(properties, "startMode", startMode);
@@ -201,6 +213,21 @@ public abstract class BaseConfig implements ContainerConfig {
     return this;
   }
 
+  /**
+   * Set the character set to use.
+   */
+  public BaseConfig setCharacterSet(String characterSet) {
+    this.characterSet = characterSet;
+    return this;
+  }
+
+  /**
+   * Set the collation to use.
+   */
+  public BaseConfig setCollation(String collation) {
+    this.collation = collation;
+    return this;
+  }
 
   /**
    * Set the max attempts to wait for DB ready.
@@ -248,5 +275,21 @@ public abstract class BaseConfig implements ContainerConfig {
 
   public String shutdownMode() {
     return shutdownMode;
+  }
+
+  public String getCharacterSet() {
+    return characterSet;
+  }
+
+  public String getCollation() {
+    return collation;
+  }
+
+  public boolean isExplicitCollation() {
+    return characterSet != null || collation != null;
+  }
+
+  public boolean isDefaultCollation() {
+    return "default".equals(collation);
   }
 }
