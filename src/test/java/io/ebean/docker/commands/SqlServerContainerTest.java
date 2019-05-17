@@ -5,6 +5,8 @@ import io.ebean.docker.container.ContainerFactory;
 import io.ebean.docker.container.Container;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,11 +15,15 @@ import java.util.Properties;
 
 public class SqlServerContainerTest {
 
+  private static final Logger log = LoggerFactory.getLogger(SqlServerContainerTest.class);
+
+  static final String SQLSERVER_VER = "2017-GA-ubuntu";
+
   @Ignore
   @Test
   public void start_when_defaultCollation() {
 
-    SqlServerConfig config = new SqlServerConfig("2017-CU4");
+    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
     config.setContainerName("temp_sqls");
     config.setPort("2433");
     config.setCollation("defaullt");
@@ -32,7 +38,7 @@ public class SqlServerContainerTest {
   @Test
   public void start_when_noCollation() {
 
-    SqlServerConfig config = new SqlServerConfig("2017-CU4");
+    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
     config.setContainerName("temp_sqls");
     config.setPort("2433");
 
@@ -46,7 +52,7 @@ public class SqlServerContainerTest {
   @Test
   public void start_when_explicitCollation() {
 
-    SqlServerConfig config = new SqlServerConfig("2017-CU4");
+    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
     config.setContainerName("temp_sqls");
     config.setPort("2433");
     config.setCollation("SQL_Latin1_General_CP1_CS_AS");
@@ -60,7 +66,7 @@ public class SqlServerContainerTest {
   @Test
   public void start() {
 
-    SqlServerConfig config = new SqlServerConfig("2017-CU4");
+    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
     config.setFastStartMode(true);
 
     SqlServerContainer container = new SqlServerContainer(config);
@@ -76,7 +82,7 @@ public class SqlServerContainerTest {
   public void viaContainerFactory() {
 
     Properties properties = new Properties();
-    properties.setProperty("sqlserver.version", "2017-CU2");
+    properties.setProperty("sqlserver.version", SQLSERVER_VER);
     properties.setProperty("sqlserver.containerName", "junk_sqlserver");
     properties.setProperty("sqlserver.port", "2433");
 
@@ -92,6 +98,7 @@ public class SqlServerContainerTest {
     ContainerConfig config = container.config();
 
     config.setStartMode("dropCreate");
+    config.setStopMode("remove");
     container.start();
 
     config.setStartMode("container");
@@ -108,11 +115,13 @@ public class SqlServerContainerTest {
       exeSql(connection, "insert into test_junk (acol) values (42)");
       exeSql(connection, "insert into test_junk (acol) values (43)");
 
+      log.info("executed test sql scripts");
+
     } catch (SQLException e) {
       throw new RuntimeException(e);
 
     } finally {
-      //container.stop();
+      container.stop();
     }
   }
 

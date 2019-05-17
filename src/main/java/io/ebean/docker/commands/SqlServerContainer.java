@@ -168,7 +168,20 @@ public class SqlServerContainer extends DbContainer implements Container {
       return true;
     }
     log.debug("create database {}", dbConfig.getDbName());
-    return execute(createDatabase(dbConfig.getDbName()), "Failed to create DB");
+    return sleep(500, execute(createDatabase(dbConfig.getDbName()), "Failed to create DB"));
+  }
+
+  /**
+   * Sleep a little as otherwise SQL Server locks itself.
+   */
+  private boolean sleep(int millis, boolean result) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    } finally {
+      return result;
+    }
   }
 
   /**
