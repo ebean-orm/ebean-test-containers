@@ -12,18 +12,20 @@ import static org.junit.Assume.assumeThat;
 
 public class ContainerFactoryTest {
 
+  static final String MYSQL_VER = "8.0";
+
   @Test
   public void runWith() {
 
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("sqlserver.version", "2017-CE");
 
     ContainerFactory factory = new ContainerFactory(properties);
 
     assertEquals("9.6", factory.runWithVersion("postgres"));
-    assertEquals("5.7", factory.runWithVersion("mysql"));
+    assertEquals(MYSQL_VER, factory.runWithVersion("mysql"));
     assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
   }
 
@@ -34,14 +36,14 @@ public class ContainerFactoryTest {
 
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("sqlserver.version", "2017-CE");
     //properties.setProperty("hana.version", "2.00.033.00.20180925.2");
 
     ContainerFactory factory = new ContainerFactory(properties);
 
     assertEquals("9.6", factory.runWithVersion("postgres"));
-    assertEquals("5.7", factory.runWithVersion("mysql"));
+    assertEquals(MYSQL_VER, factory.runWithVersion("mysql"));
     assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
     //assertEquals("2.00.033.00.20180925.2", factory.runWithVersion("hana"));
   }
@@ -51,14 +53,14 @@ public class ContainerFactoryTest {
 
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("sqlserver.version", "2017-CE");
     properties.setProperty("hana.version", "2.00.033.00.20180925.2");
 
     ContainerFactory factory = new ContainerFactory(properties, "sqlserver,mysql");
 
     assertNull(factory.runWithVersion("postgres"));
-    assertEquals("5.7", factory.runWithVersion("mysql"));
+    assertEquals(MYSQL_VER, factory.runWithVersion("mysql"));
     assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
     assertNull(factory.runWithVersion("hana"));
   }
@@ -68,13 +70,13 @@ public class ContainerFactoryTest {
 
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("sqlserver.version", "2017-CE");
     properties.setProperty("hana.version", "2.00.033.00.20180925.2");
 
     ContainerFactory factory = new ContainerFactory(properties, "mysql");
 
-    assertEquals("5.7", factory.runWithVersion("mysql"));
+    assertEquals(MYSQL_VER, factory.runWithVersion("mysql"));
     assertNull(factory.runWithVersion("postgres"));
     assertNull(factory.runWithVersion("sqlserver"));
     assertNull(factory.runWithVersion("hana"));
@@ -85,7 +87,7 @@ public class ContainerFactoryTest {
 
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
-    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("sqlserver.version", "2017-CE");
     properties.setProperty("hana.version", "2.00.033.00.20180925.2");
 
@@ -93,7 +95,7 @@ public class ContainerFactoryTest {
     try {
       ContainerFactory factory = new ContainerFactory(properties);
 
-      assertEquals("5.7", factory.runWithVersion("mysql"));
+      assertEquals(MYSQL_VER, factory.runWithVersion("mysql"));
       assertNull(factory.runWithVersion("postgres"));
       assertNull(factory.runWithVersion("sqlserver"));
       assertNull(factory.runWithVersion("hana"));
@@ -118,7 +120,7 @@ public class ContainerFactoryTest {
     properties.setProperty("redis.port", "9911");
     properties.setProperty("redis.containerName", "junk_redis");
 
-//    properties.setProperty("mysql.version", "5.7");
+//    properties.setProperty("mysql.version", MYSQL_VER);
 //    properties.setProperty("mysql.containerName", "temp_mysql");
 //    properties.setProperty("mysql.port", "7306");
 

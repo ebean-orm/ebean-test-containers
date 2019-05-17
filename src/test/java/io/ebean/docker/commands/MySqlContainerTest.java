@@ -12,11 +12,13 @@ import java.util.Properties;
 
 public class MySqlContainerTest {
 
+  static final String MYSQL_VER = "8.0";
+
   @Ignore
   @Test
   public void start_when_explicitCollation() {
 
-    MySqlConfig config = new MySqlConfig("5.7");
+    MySqlConfig config = new MySqlConfig(MYSQL_VER);
     config.setContainerName("temp_mysql");
     config.setPort("7306");
     config.setCharacterSet("utf8mb4");
@@ -32,7 +34,7 @@ public class MySqlContainerTest {
   @Test
   public void start_when_noCollation() {
 
-    MySqlConfig config = new MySqlConfig("5.7");
+    MySqlConfig config = new MySqlConfig(MYSQL_VER);
     config.setContainerName("temp_mysql");
     config.setPort("7306");
 
@@ -46,7 +48,7 @@ public class MySqlContainerTest {
   @Test
   public void start_when_defaultCollation() {
 
-    MySqlConfig config = new MySqlConfig("5.7");
+    MySqlConfig config = new MySqlConfig(MYSQL_VER);
     config.setContainerName("temp_mysql");
     config.setPort("7306");
     config.setCollation("default");
@@ -60,7 +62,7 @@ public class MySqlContainerTest {
   @Test
   public void start() {
 
-    MySqlConfig config = new MySqlConfig("5.7");
+    MySqlConfig config = new MySqlConfig(MYSQL_VER);
     config.setContainerName("temp_mysql");
     config.setPort("7306");
     config.setFastStartMode(true);
@@ -78,7 +80,7 @@ public class MySqlContainerTest {
   public void viaContainerFactory() {
 
     Properties properties = new Properties();
-    properties.setProperty("mysql.version", "5.7");
+    properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("mysql.containerName", "temp_mysql");
     properties.setProperty("mysql.port", "7306");
 

@@ -12,6 +12,6 @@ public class ClickHouseContainerTest {
 
     ClickHouseContainer container = new ClickHouseContainer(config);
     container.start();
-    container.stop();
+    container.stopRemove();
   }
 }
