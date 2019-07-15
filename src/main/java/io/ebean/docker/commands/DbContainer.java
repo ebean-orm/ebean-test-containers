@@ -50,6 +50,19 @@ abstract class DbContainer extends BaseContainer implements Container {
     return dbConfig.shutdownMode == null ? "" : dbConfig.shutdownMode;
   }
 
+  /**
+   * Return the JDBC url to connect to this container.
+   */
+  public String jdbcUrl() {
+    return config.jdbcUrl();
+  }
+
+  /**
+   * Create a connection to this database container.
+   */
+  public Connection createConnection() throws SQLException {
+    return config.createConnection();
+  }
 
   @Override
   public boolean start() {

@@ -10,12 +10,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class PostgresContainerTest {
 
   @Test
-  public void start() {
+  public void start() throws SQLException {
 
     PostgresConfig config = new PostgresConfig("10.1");
     config.setContainerName("junk_postgres10");
@@ -42,6 +43,13 @@ public class PostgresContainerTest {
 
     assertTrue(container.isRunning());
     container.registerShutdownHook("stop");
+
+    try (Connection connection = container.createConnection()) {
+      exeSql(connection, "drop table if exists test_doesnotexist");
+    }
+
+    final String url = container.jdbcUrl();
+    assertEquals(url, "jdbc:postgresql://localhost:9823/main_db");
     //container.stopOnly();
   }
 
