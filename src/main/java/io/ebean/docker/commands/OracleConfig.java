@@ -23,7 +23,7 @@ public class OracleConfig extends DbConfig {
 
   public OracleConfig(String version) {
     super("oracle", "1521", "1521", version);
-    this.image = "sath89/oracle-12c:" + version;
+    this.image = "oracleinanutshell/oracle-xe-11g:" + version;
     setAdminUser("system");
     setAdminPassword("oracle");
     setDbName("XE");

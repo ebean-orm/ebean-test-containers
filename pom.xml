@@ -58,12 +58,12 @@
     mvn install:install-file -Dfile=/some/path/to/ojdbc7.jar -DgroupId=oracle \
               -DartifactId=oracle-jdbc -Dversion=7.0 -Dpackaging=jar
     -->
-    <!--<dependency>-->
-      <!--<groupId>oracle</groupId>-->
-      <!--<artifactId>oracle-jdbc</artifactId>-->
-      <!--<version>7.0</version>-->
-      <!--<scope>test</scope>-->
-    <!--</dependency>-->
+<!--    <dependency>-->
+<!--      <groupId>oracle</groupId>-->
+<!--      <artifactId>oracle-jdbc</artifactId>-->
+<!--      <version>8.0</version>-->
+<!--      <scope>test</scope>-->
+<!--    </dependency>-->
 
     <dependency>
       <groupId>com.microsoft.sqlserver</groupId>

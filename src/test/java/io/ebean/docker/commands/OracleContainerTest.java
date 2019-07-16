@@ -19,14 +19,30 @@ public class OracleContainerTest {
 
     OracleConfig config = new OracleConfig("latest");
     config.setUser("test_start");
-    //config.setPort("15221");
+    config.setContainerName("test_ebean_migration_oracle");
+
     OracleContainer container = new OracleContainer(config);
 
-    container.startWithCreate();
-    container.startContainerOnly();
-    container.startWithDropCreate();
+    if (!container.startWithDropCreate()) {
+      throw new IllegalStateException("Failed to start?");
+    }
+    //container.startContainerOnly();
+    //container.startWithDropCreate();
 
-    //container.stopOnly();
+    try(Connection connection = config.createConnection()) {
+      exeSql(connection, "create table test_junk (acol integer)");
+      exeSql(connection, "insert into test_junk (acol) values (42)");
+      exeSql(connection, "insert into test_junk (acol) values (43)");
+
+      // docker exec -it ut_oracle bash
+      // $ORACLE_HOME/bin/sqlplus system/oracle
+      // $ORACLE_HOME/bin/sqlplus test_robino/test
+
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
+    //container.stopRemove();
   }
 
   @Ignore

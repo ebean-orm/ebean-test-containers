@@ -64,7 +64,7 @@ public class OracleContainer extends DbContainer implements Container {
 
   @Override
   protected boolean isDatabaseAdminReady() {
-    return true;
+    return checkConnectivity(true);
   }
 
   @Override
@@ -84,44 +84,14 @@ public class OracleContainer extends DbContainer implements Container {
    * Tail the logs looking for Database Ready message.
    */
   private void waitForOracle() {
-
-    int totalWaitCount = oracleConfig.getStartupWaitMinutes() * 10 * 60;
-    for (int i = 0; i < totalWaitCount; i++) {
-      if (isOracleReadyViaContainerLogs()) {
-        return;
-      }
-      try {
-        Thread.sleep(100);
-      } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        log.warn("Interrupted - oracle probably not started");
-      }
+    if (!checkConnectivity(true)) {
+      log.error("Ran out of time waiting for Oracle Database ready - probably not started.  Check via:  docker logs -f ut_oracle");
     }
-    log.error("Ran out of time waiting for Oracle Database ready - probably not started.  Check via:  docker logs -f ut_oracle");
-  }
-
-  /**
-   * Tail the logs looking for Database ready message.
-   */
-  private boolean isOracleReadyViaContainerLogs() {
-
-    List<String> currentLogs = logs();
-    if (!currentLogs.isEmpty()) {
-      List<String> extraLogs = currentLogs.subList(logPosition, currentLogs.size());
-      for (String extraLog : extraLogs) {
-        log.info("oracle container> " + extraLog);
-        if (extraLog.contains("Database ready to use.")) {
-          return true;
-        }
-      }
-      logPosition = currentLogs.size();
-    }
-    return false;
   }
 
   @Override
   protected boolean isDatabaseReady() {
-    return logsContain("Database ready to use.", "Database closed");
+    return logsContain("Starting Oracle Database", null);
   }
 
   /**
