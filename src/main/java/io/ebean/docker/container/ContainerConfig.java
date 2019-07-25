@@ -19,6 +19,11 @@ public interface ContainerConfig {
   String containerName();
 
   /**
+   * Return the image version.
+   */
+  String version();
+
+  /**
    * Return a DB connection url or null if not a database container.
    */
   String jdbcUrl();

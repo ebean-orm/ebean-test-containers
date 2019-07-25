@@ -76,12 +76,15 @@ public abstract class BaseConfig implements ContainerConfig {
    */
   protected String docker = "docker";
 
+  protected final String version;
+
   BaseConfig(String platform, String port, String internalPort, String version) {
     this.platform = platform;
     this.port = port;
     this.internalPort = internalPort;
     this.containerName = "ut_" + platform;
     this.image = platform + ":" + version;
+    this.version = version;
   }
 
   /**
@@ -105,6 +108,11 @@ public abstract class BaseConfig implements ContainerConfig {
   @Override
   public String containerName() {
     return containerName;
+  }
+
+  @Override
+  public String version() {
+    return version;
   }
 
   @Override

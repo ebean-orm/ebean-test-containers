@@ -137,6 +137,9 @@ public class MySqlContainer extends DbContainer implements Container {
     }
     log.debug("create database {}", dbConfig.getDbName());
     exec(createDatabase(dbConfig.getDbName()), "Failed to create database");
+    if (!dbConfig.version.startsWith("5")) {
+      exec(setLogBinTrustFunction(), "Failed to set log_bin_trust_function_creators");
+    }
   }
 
   private void exec(ProcessBuilder pb, String message) {
@@ -155,6 +158,10 @@ public class MySqlContainer extends DbContainer implements Container {
   private boolean contains(ProcessBuilder pb, String match) {
     List<String> outLines = ProcessHandler.process(pb).getOutLines();
     return stdoutContains(outLines, match);
+  }
+
+  private ProcessBuilder setLogBinTrustFunction() {
+    return sqlProcess("set global log_bin_trust_function_creators=1", false);
   }
 
   private ProcessBuilder createDatabase(String dbName) {
@@ -224,6 +231,9 @@ public class MySqlContainer extends DbContainer implements Container {
     } else {
       args.add("--character-set-server=utf8mb4");
       args.add("--collation-server=utf8mb4_bin");
+    }
+    if (!dbConfig.version.startsWith("5")) {
+      args.add("--default-authentication-plugin=mysql_native_password");
     }
 
     return createProcessBuilder(args);
