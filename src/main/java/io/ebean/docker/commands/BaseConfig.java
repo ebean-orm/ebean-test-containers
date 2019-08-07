@@ -34,6 +34,16 @@ public abstract class BaseConfig implements ContainerConfig {
   protected String internalPort;
 
   /**
+   * The exposed port.
+   */
+  protected String adminPort;
+
+  /**
+   * The internal port.
+   */
+  protected String adminInternalPort;
+
+  /**
    * Image name.
    */
   protected String image;
@@ -161,6 +171,8 @@ public abstract class BaseConfig implements ContainerConfig {
     image = prop(properties, "image", image);
     port = prop(properties, "port", port);
     internalPort = prop(properties, "internalPort", internalPort);
+    adminPort = prop(properties, "adminPort", adminPort);
+    adminInternalPort = prop(properties, "adminInternalPort", adminInternalPort);
     characterSet = prop(properties, "characterSet", characterSet);
     collation = prop(properties, "collation", collation);
 
@@ -214,6 +226,22 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   /**
+   * Set the exposed admin port.
+   */
+  public BaseConfig setAdminPort(String adminPort) {
+    this.adminPort = adminPort;
+    return this;
+  }
+
+  /**
+   * Set the internal admin (to the container) port.
+   */
+  public BaseConfig setAdminInternalPort(String adminInternalPort) {
+    this.adminInternalPort = adminInternalPort;
+    return this;
+  }
+
+  /**
    * Set the docker image to use.
    */
   public BaseConfig setImage(String image) {
@@ -259,6 +287,14 @@ public abstract class BaseConfig implements ContainerConfig {
 
   public String getInternalPort() {
     return internalPort;
+  }
+
+  public String getAdminPort() {
+    return adminPort;
+  }
+
+  public String getAdminInternalPort() {
+    return adminInternalPort;
   }
 
   public String getImage() {
