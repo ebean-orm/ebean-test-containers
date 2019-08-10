@@ -99,13 +99,17 @@ abstract class BaseContainer implements Container {
     if (commands.isRegistered(config.containerName())) {
       checkPort(false);
       logStart();
-      commands.start(config.containerName());
+      startContainer();
 
     } else {
       logRun();
       runContainer();
     }
     return false;
+  }
+
+  void startContainer() {
+    commands.start(config.containerName());
   }
 
   private void checkPort(boolean isRunning) {
@@ -130,7 +134,11 @@ abstract class BaseContainer implements Container {
    * Return true if the docker container logs contain the match text.
    */
   boolean logsContain(String match, String clearMatch) {
-    return commands.logsContain(config.containerName(), match, clearMatch);
+    return logsContain(config.containerName(), match, clearMatch);
+  }
+
+  boolean logsContain(String containerName, String match, String clearMatch) {
+    return commands.logsContain(containerName, match, clearMatch);
   }
 
   /**

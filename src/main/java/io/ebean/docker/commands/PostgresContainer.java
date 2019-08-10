@@ -42,24 +42,137 @@ public class PostgresContainer extends BaseDbContainer implements Container {
     return databaseExists(dbConfig.getDbName());
   }
 
+  @Override
+  protected void createDbPreConnectivity() {
+    createUser(true);
+    createDatabase(true);
+    createDatabaseExtensions();
+  }
+
+  @Override
+  protected void dropCreateDbPreConnectivity() {
+    if (!dropDatabaseIfExists() || !dropUserIfExists()) {
+      // failed to drop existing db or user
+      return;// false;
+    }
+    if (!createUser(false) || !createDatabase(false)) {
+      // failed to create the db or user
+      return;// false;
+    }
+    createDatabaseExtensions();
+  }
+
   /**
    * Return true if the database exists.
    */
-  @Override
-  public boolean databaseExists(String dbName) {
+  private boolean databaseExists(String dbName) {
     return !hasZeroRows(databaseExistsFor(dbName));
   }
 
   /**
    * Return true if the database user exists.
    */
-  @Override
-  public boolean userExists(String dbUser) {
+  private boolean userExists(String dbUser) {
     return !hasZeroRows(roleExistsFor(dbUser));
   }
 
-  @Override
-  protected boolean createUser(String user, String pwd) {
+  /**
+   * Create the database user.
+   */
+  private boolean createUser(boolean checkExists) {
+    String extraDbUser = getExtraDbUser();
+    if (defined(extraDbUser) && (!checkExists || !userExists(extraDbUser))) {
+      if (!createUser(extraDbUser, getWithDefault(dbConfig.getExtraDbPassword(), dbConfig.getPassword()))) {
+        log.error("Failed to create extra database user " + extraDbUser);
+      }
+    }
+    if (checkExists && userExists(dbConfig.getUsername())) {
+      return true;
+    }
+    return createUser(dbConfig.getUsername(), dbConfig.getPassword());
+  }
+
+  /**
+   * Maybe return an extra user to create.
+   * <p>
+   * The extra user will default to be the same as the extraDB if that is defined.
+   * Additionally we don't create an extra user IF it is the same as the main db user.
+   */
+  private String getExtraDbUser() {
+    String extraUser = getWithDefault(dbConfig.getExtraDbUser(), dbConfig.getExtraDb());
+    return extraUser != null && !extraUser.equals(dbConfig.getUsername()) ? extraUser : null;
+  }
+
+  /**
+   * Create the database with the option of checking if if already exists.
+   *
+   * @param checkExists When true check the database doesn't already exists
+   */
+  private boolean createDatabase(boolean checkExists) {
+    String extraDb = dbConfig.getExtraDb();
+    if (defined(extraDb) && (!checkExists || !databaseExists(extraDb))) {
+      String extraUser = getWithDefault(getExtraDbUser(), dbConfig.getUsername());
+      if (!createDatabase(extraDb, extraUser, dbConfig.getExtraDbInitSqlFile(), dbConfig.getExtraDbSeedSqlFile())) {
+        log.error("Failed to create extra database " + extraDb);
+      }
+    }
+    if (checkExists && databaseExists(dbConfig.getDbName())) {
+      return true;
+    }
+    return createDatabase(dbConfig.getDbName(), dbConfig.getUsername(), dbConfig.getInitSqlFile(), dbConfig.getSeedSqlFile());
+  }
+
+  /**
+   * Create the database extensions if defined.
+   */
+  private void createDatabaseExtensions() {
+
+    String dbExtn = dbConfig.getExtensions();
+    if (defined(dbExtn)) {
+      if (defined(dbConfig.getExtraDb())) {
+        createDatabaseExtensionsFor(dbExtn, dbConfig.getExtraDb());
+      }
+      createDatabaseExtensionsFor(dbExtn, dbConfig.getDbName());
+    }
+  }
+
+  /**
+   * Drop the database if it exists.
+   */
+  private boolean dropDatabaseIfExists() {
+    String extraDb = dbConfig.getExtraDb();
+    if (defined(extraDb) && !dropDatabaseIfExists(extraDb)) {
+      log.error("Failed to drop extra database " + extraDb);
+    }
+    return dropDatabaseIfExists(dbConfig.getDbName());
+  }
+
+  private boolean dropDatabaseIfExists(String dbName) {
+    if (databaseExists(dbName)) {
+      return dropDatabase(dbName);
+    }
+    return true;
+  }
+
+  /**
+   * Drop the database user if it exists.
+   */
+  private boolean dropUserIfExists() {
+    String extraDbUser = getExtraDbUser();
+    if (defined(extraDbUser) && !dropUserIfExists(extraDbUser)) {
+      log.error("Failed to drop extra database user " + extraDbUser);
+    }
+    return dropUserIfExists(dbConfig.getUsername());
+  }
+
+  private boolean dropUserIfExists(String dbUser) {
+    if (!userExists(dbUser)) {
+      return true;
+    }
+    return dropUser(dbUser);
+  }
+
+  private boolean createUser(String user, String pwd) {
     ProcessBuilder pb = createRole(user, pwd);
     return execute("CREATE ROLE", pb, "Failed to create database user");
   }
@@ -86,8 +199,7 @@ public class PostgresContainer extends BaseDbContainer implements Container {
     return createProcessBuilder(args);
   }
 
-  @Override
-  protected boolean createDatabase(String dbName, String dbUser, String initSqlFile, String seedSqlFile) {
+  private boolean createDatabase(String dbName, String dbUser, String initSqlFile, String seedSqlFile) {
     ProcessBuilder pb = createDb(dbName, dbUser);
     if (execute("CREATE DATABASE", pb, "Failed to create database with owner")) {
       runDbSqlFile(dbName, dbUser, initSqlFile);
@@ -101,8 +213,7 @@ public class PostgresContainer extends BaseDbContainer implements Container {
     return value == null ? defaultValue : value;
   }
 
-  @Override
-  protected void createDatabaseExtensionsFor(String dbExtn, String dbName) {
+  private void createDatabaseExtensionsFor(String dbExtn, String dbName) {
 
     List<String> extensions = new ArrayList<>();
     for (String extension : dbExtn.split(",")) {
@@ -136,14 +247,12 @@ public class PostgresContainer extends BaseDbContainer implements Container {
     return createProcessBuilder(args);
   }
 
-  @Override
-  protected boolean dropDatabase(String dbName) {
+  private boolean dropDatabase(String dbName) {
     ProcessBuilder pb = sqlProcess("drop database if exists " + dbName);
     return execute("DROP DATABASE", pb, "Failed to drop database");
   }
 
-  @Override
-  protected boolean dropUser(String dbUser) {
+  private boolean dropUser(String dbUser) {
     ProcessBuilder pb = sqlProcess("drop role if exists " + dbUser);
     return execute("DROP ROLE", pb, "Failed to drop database user");
   }

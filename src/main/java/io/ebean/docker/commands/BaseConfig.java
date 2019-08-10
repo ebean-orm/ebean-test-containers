@@ -149,6 +149,11 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   @Override
+  public Connection createConnectionNoSchema() throws SQLException {
+    throw new IllegalStateException("Not valid for this type");
+  }
+
+  @Override
   public Connection createAdminConnection() throws SQLException {
     throw new IllegalStateException("Not valid for this type");
   }

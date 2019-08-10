@@ -34,6 +34,11 @@ public interface ContainerConfig {
   Connection createConnection() throws SQLException;
 
   /**
+   * Return a DB connection without schema (as it maybe is not created yet).
+   */
+  Connection createConnectionNoSchema() throws SQLException;
+
+  /**
    * Return a DB connection using the admin user.
    */
   Connection createAdminConnection() throws SQLException;

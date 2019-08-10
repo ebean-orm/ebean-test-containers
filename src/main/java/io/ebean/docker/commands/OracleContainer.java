@@ -32,16 +32,12 @@ public class OracleContainer extends DbContainer implements Container {
   private final OracleConfig oracleConfig;
 
   /**
-   * Position is logs that we are tailing.
-   */
-  private int logPosition;
-
-  /**
    * Create with configuration.
    */
   public OracleContainer(OracleConfig config) {
     super(config);
     this.oracleConfig = config;
+    this.checkConnectivityUingAdmin = true;
   }
 
   @Override

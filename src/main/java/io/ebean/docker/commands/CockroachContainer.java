@@ -33,64 +33,42 @@ public class CockroachContainer extends BaseDbContainer implements Container {
 
   @Override
   protected boolean isFastStartDatabaseExists() {
-    return databaseExists(dbConfig.getDbName());
+    return databaseExists();
+  }
+
+  @Override
+  protected void createDbPreConnectivity() {
+    if (!databaseExists()) {
+      createDatabase();
+    }
+  }
+
+  @Override
+  protected void dropCreateDbPreConnectivity() {
+    dropDatabaseIfExists();
+    createDatabase();
   }
 
   /**
    * Return true if the database exists.
    */
-  @Override
-  public boolean databaseExists(String dbName) {
+  private boolean databaseExists() {
     final List<String> outLines = ProcessHandler.process(showDatabases()).getOutLines();
-    return stdoutContains(outLines, dbName);
+    return stdoutContains(outLines, dbConfig.getDbName());
   }
 
-  /**
-   * Return true if the database user exists.
-   */
-  @Override
-  public boolean userExists(String dbUser) {
-    // users not supported without enterprise licence, do nothing
-    return true;
-  }
-
-  @Override
-  protected boolean createUser(String user, String pwd) {
-    // users not supported without enterprise licence, do nothing
-    return true;
-  }
-
-  @Override
-  protected void executeSqlFile(String dbUser, String dbName, String containerFilePath) {
-    // not supported yet
-  }
-
-  @Override
-  protected boolean createDatabase(String dbName, String dbUser, String initSqlFile, String seedSqlFile) {
-    ProcessBuilder pb = createDb(dbName, dbUser);
-    if (execute("CREATE DATABASE", pb, "Failed to create database with owner")) {
-      runDbSqlFile(dbName, dbUser, initSqlFile);
-      runDbSqlFile(dbName, dbUser, seedSqlFile);
+  protected boolean createDatabase() {
+    if (execute("CREATE DATABASE", procCreateDb(), "Failed to create database with owner")) {
+      //runDbSqlFile(dbName, dbUser, initSqlFile);
+      //runDbSqlFile(dbName, dbUser, seedSqlFile);
       return true;
     }
     return false;
   }
 
-  @Override
-  protected void createDatabaseExtensionsFor(String dbExtn, String dbName) {
-    // do nothing
-  }
-
-  @Override
-  protected boolean dropDatabase(String dbName) {
-    ProcessBuilder pb = sqlProcess("drop database if exists " + dbName);
+  protected boolean dropDatabaseIfExists() {
+    ProcessBuilder pb = sqlProcess("drop database if exists " + dbConfig.getDbName());
     return execute("DROP DATABASE", pb, "Failed to drop database");
-  }
-
-  @Override
-  protected boolean dropUser(String dbUser) {
-    // users not supported without enterprise licence, do nothing
-    return true;
   }
 
   /**
@@ -105,8 +83,8 @@ public class CockroachContainer extends BaseDbContainer implements Container {
     return true;
   }
 
-  private ProcessBuilder createDb(String dbName, String roleName) {
-    return sqlProcess("create database " + dbName);
+  private ProcessBuilder procCreateDb() {
+    return sqlProcess("create database " + dbConfig.getDbName());
   }
 
   private ProcessBuilder showDatabases() {

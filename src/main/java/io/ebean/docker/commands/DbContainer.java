@@ -24,6 +24,8 @@ abstract class DbContainer extends BaseContainer implements Container {
 
   Mode startMode;
 
+  boolean checkConnectivityUingAdmin;
+
   DbContainer(DbConfig config) {
     super(config);
     this.dbConfig = config;
@@ -197,7 +199,7 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Check connectivity via trying to make a JDBC connection.
    */
   boolean checkConnectivity() {
-    return checkConnectivity(false);
+    return checkConnectivity(checkConnectivityUingAdmin);
   }
 
   /**
@@ -205,12 +207,11 @@ abstract class DbContainer extends BaseContainer implements Container {
    */
   boolean checkConnectivity(boolean useAdmin) {
     try {
-      log.debug("checkConnectivity on {} ... ", config.containerName);
-      Connection connection = useAdmin ? config.createAdminConnection() : config.createConnection();
-      connection.close();
-      log.debug("connectivity confirmed for {}", config.containerName);
+      log.trace("checkConnectivity on {} ... ", config.containerName);
+      try (Connection connection = useAdmin ? config.createAdminConnection() : config.createConnectionNoSchema()) {
+        log.debug("connectivity confirmed for {}", config.containerName);
+      }
       return true;
-
     } catch (SQLException e) {
       log.trace("connection failed: " + e.getMessage());
       return false;

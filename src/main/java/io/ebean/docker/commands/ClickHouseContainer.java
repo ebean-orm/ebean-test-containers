@@ -20,51 +20,34 @@ public class ClickHouseContainer extends BaseDbContainer {
   }
 
   @Override
-  public boolean userExists(String dbUser) {
-    // nothing to do
-    return true;
-  }
-
-  @Override
-  protected boolean createUser(String user, String pwd) {
-    // nothing to do
-    return true;
-  }
-
-  @Override
-  protected boolean dropUser(String dbUser) {
-    // nothing to do
-    return true;
-  }
-
-  @Override
-  protected void createDatabaseExtensionsFor(String dbExtn, String dbName) {
-    // do nothing
-  }
-
-  @Override
   protected boolean isDatabaseAdminReady() {
     return true;
   }
 
   @Override
-  public boolean databaseExists(String dbName) {
-    return execute(dbName, sqlProcess("SHOW DATABASES"));
+  protected void createDbPreConnectivity() {
+    if (!databaseExists()) {
+      createDatabase();
+    }
   }
 
   @Override
-  protected boolean createDatabase(String dbName, String dbUser, String initSqlFile, String seedSqlFile) {
-    return hasZeroRows(sqlProcess("CREATE DATABASE " + dbName));
+  protected void dropCreateDbPreConnectivity() {
+    if (dropDatabase()) {
+      createDatabase();
+    }
   }
 
-  @Override
-  protected void executeSqlFile(String dbUser, String dbName, String containerFilePath) {
-
+  private boolean databaseExists() {
+    return execute(dbConfig.getDbName(), sqlProcess("SHOW DATABASES"));
   }
 
-  @Override
-  protected boolean dropDatabase(String dbName) {
-    return hasZeroRows(sqlProcess("DROP DATABASE IF EXISTS " + dbName));
+  private boolean createDatabase() {
+    return hasZeroRows(sqlProcess("CREATE DATABASE " + dbConfig.getDbName()));
+  }
+
+  private boolean dropDatabase() {
+    return hasZeroRows(sqlProcess("DROP DATABASE IF EXISTS " + dbConfig.getDbName()));
   }
 
   private boolean hasZeroRows(ProcessBuilder pb) {

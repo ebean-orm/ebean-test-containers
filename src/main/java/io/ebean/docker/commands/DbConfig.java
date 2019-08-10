@@ -18,12 +18,12 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Database admin password.
    */
-  private String adminUsername = "admin";
+  String adminUsername = "admin";
 
   /**
    * Database admin password.
    */
-  private String adminPassword = "admin";
+  String adminPassword = "admin";
 
   /**
    * An additional database.
@@ -48,6 +48,11 @@ public abstract class DbConfig extends BaseConfig {
    * Database password for the user.
    */
   private String password = "test";
+
+  /**
+   * The default database schema to use if specified.
+   */
+  private String schema;
 
   /**
    * Comma delimited list of database extensions required (hstore, pgcrypto etc).
@@ -95,18 +100,45 @@ public abstract class DbConfig extends BaseConfig {
   }
 
   /**
+   * Set the schema if it hasn't already set. Some databases (NuoDB) effectively require a
+   * default schema and it is reasonable for this to default to the username.
+   */
+  public void initDefaultSchema() {
+    if (schema == null) {
+      schema = username;
+    }
+  }
+
+  /**
    * Return a Connection to the database (make sure you close it).
    */
   @Override
   public Connection createConnection() throws SQLException {
-    return DriverManager.getConnection(jdbcUrl(), getUsername(), getPassword());
+    Properties props = new java.util.Properties();
+    props.put("user", username);
+    props.put("password", password);
+    if (schema != null) {
+      props.put("schema", schema);
+    }
+    return DriverManager.getConnection(jdbcUrl(), props);
+  }
+
+  @Override
+  public Connection createConnectionNoSchema() throws SQLException {
+    Properties props = new java.util.Properties();
+    props.put("user", username);
+    props.put("password", password);
+    return DriverManager.getConnection(jdbcUrl(), props);
   }
 
   /**
    * Return a Connection to the database using the admin user.
    */
   public Connection createAdminConnection() throws SQLException {
-    return DriverManager.getConnection(jdbcUrl(), getAdminUsername(), getAdminPassword());
+    Properties props = new java.util.Properties();
+    props.put("user", adminUsername);
+    props.put("password", adminPassword);
+    return DriverManager.getConnection(jdbcUrl(), props);
   }
 
   /**
@@ -125,6 +157,7 @@ public abstract class DbConfig extends BaseConfig {
     dbName = prop(properties, "dbName", dbName);
     username = prop(properties, "username", username);
     password = prop(properties, "password", password);
+    schema = prop(properties, "schema", schema);
     extensions = prop(properties, "extensions", extensions);
     adminUsername = prop(properties, "adminUsername", adminUsername);
     adminPassword = prop(properties, "adminPassword", adminPassword);
@@ -192,6 +225,14 @@ public abstract class DbConfig extends BaseConfig {
    */
   public DbConfig setPassword(String password) {
     this.password = password;
+    return this;
+  }
+
+  /**
+   * Set the DB schema.
+   */
+  public DbConfig setSchema(String schema) {
+    this.schema = schema;
     return this;
   }
 
@@ -295,6 +336,10 @@ public abstract class DbConfig extends BaseConfig {
 
   public String getPassword() {
     return password;
+  }
+
+  public String getSchema() {
+    return schema;
   }
 
   public String getExtensions() {
