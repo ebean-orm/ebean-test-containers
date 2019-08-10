@@ -41,7 +41,9 @@ public class NuoDBContainer extends BaseDbContainer {
     commands.stopRemove(teName);
     commands.stopRemove(smName);
     commands.stopRemove(adName);
-    removeNetwork();
+    if (networkExists()) {
+      removeNetwork();
+    }
   }
 
   private void removeNetwork() {
