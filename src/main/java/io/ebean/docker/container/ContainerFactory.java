@@ -5,6 +5,7 @@ import io.ebean.docker.commands.ElasticContainer;
 import io.ebean.docker.commands.HanaContainer;
 import io.ebean.docker.commands.MariaDBContainer;
 import io.ebean.docker.commands.MySqlContainer;
+import io.ebean.docker.commands.NuoDBContainer;
 import io.ebean.docker.commands.OracleContainer;
 import io.ebean.docker.commands.PostgresContainer;
 import io.ebean.docker.commands.RedisContainer;
@@ -80,6 +81,10 @@ public class ContainerFactory {
     String mariadbVersion = runWithVersion("mariadb");
     if (mariadbVersion != null) {
       containers.add(MariaDBContainer.create(mariadbVersion, properties));
+    }
+    String nuodbVersion = runWithVersion("nuodb");
+    if (nuodbVersion != null) {
+      containers.add(NuoDBContainer.create(nuodbVersion, properties));
     }
     String sqlServerVersion = runWithVersion("sqlserver");
     if (sqlServerVersion != null) {

@@ -157,11 +157,12 @@ public class NuoDBContainer extends BaseDbContainer {
     args.add(adName);
     args.add("--net");
     args.add(network);
-
     args.add("-p");
     args.add(config.getPort() + ":" + config.getInternalPort());
     args.add("-p");
     args.add(nuoConfig.getPort2() + ":" + nuoConfig.getInternalPort2());
+    args.add("-p");
+    args.add(nuoConfig.getPort3() + ":" + nuoConfig.getInternalPort3());
 
     if (defined(dbConfig.getAdminPassword())) {
       args.add("-e");
@@ -190,7 +191,7 @@ public class NuoDBContainer extends BaseDbContainer {
     args.add(config.getImage());
     args.add("nuodocker");
     args.add("--api-server");
-    args.add(adName + ":" + config.getAdminPort());
+    args.add(adName + ":" + config.getPort());
     args.add("start");
     args.add("sm");
     args.add("--db-name");
@@ -229,7 +230,7 @@ public class NuoDBContainer extends BaseDbContainer {
     args.add(config.getImage());
     args.add("nuodocker");
     args.add("--api-server");
-    args.add(adName + ":" + config.getAdminPort());
+    args.add(adName + ":" + config.getPort());
     args.add("start");
     args.add("te");
     args.add("--db-name");

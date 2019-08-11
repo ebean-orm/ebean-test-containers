@@ -160,7 +160,8 @@ abstract class BaseContainer implements Container {
         return true;
       }
       try {
-        Thread.sleep(200);
+        int sleep = (i < 10) ? 10 : (i < 20) ? 20 : 200;
+        Thread.sleep(sleep);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         return false;

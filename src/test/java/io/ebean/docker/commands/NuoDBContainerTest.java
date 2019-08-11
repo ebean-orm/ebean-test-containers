@@ -16,13 +16,13 @@ public class NuoDBContainerTest {
     //config.setContainerName("ut_nuodb");
     //config.setAdminUser("dba");
     //config.setAdminPassword("dba");
-    config.setDbName("my_app");
-    config.setSchema("my_app");
-    config.setUser("my_app");
+    //config.setDbName("testdb");
+    config.setSchema("my_app2");
+    config.setUser("my_app2");
     config.setPassword("test");
 
     NuoDBContainer container = new NuoDBContainer(config);
-    container.stopRemove();
+    //container.stopRemove();
     container.start();
 
     try (Connection connection = config.createConnection()) {
@@ -40,7 +40,7 @@ public class NuoDBContainerTest {
       throw new RuntimeException(e);
 
     } finally {
-      container.stopRemove();
+      //container.stopRemove();
     }
   }
 

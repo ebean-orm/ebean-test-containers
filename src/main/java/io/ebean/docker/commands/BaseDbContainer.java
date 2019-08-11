@@ -54,6 +54,7 @@ public abstract class BaseDbContainer extends DbContainer implements Container {
     if (startIfNeeded() && fastStart()) {
       // container was running, fast start enabled and passed
       // so skip the usual checks for user, extensions and connectivity
+      createDbPostConnectivity();
       return true;
     }
     if (!waitForDatabaseReady()) {

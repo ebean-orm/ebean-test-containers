@@ -37,22 +37,22 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Database name to use.
    */
-  private String dbName = "test_db";
+  String dbName = "test_db";
 
   /**
    * Database user to use.
    */
-  private String username = "test_user";
+  String username = "test_user";
 
   /**
    * Database password for the user.
    */
-  private String password = "test";
+  String password = "test";
 
   /**
    * The default database schema to use if specified.
    */
-  private String schema;
+  String schema;
 
   /**
    * Comma delimited list of database extensions required (hstore, pgcrypto etc).
@@ -78,7 +78,7 @@ public abstract class DbConfig extends BaseConfig {
    * If true we ONLY check the existence of the DB and if present we skip the
    * other usual checks (does user exist, create extensions if not exists etc).
    */
-  private boolean fastStartMode = true;
+  boolean fastStartMode = true;
 
   DbConfig(String platform, String port, String internalPort, String version) {
     super(platform, port, internalPort, version);
@@ -96,7 +96,7 @@ public abstract class DbConfig extends BaseConfig {
    * Return summary of the port db name and other details.
    */
   public String summary() {
-    return "port:" + port + " db:" + dbName + " user:" + username;
+    return "port:" + port + " db:" + dbName + " user:" + username + "/" + password;
   }
 
   /**

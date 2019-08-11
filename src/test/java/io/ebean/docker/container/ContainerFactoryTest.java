@@ -30,6 +30,21 @@ public class ContainerFactoryTest {
   }
 
   @Test
+  public void runWithNuoDB() {
+
+    Properties properties = new Properties();
+    properties.setProperty("nuodb.version", "4.0.0");
+    properties.setProperty("nuodb.schema", "junk");
+    properties.setProperty("nuodb.username", "junk");
+
+    ContainerFactory factory = new ContainerFactory(properties);
+    assertEquals("4.0.0", factory.runWithVersion("nuodb"));
+
+    //factory.startContainers();
+    //factory.stopContainers();
+  }
+
+  @Test
   public void runWithHana() {
 
     assumeThat(System.getProperty("os.name").toLowerCase(), CoreMatchers.containsString("linux"));
