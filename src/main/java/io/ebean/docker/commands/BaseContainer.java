@@ -155,7 +155,7 @@ abstract class BaseContainer implements Container {
    */
   boolean waitForConnectivity() {
     log.debug("waitForConnectivity {} ... ", config.containerName());
-    for (int i = 0; i < 120; i++) {
+    for (int i = 0; i < 200; i++) {
       if (checkConnectivity()) {
         return true;
       }

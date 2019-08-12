@@ -40,7 +40,7 @@ public class NuoDBContainerTest {
       throw new RuntimeException(e);
 
     } finally {
-      //container.stopRemove();
+      container.stopRemove();
     }
   }
 

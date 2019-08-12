@@ -65,25 +65,31 @@ public class NuoDBContainer extends BaseDbContainer {
       process(runStorageManager());
       if (waitForStorageManager()) {
         process(runTransactionManager());
+        waitForTransactionManager();
       }
     }
   }
 
+  private void waitForTransactionManager() {
+    waitForLogs(teName, "Database entered", "Starting Transaction Engine");
+  }
+
   private boolean waitForStorageManager() {
-    return waitForLogs(smName, "Node state transition");
+    return waitForLogs(smName, "Node state transition", null);
   }
 
   private boolean waitForAdminProcess() {
-    return waitForLogs(config.containerName(), "NuoAdmin Server running");
+    return waitForLogs(config.containerName(), "NuoAdmin Server running", null);
   }
 
-  private boolean waitForLogs(String containerName, String match) {
-    for (int i = 0; i < 100; i++) {
-      if (logsContain(containerName, match, null)) {
+  private boolean waitForLogs(String containerName, String match, String resetMatch) {
+    for (int i = 0; i < 150; i++) {
+      if (logsContain(containerName, match, resetMatch)) {
         return true;
       }
       try {
-        Thread.sleep(100);
+        int sleep = (i < 10) ? 10 : (i < 20) ? 20 : 100;
+        Thread.sleep(sleep);
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         return false;
