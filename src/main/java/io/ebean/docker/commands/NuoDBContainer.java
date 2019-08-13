@@ -12,6 +12,13 @@ import static io.ebean.docker.commands.process.ProcessHandler.process;
 
 public class NuoDBContainer extends BaseDbContainer {
 
+  private static final String AD_STOPPED = "com.nuodb.nagent.AgentMain main Server shutting down";
+  private static final String AD_RUNNING = "com.nuodb.nagent.AgentMain main NuoAdmin Server running";
+  public static final String SM_STOPPED = "Stopped Storage Manager";
+  public static final String SM_RUNNING = "Node state transition";
+  public static final String TE_RUNNING = "Starting Transaction Engine";
+  public static final String TE_STOPPED = "Stopped Transaction Engine";
+
   /**
    * Create NuoDB container with configuration from properties.
    */
@@ -71,15 +78,15 @@ public class NuoDBContainer extends BaseDbContainer {
   }
 
   private void waitForTransactionManager() {
-    waitForLogs(teName, "Database entered", "Starting Transaction Engine");
+    waitForLogs(teName, TE_RUNNING, TE_STOPPED);
   }
 
   private boolean waitForStorageManager() {
-    return waitForLogs(smName, "Node state transition", null);
+    return waitForLogs(smName, SM_RUNNING, SM_STOPPED);
   }
 
   private boolean waitForAdminProcess() {
-    return waitForLogs(config.containerName(), "NuoAdmin Server running", null);
+    return waitForLogs(config.containerName(), AD_RUNNING, AD_STOPPED);
   }
 
   private boolean waitForLogs(String containerName, String match, String resetMatch) {
@@ -101,8 +108,14 @@ public class NuoDBContainer extends BaseDbContainer {
   @Override
   void startContainer() {
     commands.start(adName);
-    commands.start(smName);
-    commands.start(teName);
+    if (!waitForAdminProcess()) {
+      log.error("Failed waiting for NuoDB admin container [" + adName + "] to start running");
+    } else {
+      commands.start(smName);
+      waitForStorageManager();
+      commands.start(teName);
+      waitForTransactionManager();
+    }
   }
 
   private void createNetwork() {
