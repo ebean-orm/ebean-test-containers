@@ -1,5 +1,9 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.commands.process.ProcessResult;
+
+import java.io.File;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,12 +16,13 @@ import static io.ebean.docker.commands.process.ProcessHandler.process;
 
 public class NuoDBContainer extends BaseDbContainer {
 
-  private static final String AD_STOPPED = "com.nuodb.nagent.AgentMain main Server shutting down";
+  private static final String AD_RESET = "com.nuodb.nagent.AgentMain main Entering initializing for server";
   private static final String AD_RUNNING = "com.nuodb.nagent.AgentMain main NuoAdmin Server running";
-  public static final String SM_STOPPED = "Stopped Storage Manager";
-  public static final String SM_RUNNING = "Node state transition";
-  public static final String TE_RUNNING = "Starting Transaction Engine";
-  public static final String TE_STOPPED = "Stopped Transaction Engine";
+  private static final String SM_RESET = "Starting Storage Manager";
+  private static final String SM_RUNNING = "Database formed";
+  private static final String SM_UNABLE_TO_CONNECT = "Unable to connect ";
+  private static final String TE_RESET = "Starting Transaction Engine";
+  private static final String TE_RUNNING = "Database entered";
 
   /**
    * Create NuoDB container with configuration from properties.
@@ -45,9 +50,9 @@ public class NuoDBContainer extends BaseDbContainer {
 
   @Override
   public void stopRemove() {
-    commands.stopRemove(teName);
-    commands.stopRemove(smName);
-    commands.stopRemove(adName);
+    if (stopDatabase()) {
+      commands.removeContainers(teName, smName, adName);
+    }
     if (networkExists()) {
       removeNetwork();
     }
@@ -59,9 +64,31 @@ public class NuoDBContainer extends BaseDbContainer {
 
   @Override
   public void stopOnly() {
-    commands.stopIfRunning(teName);
-    commands.stopIfRunning(smName);
-    commands.stopIfRunning(adName);
+    stopDatabase();
+  }
+
+  private boolean stopDatabase() {
+
+    //  nuocmd shutdown database --db-name testdb
+    List<String> args = new ArrayList<>();
+    args.add(config.docker);
+    args.add("exec");
+    args.add("-i");
+    args.add(adName);
+    args.add("nuocmd");
+    args.add("shutdown");
+    args.add("database");
+    args.add("--db-name");
+    args.add(dbConfig.getDbName());
+
+    final ProcessResult result = process(createProcessBuilder(args));
+    if (!result.success()) {
+      log.error("Error performing shutdown database " + result);
+      return false;
+    }
+    waitTime(100);
+    commands.stop(adName);
+    return true;
   }
 
   @Override
@@ -77,16 +104,41 @@ public class NuoDBContainer extends BaseDbContainer {
     }
   }
 
-  private void waitForTransactionManager() {
-    waitForLogs(teName, TE_RUNNING, TE_STOPPED);
+  private boolean waitForTransactionManager() {
+    return waitForLogs(teName, TE_RUNNING, TE_RESET) && waitTime(100);
+  }
+
+  private boolean storageManagerUnableToConnect() {
+
+    boolean unableToConnect = false;
+
+    final List<String> logs = commands.logs(smName);
+    for (String log : logs) {
+      if (log.contains(SM_UNABLE_TO_CONNECT)) {
+        unableToConnect = true;
+      } else if (log.contains(SM_RUNNING)) {
+        unableToConnect = false;
+      }
+    }
+    return unableToConnect;
   }
 
   private boolean waitForStorageManager() {
-    return waitForLogs(smName, SM_RUNNING, SM_STOPPED);
+    return waitForLogs(smName, SM_RUNNING, SM_RESET);
   }
 
   private boolean waitForAdminProcess() {
-    return waitForLogs(config.containerName(), AD_RUNNING, AD_STOPPED);
+    return waitForLogs(config.containerName(), AD_RUNNING, AD_RESET);
+  }
+
+  private boolean waitTime(long millis) {
+    try {
+      Thread.sleep(millis);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      e.printStackTrace();
+    }
+    return true;
   }
 
   private boolean waitForLogs(String containerName, String match, String resetMatch) {
@@ -107,15 +159,91 @@ public class NuoDBContainer extends BaseDbContainer {
 
   @Override
   void startContainer() {
-    commands.start(adName);
-    if (!waitForAdminProcess()) {
-      log.error("Failed waiting for NuoDB admin container [" + adName + "] to start running");
+    if (!isArchivePopulated()) {
+      removeContainersAndRun();
+
     } else {
-      commands.start(smName);
-      waitForStorageManager();
-      commands.start(teName);
-      waitForTransactionManager();
+      commands.start(adName);
+      if (!waitForAdminProcess() || !waitForDatabaseState()) {
+        throw new RuntimeException("Failed waiting for NuoDB admin container [" + smName + "] to start running");
+      } else {
+        if (!startStorageManager(0)) {
+          throw new RuntimeException("Failed to start storage manager NuoDB [" + adName + "]");
+        } else {
+          commands.start(teName);
+          if (!waitForTransactionManager()) {
+            throw new RuntimeException("Failed waiting for NuoDB transaction manager [" + smName + "] to start running");
+          }
+        }
+      }
     }
+  }
+
+  private void removeContainersAndRun() {
+    log.info("Archive directory is empty, remove containers and run");
+    commands.removeContainers(teName, smName, adName);
+    runContainer();
+  }
+
+  private boolean waitForDatabaseState() {
+    waitTime(100);
+    for (int i = 0; i < 20; i++) {
+      if (checkDbStateOk()) {
+        return true;
+      } else {
+        waitTime(100);
+      }
+    }
+    return false;
+  }
+
+  private boolean checkDbStateOk() {
+    //$ nuocmd show database  --db-format 'dbState:{state}'  --db-name testdb
+    List<String> args = new ArrayList<>();
+    args.add(config.docker);
+    args.add("exec");
+    args.add("-i");
+    args.add(adName);
+    args.add("nuocmd");
+    args.add("show");
+    args.add("database");
+    args.add("--db-format");
+    args.add("dbState:{state}");
+    args.add("--db-name");
+    args.add(dbConfig.getDbName());
+
+    try {
+      final ProcessResult result = process(createProcessBuilder(args));
+      if (result.success()) {
+        for (String outLine : result.getOutLines()) {
+          final String trimmedOut = outLine.trim();
+          if (trimmedOut.startsWith("dbState:")) {
+            return dbStateOk(trimmedOut);
+          }
+        }
+      }
+    } catch (CommandException e) {
+      return false;
+    }
+    return false;
+  }
+
+  private boolean dbStateOk(String trimmedOut) {
+    log.trace("checking dbStateOk [{}]", trimmedOut);
+    return trimmedOut.contains("NOT_RUNNING") || trimmedOut.contains("RUNNING");
+  }
+
+  private boolean startStorageManager(int attempt) {
+    commands.start(smName);
+    if (!waitForStorageManager()) {
+      log.error("Failed waiting for NuoDB storage manager [" + adName + "] to start running");
+      return false;
+    }
+    if (storageManagerUnableToConnect()) {
+      log.info("Retry NuoDB storage manager [" + adName + "] attempt:" + attempt);
+      return attempt <= 2 && startStorageManager(attempt + 1);
+    }
+    return true;
   }
 
   private void createNetwork() {
@@ -197,6 +325,8 @@ public class NuoDBContainer extends BaseDbContainer {
     // volumes for backup and archive not added yet
     // as generally we are application testing with this
 
+    final Path archiveDir = archivePath();
+
     List<String> args = new ArrayList<>();
     args.add(config.docker);
     args.add("run");
@@ -205,6 +335,8 @@ public class NuoDBContainer extends BaseDbContainer {
     args.add(smName);
     args.add("--hostname");
     args.add(smName);
+    args.add("--volume");
+    args.add(archiveDir.toAbsolutePath().toString() + ":/var/opt/nuodb/archive");
     args.add("--net");
     args.add(network);
     args.add(config.getImage());
@@ -229,12 +361,45 @@ public class NuoDBContainer extends BaseDbContainer {
     return createProcessBuilder(args);
   }
 
-  private ProcessBuilder runTransactionManager() {
+  boolean deleteDirectory(File dir) {
+    File[] allContents = dir.listFiles();
+    if (allContents != null) {
+      for (File file : allContents) {
+        deleteDirectory(file);
+      }
+    }
+    return dir.delete();
+  }
 
-//    docker run -d --name te1 --hostname te1 --rm \
-//    --net nuodb-net ${IMG_NAME} nuodocker \
-//    --api-server ad1:8888 start te \
-//    --db-name test --server-id ad1
+  private Path archivePath() {
+    File nuoArchive = archiveFile();
+    if (nuoArchive.exists()) {
+      log.info("delete " + nuoArchive.toPath());
+      deleteDirectory(nuoArchive);
+    } else {
+      nuoArchive.setWritable(true, false);
+      if (!nuoArchive.mkdirs()) {
+        throw new RuntimeException("Failed to re-create " + nuoArchive.getAbsolutePath());
+      }
+    }
+    return nuoArchive.toPath();
+  }
+
+  private boolean isArchivePopulated() {
+    final File file = archiveFile();
+    if (file.exists()) {
+      final File[] files = file.listFiles();
+      return files != null && files.length > 0;
+    }
+    return false;
+  }
+
+  private File archiveFile() {
+    final File tmp = new File(System.getProperty("java.io.tmpdir"));
+    return new File(new File(tmp, "nuodb"), dbConfig.getDbName());
+  }
+
+  private ProcessBuilder runTransactionManager() {
 
     List<String> args = new ArrayList<>();
     args.add(config.docker);

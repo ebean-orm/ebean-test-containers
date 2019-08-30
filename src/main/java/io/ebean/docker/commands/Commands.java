@@ -5,6 +5,8 @@ import io.ebean.docker.commands.process.ProcessResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -78,6 +80,34 @@ public class Commands {
   public void stop(String containerName) {
     log.debug("stop {}", containerName);
     ProcessHandler.command(docker, "stop", containerName);
+  }
+
+  public void removeContainers(String... containerNames) {
+    log.debug("remove {}", Arrays.toString(containerNames));
+    try {
+      dockerCmd("rm", containerNames);
+    } catch (CommandException e) {
+      log.debug("removing containers that don't exist " + e.getMessage());
+    }
+  }
+
+  public void stopContainers(String... containerNames) {
+    log.debug("stop {}", Arrays.toString(containerNames));
+    try {
+      dockerCmd("stop", containerNames);
+    } catch (CommandException e) {
+      log.debug("stopping containers that don't exist " + e.getMessage());
+    }
+  }
+
+  private void dockerCmd(String cmd, String[] containerNames) {
+    final List<String> cmds = new ArrayList<>();
+    cmds.add(docker);
+    cmds.add(cmd);
+    for (String containerName : containerNames) {
+      cmds.add(containerName);
+    }
+    ProcessHandler.command(cmds);
   }
 
   /**

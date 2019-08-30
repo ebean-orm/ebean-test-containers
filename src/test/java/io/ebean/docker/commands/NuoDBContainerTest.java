@@ -1,6 +1,8 @@
 package io.ebean.docker.commands;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -9,11 +11,13 @@ import java.util.Random;
 
 public class NuoDBContainerTest {
 
+  private static final Logger log = LoggerFactory.getLogger(NuoDBContainerTest.class);
+
   @Test
   public void start_executeSql_stop() {
 
     NuoDBConfig config = new NuoDBConfig();
-    //config.setContainerName("ut_nuodb");
+    //config.setContainerName("nuodb");
     //config.setAdminUser("dba");
     //config.setAdminPassword("dba");
     //config.setDbName("testdb");
@@ -22,7 +26,6 @@ public class NuoDBContainerTest {
     config.setPassword("test");
 
     NuoDBContainer container = new NuoDBContainer(config);
-    //container.stopRemove();
     container.start();
 
     try (Connection connection = config.createConnection()) {
@@ -41,12 +44,13 @@ public class NuoDBContainerTest {
 
     } finally {
 //      container.stop();
-      container.stopRemove();
+//      container.stopRemove();
     }
   }
 
   private void exeSql(Connection connection, String sql) throws SQLException {
     try (PreparedStatement st = connection.prepareStatement(sql)) {
+      log.debug("execute SQL {}", sql);
       st.execute();
     }
   }

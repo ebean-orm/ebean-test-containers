@@ -47,6 +47,10 @@ public class ProcessHandler {
     return process(new ProcessBuilder(command));
   }
 
+  public static ProcessResult command(List<String> commands) {
+    return process(new ProcessBuilder(commands));
+  }
+
   public static ProcessResult process(ProcessBuilder pb) {
     return process(pb, null, null);
   }

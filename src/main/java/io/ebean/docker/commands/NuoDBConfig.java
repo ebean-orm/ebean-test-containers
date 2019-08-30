@@ -5,8 +5,8 @@ import java.util.Properties;
 public class NuoDBConfig extends DbConfig {
 
   private String network = "nuodb-net";
-  private String sm1 = "sm1";
-  private String te1 = "te1";
+  private String sm1 = "sm";
+  private String te1 = "te";
   private String labels = "node localhost";
 
   private int port2 = 48004;
@@ -21,6 +21,7 @@ public class NuoDBConfig extends DbConfig {
 
   public NuoDBConfig(String version) {
     super("nuodb", "8888", "8888", version);
+    this.containerName = platform;
     this.image = "nuodb/nuodb-ce:" + version;
     this.adminUsername = "dba";
     this.adminPassword = "dba";
@@ -30,7 +31,7 @@ public class NuoDBConfig extends DbConfig {
   }
 
   public NuoDBConfig() {
-    this("4.0.0");
+    this("4.0.0-2");
   }
 
   @Override

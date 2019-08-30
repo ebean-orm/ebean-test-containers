@@ -11,7 +11,7 @@ public class CockroachContainerTest {
   @Test
   public void start() throws SQLException {
 
-    CockroachConfig config = new CockroachConfig();//"v19.1.3");
+    CockroachConfig config = new CockroachConfig();//"v19.1.4");
     //config.setContainerName("junk_roach");
     config.setDbName("my_app");
 

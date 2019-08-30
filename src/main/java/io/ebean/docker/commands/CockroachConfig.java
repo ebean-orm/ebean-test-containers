@@ -18,7 +18,7 @@ public class CockroachConfig extends DbConfig {
   }
 
   public CockroachConfig() {
-    this("v19.1.3");
+    this("v19.1.4");
   }
 
   public String jdbcUrl() {

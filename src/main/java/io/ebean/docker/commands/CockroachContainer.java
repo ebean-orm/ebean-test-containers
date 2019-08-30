@@ -114,7 +114,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
 //    --net=roachnet \
 //    -p 26257:26257 -p 8080:8080  \
 //    -v "${PWD}/cockroach-data/roach1:/cockroach/cockroach-data"  \
-//    cockroachdb/cockroach:v19.1.3 start --insecure
+//    cockroachdb/cockroach:v19.1.4 start --insecure
 //
     List<String> args = new ArrayList<>();
     args.add(config.docker);

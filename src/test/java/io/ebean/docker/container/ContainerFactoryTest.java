@@ -45,6 +45,19 @@ public class ContainerFactoryTest {
   }
 
   @Test
+  public void runWithCockroach() {
+
+    Properties properties = new Properties();
+    properties.setProperty("cockroach.version", "v19.1.4");
+
+    ContainerFactory factory = new ContainerFactory(properties);
+    assertEquals("v19.1.4", factory.runWithVersion("cockroach"));
+
+    factory.startContainers();
+    factory.stopContainers();
+  }
+
+  @Test
   public void runWithHana() {
 
     assumeThat(System.getProperty("os.name").toLowerCase(), CoreMatchers.containsString("linux"));
