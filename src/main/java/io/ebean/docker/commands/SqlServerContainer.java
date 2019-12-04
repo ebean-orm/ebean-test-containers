@@ -177,9 +177,9 @@ public class SqlServerContainer extends DbContainer implements Container {
   private boolean sleep(int millis, boolean result) {
     try {
       Thread.sleep(millis);
+      return result;
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
-    } finally {
       return result;
     }
   }
@@ -284,18 +284,9 @@ public class SqlServerContainer extends DbContainer implements Container {
   @Override
   protected ProcessBuilder runProcess() {
 
-    List<String> args = new ArrayList<>();
-    args.add(config.docker);
-    args.add("run");
-    args.add("-d");
-    args.add("--name");
-    args.add(config.containerName());
-    args.add("-p");
-    args.add(config.getPort() + ":" + config.getInternalPort());
-
+    List<String> args = dockerRun();
     args.add("-e");
     args.add("ACCEPT_EULA=Y");
-
     args.add("-e");
     args.add("SA_PASSWORD=" + dbConfig.getAdminPassword());
 

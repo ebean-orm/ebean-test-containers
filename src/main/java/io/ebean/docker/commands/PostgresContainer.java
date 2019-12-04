@@ -184,13 +184,7 @@ public class PostgresContainer extends BaseDbContainer implements Container {
   }
 
   private ProcessBuilder sqlFileProcess(String dbUser, String dbName, String containerFilePath) {
-    List<String> args = new ArrayList<>();
-    args.add(config.docker);
-    args.add("exec");
-    args.add("-i");
-    args.add(config.containerName());
-    args.add("psql");
-    args.add("-U");
+    List<String> args = execPsql();
     args.add(dbUser);
     args.add("-d");
     args.add(dbName);
@@ -229,13 +223,7 @@ public class PostgresContainer extends BaseDbContainer implements Container {
 
   private ProcessBuilder createDatabaseExtension(List<String> extensions, String dbName) {
     //docker exec -i ut_postgres psql -U postgres -d test_db -c "create extension if not exists pgcrypto";
-    List<String> args = new ArrayList<>();
-    args.add(config.docker);
-    args.add("exec");
-    args.add("-i");
-    args.add(config.containerName());
-    args.add("psql");
-    args.add("-U");
+    List<String> args = execPsql();
     args.add("postgres");
     args.add("-d");
     args.add(dbName);
@@ -298,6 +286,14 @@ public class PostgresContainer extends BaseDbContainer implements Container {
   }
 
   private ProcessBuilder sqlProcess(String sql) {
+    List<String> args = execPsql();
+    args.add("postgres");
+    args.add("-c");
+    args.add(sql);
+    return createProcessBuilder(args);
+  }
+
+  private List<String> execPsql() {
     List<String> args = new ArrayList<>();
     args.add(config.docker);
     args.add("exec");
@@ -305,23 +301,13 @@ public class PostgresContainer extends BaseDbContainer implements Container {
     args.add(config.containerName());
     args.add("psql");
     args.add("-U");
-    args.add("postgres");
-    args.add("-c");
-    args.add(sql);
-    return createProcessBuilder(args);
+    return args;
   }
 
   @Override
   protected ProcessBuilder runProcess() {
 
-    List<String> args = new ArrayList<>();
-    args.add(config.docker);
-    args.add("run");
-    args.add("-d");
-    args.add("--name");
-    args.add(config.containerName());
-    args.add("-p");
-    args.add(config.getPort() + ":" + config.getInternalPort());
+    List<String> args = dockerRun();
 
     if (dbConfig.isInMemory() && dbConfig.getTmpfs() != null) {
       args.add("--tmpfs");

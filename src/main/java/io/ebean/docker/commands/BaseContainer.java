@@ -6,6 +6,7 @@ import io.ebean.docker.container.ContainerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 abstract class BaseContainer implements Container {
@@ -178,15 +179,10 @@ abstract class BaseContainer implements Container {
   @Override
   public void stop() {
     String mode = config.getStopMode().toLowerCase().trim();
-    switch (mode) {
-      case "stop":
-        stopOnly();
-        break;
-      case "remove":
-        stopRemove();
-        break;
-      default:
-        stopOnly();
+    if ("remove".equals(mode)) {
+      stopRemove();
+    } else {
+      stopOnly();
     }
   }
 
@@ -212,6 +208,18 @@ abstract class BaseContainer implements Container {
       log.debug(String.join(" ", args));
     }
     return pb;
+  }
+
+  protected List<String> dockerRun() {
+    List<String> args = new ArrayList<>();
+    args.add(config.docker);
+    args.add("run");
+    args.add("-d");
+    args.add("--name");
+    args.add(config.containerName());
+    args.add("-p");
+    args.add(config.getPort() + ":" + config.getInternalPort());
+    return args;
   }
 
   /**

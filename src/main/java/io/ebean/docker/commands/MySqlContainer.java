@@ -201,15 +201,7 @@ public class MySqlContainer extends DbContainer implements Container {
   @Override
   protected ProcessBuilder runProcess() {
 
-    List<String> args = new ArrayList<>();
-    args.add(config.docker);
-    args.add("run");
-    args.add("-d");
-    args.add("--name");
-    args.add(config.containerName());
-    args.add("-p");
-    args.add(config.getPort() + ":" + config.getInternalPort());
-
+    List<String> args = dockerRun();
     if (defined(dbConfig.getAdminPassword())) {
       args.add("-e");
       args.add("MYSQL_ROOT_PASSWORD=" + dbConfig.getAdminPassword());

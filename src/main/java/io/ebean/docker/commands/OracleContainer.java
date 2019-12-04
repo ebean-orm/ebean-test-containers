@@ -43,17 +43,9 @@ public class OracleContainer extends DbContainer implements Container {
   @Override
   protected ProcessBuilder runProcess() {
 
-    List<String> args = new ArrayList<>();
-    args.add(config.docker);
-    args.add("run");
-    args.add("-d");
-    args.add("--name");
-    args.add(config.containerName());
-    args.add("-p");
-    args.add(config.getPort() + ":" + config.getInternalPort());
+    List<String> args = dockerRun();
     args.add("-p");
     args.add(oracleConfig.getApexPort() + ":" + oracleConfig.getInternalApexPort());
-
     args.add(config.getImage());
     return createProcessBuilder(args);
   }
