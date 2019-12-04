@@ -16,7 +16,7 @@ public class PostgresConfigTest {
     Properties properties = new Properties();
     properties.setProperty("stopMode", "remove");
 
-    PostgresConfig config = new PostgresConfig("9.6", properties);
+    PostgresConfig config = new PostgresConfig("11", properties);
     assertEquals(config.getStopMode(), "remove");
   }
 
@@ -25,7 +25,7 @@ public class PostgresConfigTest {
 
     Properties properties = new Properties();
 
-    PostgresConfig config = new PostgresConfig("9.6", properties);
+    PostgresConfig config = new PostgresConfig("11", properties);
     assertEquals(config.getStopMode(), "stop");
   }
 
@@ -36,7 +36,7 @@ public class PostgresConfigTest {
     properties.setProperty("stopMode", "remove");
     properties.setProperty("postgres.stopMode", "none");
 
-    PostgresConfig config = new PostgresConfig("9.6", properties);
+    PostgresConfig config = new PostgresConfig("11", properties);
     assertEquals(config.getStopMode(), "none");
   }
 
@@ -46,10 +46,10 @@ public class PostgresConfigTest {
 
     Properties properties = new Properties();
 
-    PostgresConfig config = new PostgresConfig("9.6", properties);
+    PostgresConfig config = new PostgresConfig("11", properties);
     assertEquals(config.containerName(), "ut_postgres");
     assertEquals(config.getPort(), "6432");
-    assertEquals(config.getImage(), "postgres:9.6");
+    assertEquals(config.getImage(), "postgres:11");
     assertEquals(config.getDbName(), "test_db");
     assertEquals(config.getUsername(), "test_user");
     assertEquals(config.getPassword(), "test");
@@ -62,7 +62,7 @@ public class PostgresConfigTest {
   public void properties_basic() {
 
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "9.6");
+    properties.setProperty("postgres.version", "11");
     properties.setProperty("postgres.containerName", "junk_postgres");
     properties.setProperty("postgres.port", "9823");
     properties.setProperty("postgres.dbName", "baz");
@@ -76,10 +76,10 @@ public class PostgresConfigTest {
     properties.setProperty("postgres.extraDb.initSqlFile", "extra_init.sql");
     properties.setProperty("postgres.extraDb.seedSqlFile", "extra_seed.sql");
 
-    PostgresConfig config = new PostgresConfig("9.6", properties);
+    PostgresConfig config = new PostgresConfig("11", properties);
     assertEquals(config.containerName(), "junk_postgres");
     assertEquals(config.getPort(), "9823");
-    assertEquals(config.getImage(), "postgres:9.6");
+    assertEquals(config.getImage(), "postgres:11");
     assertEquals(config.getDbName(), "baz");
     assertEquals(config.getUsername(), "foo");
     assertEquals(config.getPassword(), "bar");

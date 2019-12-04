@@ -18,7 +18,7 @@ public class PostgresContainerTest {
   @Test
   public void start() throws SQLException {
 
-    PostgresConfig config = new PostgresConfig("10.1");
+    PostgresConfig config = new PostgresConfig("11");
     config.setContainerName("junk_postgres10");
     config.setPort("9823");
     config.setExtensions(" hstore, , pgcrypto ");

@@ -1,5 +1,6 @@
 package io.ebean.docker.commands;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -8,6 +9,7 @@ import java.sql.Statement;
 
 public class CockroachContainerTest {
 
+  @Ignore
   @Test
   public void start() throws SQLException {
 

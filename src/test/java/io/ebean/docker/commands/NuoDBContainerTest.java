@@ -1,5 +1,6 @@
 package io.ebean.docker.commands;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ public class NuoDBContainerTest {
 
   private static final Logger log = LoggerFactory.getLogger(NuoDBContainerTest.class);
 
+  @Ignore
   @Test
   public void start_executeSql_stop() {
 
