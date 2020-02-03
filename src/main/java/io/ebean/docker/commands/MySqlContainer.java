@@ -1,13 +1,13 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.commands.process.ProcessHandler;
 import io.ebean.docker.container.Container;
 
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
-public class MySqlContainer extends DbContainer implements Container {
+public class MySqlContainer extends JdbcBaseDbContainer implements Container {
 
   public static MySqlContainer create(String mysqlVersion, Properties properties) {
     return new MySqlContainer(new MySqlConfig(mysqlVersion, properties));
@@ -18,184 +18,76 @@ public class MySqlContainer extends DbContainer implements Container {
   }
 
   @Override
-  protected boolean isDatabaseReady() {
-    return commands.logsContain(config.containerName(), "mysqld: ready for connections", "Shutting down");
-  }
-
-  /**
-   * Check that we can execute admin commands.
-   */
-  @Override
-  protected boolean isDatabaseAdminReady() {
-    return execute("Database", showDatabases());
-  }
-
-  /**
-   * Start the container and wait for it to be ready.
-   * <p>
-   * This checks if the container is already running.
-   * </p>
-   * <p>
-   * Returns false if the wait for ready was unsuccessful.
-   * </p>
-   */
-  @Override
-  public boolean startWithCreate() {
-    startMode = Mode.Create;
-    if (startIfNeeded() &&  fastStart()) {
-      // container was running, fast start enabled and passed
-      // so skip the usual checks for user, extensions and connectivity
-      return true;
-    }
-    if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
-      return false;
-    }
-    createDatabase(true);
-    createUser(true);
-    if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
-      return false;
-    }
-    return true;
-  }
-
-  /**
-   * Start with a drop and create of the database and user.
-   */
-  @Override
-  public boolean startWithDropCreate() {
-    startMode = Mode.DropCreate;
-    startIfNeeded();
-    if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
-      return false;
-    }
-
-    dropDatabaseIfExists();
-    dropUserIfExists();
-    createDatabase(true);
-    createUser(true);
-
-    if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
-      return false;
-    }
-    return true;
+  void createDatabase() {
+    createRoleAndDatabase(false);
   }
 
   @Override
-  protected boolean isFastStartDatabaseExists() {
-    return databaseExists();
+  void dropCreateDatabase() {
+    createRoleAndDatabase(true);
   }
 
-  /**
-   * Drop the database if it exists.
-   */
-  private void dropDatabaseIfExists() {
-    if (databaseExists()) {
-      log.debug("drop database {}", dbConfig.getDbName());
-      exec(sqlProcess("drop database " + dbConfig.getDbName(), false), "Failed to drop database");
+  private void createRoleAndDatabase(boolean withDrop) {
+    try (Connection connection = config.createAdminConnection()) {
+      if (withDrop) {
+        dropUserIfExists(connection, dbConfig.getUsername());
+        dropDatabaseIfExists(connection, dbConfig.getDbName());
+      }
+      createDatabase(connection);
+      createUser(connection);
+
+    } catch (SQLException e) {
+      throw new RuntimeException("Error when creating database and role", e);
     }
   }
 
-  /**
-   * Drop the database user if it exists.
-   */
-  private void dropUserIfExists() {
-    if (userExists()) {
-      log.debug("drop user {}", dbConfig.getUsername());
-      exec(sqlProcess("drop user '" + dbConfig.getUsername() + "'@'%'", false), "Failed to drop user");
+  private void createUser(Connection connection) {
+    createUser(connection, dbConfig.getUsername(), dbConfig.getPassword(), dbConfig.getDbName());
+  }
+
+
+  private void dropDatabaseIfExists(Connection connection, String dbName) {
+    if (databaseExists(connection, dbName)) {
+      sqlRun(connection, "drop database " + dbName);
     }
   }
 
-  /**
-   * Create the database user.
-   */
-  public boolean createUser(boolean checkExists) {
-    if (checkExists && userExists()) {
-      return true;
-    }
-    log.debug("create user {}", dbConfig.getUsername());
-    createUser(dbConfig.getUsername(), dbConfig.getPassword());
-    return true;
-  }
-
-  private void createUser(String dbUser, String dbPassword) {
-
-    ProcessBuilder pb = sqlProcess("create user '" + dbUser + "'@'%' identified by '" + dbPassword + "'", false);
-    exec(pb, "Failed to create user");
-
-    pb = sqlProcess("grant all on " + dbConfig.getDbName() + ".* to '" + dbUser + "'@'%'", false);
-    exec(pb, "Failed to create user");
-  }
-
-  private void createDatabase(boolean checkExists) {
-
-    if (checkExists && databaseExists()) {
-      return;
-    }
-    log.debug("create database {}", dbConfig.getDbName());
-    exec(createDatabase(dbConfig.getDbName()), "Failed to create database");
-    if (!dbConfig.version.startsWith("5")) {
-      exec(setLogBinTrustFunction(), "Failed to set log_bin_trust_function_creators");
+  private void dropUserIfExists(Connection connection, String username) {
+    if (userExists(connection, username)) {
+      sqlRun(connection, "drop user '" + username + "'@'%'");
     }
   }
 
-  private void exec(ProcessBuilder pb, String message) {
-    executeWithout("ERROR", pb, message);
-  }
-
-  private boolean userExists() {
-
-    return contains(dbUserExists(dbConfig.getUsername()), dbConfig.getUsername());
-  }
-
-  private boolean databaseExists() {
-    return contains(dbExists(dbConfig.getDbName()), dbConfig.getDbName());
-  }
-
-  private boolean contains(ProcessBuilder pb, String match) {
-    List<String> outLines = ProcessHandler.process(pb).getOutLines();
-    return stdoutContains(outLines, match);
-  }
-
-  private ProcessBuilder setLogBinTrustFunction() {
-    return sqlProcess("set global log_bin_trust_function_creators=1", false);
-  }
-
-  private ProcessBuilder createDatabase(String dbName) {
-    return sqlProcess("create database " + dbName, false);
-  }
-
-  private ProcessBuilder showDatabases() {
-    return sqlProcess("show databases", false);
-  }
-
-  private ProcessBuilder dbExists(String dbName) {
-    return sqlProcess("show databases like '" + dbName + "'", false);
-  }
-
-  private ProcessBuilder dbUserExists(String dbUser) {
-    return sqlProcess("select User from user where User = '" + dbUser + "'", true);
-  }
-
-  private ProcessBuilder sqlProcess(String sql, boolean withMysql) {
-    List<String> args = new ArrayList<>();
-    args.add(config.docker);
-    args.add("exec");
-    args.add("-i");
-    args.add(config.containerName());
-    args.add("mysql");
-    args.add("-uroot");
-    args.add("-p" + dbConfig.getAdminPassword());
-    if (withMysql) {
-      args.add("mysql");
+  private void createUser(Connection connection, String dbUser, String dbPassword, String db) {
+    if (!userExists(connection, dbUser)) {
+      sqlRun(connection, "create user '" + dbUser + "'@'%' identified by '" + dbPassword + "'");
+      sqlRun(connection, "grant all on " + db + ".* to '" + dbUser + "'@'%'");
     }
-    args.add("-e");
-    args.add(sql);
+  }
 
-    return createProcessBuilder(args);
+  private void createDatabase(Connection connection) {
+    if (!databaseExists(connection, dbConfig.getDbName())) {
+      createDatabase(connection, dbConfig.getDbName());
+      if (!dbConfig.version.startsWith("5")) {
+        setLogBinTrustFunction(connection);
+      }
+    }
+  }
+
+  private void setLogBinTrustFunction(Connection connection) {
+     sqlRun(connection, "set global log_bin_trust_function_creators=1");
+  }
+
+  private void createDatabase(Connection connection, String dbName) {
+    sqlRun(connection, "create database " + dbName);
+  }
+
+  private boolean databaseExists(Connection connection, String dbName) {
+    return sqlHasRow(connection, "show databases like '" + dbName + "'");
+  }
+
+  private boolean userExists(Connection connection, String dbUser) {
+    return sqlHasRow(connection, "select User from user where User = '" + dbUser + "'");
   }
 
   @Override

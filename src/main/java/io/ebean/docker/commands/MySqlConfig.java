@@ -11,6 +11,8 @@ public class MySqlConfig extends DbConfig {
 
   public MySqlConfig(String version) {
     super("mysql", "4306", "3306", version);
+    this.adminUsername = "root";
+    this.adminPassword = "admin";
     this.setTmpfs("/var/lib/mysql:rw");
   }
 
@@ -21,7 +23,13 @@ public class MySqlConfig extends DbConfig {
     super(platform, port, internalPort, version);
   }
 
+  @Override
   public String jdbcUrl() {
     return "jdbc:mysql://localhost:" + getPort() + "/" + getDbName();
+  }
+
+  @Override
+  public String jdbcAdminUrl() {
+    return "jdbc:mysql://localhost:" + getPort() + "/mysql";
   }
 }
