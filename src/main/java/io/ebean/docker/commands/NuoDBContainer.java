@@ -6,7 +6,6 @@ import java.io.File;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +38,7 @@ public class NuoDBContainer extends BaseDbContainer {
 
   public NuoDBContainer(NuoDBConfig config) {
     super(config);
-    this.checkConnectivityUingAdmin = true;
+    this.checkConnectivityUsingAdmin = true;
     config.initDefaultSchema();
     this.nuoConfig = config;
     this.network = config.getNetwork();
@@ -504,20 +503,6 @@ public class NuoDBContainer extends BaseDbContainer {
 
   private boolean sqlUserExists(Connection connection, String dbUser) throws SQLException {
     return sqlQueryMatch(connection, "select username from system.users", dbUser);
-  }
-
-  private boolean sqlQueryMatch(Connection connection, String sql, String dbUser) throws SQLException {
-    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-      try (ResultSet rset = stmt.executeQuery()) {
-        while (rset.next()) {
-          final String name = rset.getString(1);
-          if (name.equalsIgnoreCase(dbUser)) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
   }
 
   private void exeSql(Connection connection, String sql) throws SQLException {

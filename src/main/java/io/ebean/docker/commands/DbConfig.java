@@ -134,11 +134,15 @@ public abstract class DbConfig extends BaseConfig {
   /**
    * Return a Connection to the database using the admin user.
    */
-  public Connection createAdminConnection() throws SQLException {
+  public Connection createAdminConnection(String url) throws SQLException {
     Properties props = new java.util.Properties();
     props.put("user", adminUsername);
     props.put("password", adminPassword);
-    return DriverManager.getConnection(jdbcUrl(), props);
+    return DriverManager.getConnection(url, props);
+  }
+
+  public Connection createAdminConnection() throws SQLException {
+    return createAdminConnection(jdbcAdminUrl());
   }
 
   /**

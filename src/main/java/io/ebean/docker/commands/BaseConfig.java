@@ -163,6 +163,11 @@ public abstract class BaseConfig implements ContainerConfig {
     throw new IllegalStateException("Not valid for this type");
   }
 
+  @Override
+  public String jdbcAdminUrl() {
+    return jdbcUrl();
+  }
+
   /**
    * Load configuration from properties.
    */

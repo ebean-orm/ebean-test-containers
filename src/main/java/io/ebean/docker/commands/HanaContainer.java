@@ -147,7 +147,7 @@ public class HanaContainer extends DbContainer implements Container {
     log.info("Drop database user {} if exists", dbConfig.getUsername());
     sqlProcess(connection -> {
       if (userExists(connection)) {
-        runSql(connection, "drop user " + dbConfig.getUsername() + " cascade");
+        sqlRun(connection, "drop user " + dbConfig.getUsername() + " cascade");
       }
     });
     return true;
@@ -157,7 +157,7 @@ public class HanaContainer extends DbContainer implements Container {
     log.info("Create database user {} if not exists", dbConfig.getUsername());
     sqlProcess(connection -> {
       if (!userExists(connection)) {
-        runSql(connection, "create user " + dbConfig.getUsername() + " password " + dbConfig.getPassword()
+        sqlRun(connection, "create user " + dbConfig.getUsername() + " password " + dbConfig.getPassword()
             + " no force_first_password_change");
       }
     });
@@ -179,25 +179,6 @@ public class HanaContainer extends DbContainer implements Container {
     } catch (SQLException e) {
       log.error("Failed to execute sql to check if user exists", e);
       return false;
-    }
-  }
-
-  private boolean sqlProcess(Consumer<Connection> runner) {
-    try (Connection connection = config.createAdminConnection()) {
-      runner.accept(connection);
-      return true;
-    } catch (SQLException e) {
-      log.error("Failed to execute sql", e);
-      return false;
-    }
-  }
-
-  private void runSql(Connection connection, String sql) {
-    try (Statement statement = connection.createStatement()) {
-      log.debug("execute: " + sql);
-      statement.execute(sql);
-    } catch (SQLException e) {
-      sneakyThrow(e);
     }
   }
 
