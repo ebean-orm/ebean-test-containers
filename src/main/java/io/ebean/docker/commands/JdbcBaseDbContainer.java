@@ -47,12 +47,9 @@ public abstract class JdbcBaseDbContainer extends DbContainer {
   }
 
   protected boolean singleAdminConnection() {
-    System.out.println("start" + System.currentTimeMillis());
     try (Connection connection = dbConfig.createAdminConnection()) {
-      System.out.println("success" + System.currentTimeMillis());
       return true;
     } catch (SQLException e) {
-      System.out.println("fail" + System.currentTimeMillis());
       // no connectivity
       return false;
     }
