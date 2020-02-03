@@ -346,17 +346,16 @@ abstract class DbContainer extends BaseContainer implements Container {
     return true;
   }
 
-  boolean sqlProcess(Consumer<Connection> runner) {
+  void sqlProcess(Consumer<Connection> runner) {
     try (Connection connection = config.createAdminConnection()) {
       runner.accept(connection);
-      return true;
     } catch (SQLException e) {
       throw new IllegalStateException("Failed to execute sql", e);
     }
   }
 
   void sqlRun(Connection connection, String sql) {
-    log.debug("execute: " + sql);
+    log.debug("sqlRun: {}", sql);
     try(Statement statement = connection.createStatement()) {
       statement.execute(sql);
     } catch (SQLException e) {
@@ -365,7 +364,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   boolean sqlHasRow(Connection connection, String sql) {
-    log.debug("execute: " + sql);
+    log.trace("sqlRun: {}", sql);
     try(Statement statement = connection.createStatement()) {
       try (ResultSet resultSet = statement.executeQuery(sql)) {
         if (resultSet.next()) {
@@ -379,9 +378,10 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   boolean sqlQueryMatch(Connection connection, String sql, String match) throws SQLException {
+    log.trace("sqlRun: {}", sql);
     try (PreparedStatement stmt = connection.prepareStatement(sql)) {
       try (ResultSet resultSet = stmt.executeQuery()) {
-        while (resultSet.next()) {
+        if (resultSet.next()) {
           return resultSet.getString(1).equalsIgnoreCase(match);
         }
       }

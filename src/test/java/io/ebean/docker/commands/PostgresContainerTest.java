@@ -19,17 +19,15 @@ public class PostgresContainerTest {
   public void start() throws SQLException {
 
     PostgresConfig config = new PostgresConfig("11");
-    config.setContainerName("junk_postgres10");
+    config.setContainerName("junk_postgres11");
     config.setPort("9823");
     config.setExtensions(" hstore, , pgcrypto ");
     config.setInMemory(true);
-//    config.setFastStartMode(true);
     config.setUser("main_user");
     config.setDbName("main_db");
     config.setInitSqlFile("init-main-database.sql");
     config.setSeedSqlFile("seed-main-database.sql");
 
-//    config.setExtraDbUser("extra_user");
     config.setExtraDb("extra");
     config.setExtraDbInitSqlFile("init-extra-database.sql");
     config.setExtraDbSeedSqlFile("seed-extra-database.sql");
@@ -50,15 +48,15 @@ public class PostgresContainerTest {
 
     final String url = container.jdbcUrl();
     assertEquals(url, "jdbc:postgresql://localhost:9823/main_db");
-    //container.stopOnly();
+//    container.stopRemove();
   }
 
   @Test
   public void viaContainerFactory() {
 
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "10.1");
-    properties.setProperty("postgres.containerName", "junk_postgres10");
+    properties.setProperty("postgres.version", "11");
+    properties.setProperty("postgres.containerName", "junk_postgres11");
     properties.setProperty("postgres.port", "9823");
 
     properties.setProperty("postgres.extensions", "hstore,pgcrypto");

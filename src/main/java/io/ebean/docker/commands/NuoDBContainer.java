@@ -13,7 +13,7 @@ import java.util.Properties;
 
 import static io.ebean.docker.commands.process.ProcessHandler.process;
 
-public class NuoDBContainer extends BaseDbContainer {
+public class NuoDBContainer extends JdbcBaseDbContainer {
 
   private static final String AD_RESET = "com.nuodb.nagent.AgentMain main Entering initializing for server";
   private static final String AD_RUNNING = "com.nuodb.nagent.AgentMain main NuoAdmin Server running";
@@ -435,22 +435,12 @@ public class NuoDBContainer extends BaseDbContainer {
   }
 
   @Override
-  protected void createDbPreConnectivity() {
-    // do nothing, we setup via JDBC
-  }
-
-  @Override
-  protected void dropCreateDbPreConnectivity() {
-    // do nothing, we setup via JDBC
-  }
-
-  @Override
-  protected void createDbPostConnectivity() {
+  void createDatabase() {
     createSchemaAndUser(false);
   }
 
   @Override
-  protected void dropCreateDbPostConnectivity() {
+  void dropCreateDatabase() {
     createSchemaAndUser(true);
   }
 
