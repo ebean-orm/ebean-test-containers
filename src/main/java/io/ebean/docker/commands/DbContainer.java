@@ -7,10 +7,14 @@ import java.io.File;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 abstract class DbContainer extends BaseContainer implements Container {
 
@@ -24,7 +28,7 @@ abstract class DbContainer extends BaseContainer implements Container {
 
   Mode startMode;
 
-  boolean checkConnectivityUingAdmin;
+  boolean checkConnectivityUsingAdmin;
 
   DbContainer(DbConfig config) {
     super(config);
@@ -79,8 +83,6 @@ abstract class DbContainer extends BaseContainer implements Container {
   protected boolean startForMode() {
     String mode = config.getStartMode().toLowerCase().trim();
     switch (mode) {
-      case "create":
-        return startWithCreate();
       case "dropcreate":
         return startWithDropCreate();
       case "container":
@@ -199,7 +201,7 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Check connectivity via trying to make a JDBC connection.
    */
   boolean checkConnectivity() {
-    return checkConnectivity(checkConnectivityUingAdmin);
+    return checkConnectivity(checkConnectivityUsingAdmin);
   }
 
   /**
@@ -344,4 +346,46 @@ abstract class DbContainer extends BaseContainer implements Container {
     return true;
   }
 
+  boolean sqlProcess(Consumer<Connection> runner) {
+    try (Connection connection = config.createAdminConnection()) {
+      runner.accept(connection);
+      return true;
+    } catch (SQLException e) {
+      throw new IllegalStateException("Failed to execute sql", e);
+    }
+  }
+
+  void sqlRun(Connection connection, String sql) {
+    log.debug("execute: " + sql);
+    try(Statement statement = connection.createStatement()) {
+      statement.execute(sql);
+    } catch (SQLException e) {
+      throw new IllegalStateException("Failed to execute sql", e);
+    }
+  }
+
+  boolean sqlHasRow(Connection connection, String sql) {
+    log.debug("execute: " + sql);
+    try(Statement statement = connection.createStatement()) {
+      try (ResultSet resultSet = statement.executeQuery(sql)) {
+        if (resultSet.next()) {
+          return true;
+        }
+      }
+      return false;
+    } catch (SQLException e) {
+      throw new IllegalStateException("Failed to execute sql", e);
+    }
+  }
+
+  boolean sqlQueryMatch(Connection connection, String sql, String match) throws SQLException {
+    try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+      try (ResultSet resultSet = stmt.executeQuery()) {
+        while (resultSet.next()) {
+          return resultSet.getString(1).equalsIgnoreCase(match);
+        }
+      }
+    }
+    return false;
+  }
 }

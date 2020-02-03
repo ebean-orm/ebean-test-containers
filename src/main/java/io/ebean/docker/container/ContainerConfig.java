@@ -29,6 +29,11 @@ public interface ContainerConfig {
   String jdbcUrl();
 
   /**
+   * Return a DB connection url for the admin database user.
+   */
+  String jdbcAdminUrl();
+
+  /**
    * Return a DB connection.
    */
   Connection createConnection() throws SQLException;

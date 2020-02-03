@@ -9,11 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.function.Consumer;
 
 /**
  * Commands for controlling an Oracle docker container.
@@ -37,7 +34,7 @@ public class OracleContainer extends DbContainer implements Container {
   public OracleContainer(OracleConfig config) {
     super(config);
     this.oracleConfig = config;
-    this.checkConnectivityUingAdmin = true;
+    this.checkConnectivityUsingAdmin = true;
   }
 
   @Override
@@ -126,18 +123,16 @@ public class OracleContainer extends DbContainer implements Container {
   }
 
   private boolean dropCreateUser() {
-
     log.info("Drop and create database user {}", dbConfig.getUsername());
     sqlProcess(connection -> {
       if (userExists(connection)) {
-        runSql(connection, "drop user " + dbConfig.getUsername() + " cascade");
+        sqlRun(connection, "drop user " + dbConfig.getUsername() + " cascade");
       }
-      runSql(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
-      runSql(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getUsername());
+      sqlRun(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
+      sqlRun(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getUsername());
     });
     return true;
   }
-
 
   /**
    * Create the database user.
@@ -146,98 +141,27 @@ public class OracleContainer extends DbContainer implements Container {
     log.info("Create database user {} if not exists", dbConfig.getUsername());
     sqlProcess(connection -> {
       if (!userExists(connection)) {
-        runSql(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
-        runSql(connection, "grant connect, resource, create view, unlimited tablespace to " + dbConfig.getUsername());
+        sqlRun(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
+        sqlRun(connection, "grant connect, resource, create view, unlimited tablespace to " + dbConfig.getUsername());
       }
     });
     return true;
   }
 
   private boolean userExists(Connection connection) {
-    PreparedStatement statement = null;
-    ResultSet resultSet = null;
-    try {
-      String sql = "select count(*) from dba_users where lower(username) = ?";
-      log.debug("execute: " + sql);
-      statement = connection.prepareStatement(sql);
+    String sql = "select count(*) from dba_users where lower(username) = ?";
+    log.debug("execute: " + sql);
+    try (PreparedStatement statement = connection.prepareStatement(sql)) {
       statement.setString(1, dbConfig.getUsername().toLowerCase());
-      resultSet = statement.executeQuery();
-
-      if (resultSet.next()) {
-        int count = resultSet.getInt(1);
-        return count == 1;
+      try (ResultSet resultSet = statement.executeQuery()){
+        if (resultSet.next()) {
+          int count = resultSet.getInt(1);
+          return count == 1;
+        }
+        return false;
       }
-
-      return false;
-
     } catch (SQLException e) {
       throw new IllegalStateException("Failed to execute sql to check if user exists", e);
-
-    } finally {
-      close(resultSet);
-      close(statement);
-    }
-  }
-
-
-  private boolean sqlProcess(Consumer<Connection> runner) {
-
-    Connection connection = null;
-    try {
-      connection = config.createAdminConnection();
-      runner.accept(connection);
-      return true;
-
-    } catch (SQLException e) {
-      throw new IllegalStateException("Failed to execute sql", e);
-
-    } finally {
-      close(connection);
-    }
-  }
-
-  private void runSql(Connection connection, String sql) {
-    Statement statement = null;
-    try {
-      log.debug("execute: " + sql);
-      statement = connection.createStatement();
-      statement.execute(sql);
-
-    } catch (SQLException e) {
-      throw new IllegalStateException("Failed to execute sql", e);
-
-    } finally {
-      close(statement);
-    }
-  }
-
-  private void close(ResultSet resultSet) {
-    if (resultSet != null) {
-      try {
-        resultSet.close();
-      } catch (SQLException e) {
-        log.warn("Error closing resultSet", e);
-      }
-    }
-  }
-
-  private void close(Statement statement) {
-    if (statement != null) {
-      try {
-        statement.close();
-      } catch (SQLException e) {
-        log.warn("Error closing statement", e);
-      }
-    }
-  }
-
-  private void close(Connection connection) {
-    if (connection != null) {
-      try {
-        connection.close();
-      } catch (SQLException e) {
-        log.warn("Error closing connection", e);
-      }
     }
   }
 
