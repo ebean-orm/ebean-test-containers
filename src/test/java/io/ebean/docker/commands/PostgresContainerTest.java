@@ -16,6 +16,44 @@ import static org.junit.Assert.assertTrue;
 public class PostgresContainerTest {
 
   @Test
+  public void startPortBased() {
+    PostgresConfig config = new PostgresConfig("11");
+    config.setContainerName("junk_postgres11");
+    config.setPort("9823");
+
+    PostgresContainer dummy = new PostgresContainer(config);
+
+    dummy.stopRemove();
+    dummy.startContainerOnly();
+
+    runBasedOnPort("9823");
+
+    dummy.stopRemove();
+  }
+
+  private void runBasedOnPort(String port) {
+    System.out.println("runBasedOnPort ... will connect and not start docker container");
+    PostgresConfig config = new PostgresConfig("12");
+    config.setContainerName("not_started");
+    config.setPort(port);
+    config.setExtensions("hstore");
+    config.setStopMode("remove");
+
+    PostgresContainer dummy = new PostgresContainer(config);
+
+    dummy.start();
+
+    try {
+      Connection connection = config.createConnection();
+      exeSql(connection, "create table test_junk2 (acol integer, map hstore)");
+      exeSql(connection, "insert into test_junk2 (acol) values (42)");
+      exeSql(connection, "insert into test_junk2 (acol) values (43)");
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
   public void start() throws SQLException {
 
     PostgresConfig config = new PostgresConfig("11");

@@ -35,7 +35,8 @@ public abstract class JdbcBaseDbContainer extends DbContainer {
   }
 
   private boolean startContainerWithWait() {
-    if (singleAdminConnection()) {
+    if (checkAlreadyRunning()) {
+      dbConfig.clearStopMode();
       return true;
     }
     startIfNeeded();
@@ -46,7 +47,7 @@ public abstract class JdbcBaseDbContainer extends DbContainer {
     return true;
   }
 
-  protected boolean singleAdminConnection() {
+  protected boolean checkAlreadyRunning() {
     try (Connection connection = dbConfig.createAdminConnection()) {
       return true;
     } catch (SQLException e) {
