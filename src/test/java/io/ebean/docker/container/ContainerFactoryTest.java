@@ -1,6 +1,7 @@
 package io.ebean.docker.container;
 
 import org.hamcrest.CoreMatchers;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -44,6 +45,7 @@ public class ContainerFactoryTest {
     //factory.stopContainers();
   }
 
+  @Ignore
   @Test
   public void runWithCockroach() {
 
