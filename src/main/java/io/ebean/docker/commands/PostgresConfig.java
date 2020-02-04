@@ -18,11 +18,11 @@ public class PostgresConfig extends DbConfig {
 
   @Override
   public String jdbcUrl() {
-    return "jdbc:postgresql://localhost:" + getPort() + "/" + getDbName();
+    return "jdbc:postgresql://127.0.0.1:" + getPort() + "/" + getDbName();
   }
 
   @Override
   public String jdbcAdminUrl() {
-    return "jdbc:postgresql://localhost:" + getPort() + "/postgres";
+    return "jdbc:postgresql://127.0.0.1:" + getPort() + "/postgres";
   }
 }
