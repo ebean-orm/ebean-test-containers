@@ -162,7 +162,7 @@ public class ContainerFactoryTest {
 
     // for a DB container we can get JDBC URL & Connection
     String jdbcUrl = postgres.config().jdbcUrl();
-    assertEquals(jdbcUrl, "jdbc:postgresql://localhost:9823/test_db");
+    assertEquals(jdbcUrl, "jdbc:postgresql://127.0.0.1:9823/test_db");
     Connection connection = postgres.config().createConnection();
     connection.close();
 
