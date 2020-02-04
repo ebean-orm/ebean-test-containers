@@ -85,7 +85,7 @@ public class PostgresContainerTest {
     }
 
     final String url = container.jdbcUrl();
-    assertEquals(url, "jdbc:postgresql://localhost:9823/main_db");
+    assertEquals(url, "jdbc:postgresql://127.0.0.1:9823/main_db");
 //    container.stopRemove();
   }
 
