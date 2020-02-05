@@ -8,7 +8,7 @@ public class ClickHouseContainerTest {
   public void runProcess() {
 
     ClickHouseConfig config = new ClickHouseConfig("latest");
-    config.setStartMode("dropCreate");
+    config.setStartMode(StartMode.DropCreate);
 
     ClickHouseContainer container = new ClickHouseContainer(config);
     container.start();

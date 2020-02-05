@@ -1,5 +1,7 @@
 package io.ebean.docker.container;
 
+import io.ebean.docker.commands.StartMode;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -51,7 +53,7 @@ public interface ContainerConfig {
   /**
    * Set the start mode.  One of create, dropCreate, or container [only].
    */
-  void setStartMode(String startMode);
+  void setStartMode(StartMode startMode);
 
   /**
    * Set the stop mode.

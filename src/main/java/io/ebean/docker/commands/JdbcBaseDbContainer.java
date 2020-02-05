@@ -16,7 +16,6 @@ public abstract class JdbcBaseDbContainer extends DbContainer {
 
   @Override
   public boolean startWithCreate() {
-    startMode = Mode.Create;
     if (!startContainerWithWait()) {
       return false;
     }
@@ -26,7 +25,6 @@ public abstract class JdbcBaseDbContainer extends DbContainer {
 
   @Override
   public boolean startWithDropCreate() {
-    startMode = Mode.DropCreate;
     if (!startContainerWithWait()) {
       return false;
     }

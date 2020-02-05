@@ -90,7 +90,6 @@ public class OracleContainer extends DbContainer implements Container {
    */
   @Override
   public boolean startWithCreate() {
-    startMode = Mode.Create;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
@@ -109,7 +108,6 @@ public class OracleContainer extends DbContainer implements Container {
    */
   @Override
   public boolean startWithDropCreate() {
-    startMode = Mode.DropCreate;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for container {}", config.containerName());

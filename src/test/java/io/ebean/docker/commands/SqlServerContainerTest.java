@@ -97,14 +97,14 @@ public class SqlServerContainerTest {
     Container container = factory.container("sqlserver");
     ContainerConfig config = container.config();
 
-    config.setStartMode("dropCreate");
+    config.setStartMode(StartMode.DropCreate);
     config.setStopMode("remove");
     container.start();
 
-    config.setStartMode("container");
+    config.setStartMode(StartMode.Container);
     container.start();
 
-    config.setStartMode("create");
+    config.setStartMode(StartMode.Create);
     container.start();
 
     try {

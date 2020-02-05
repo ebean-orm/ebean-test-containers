@@ -50,7 +50,6 @@ public abstract class BaseDbContainer extends DbContainer implements Container {
    */
   @Override
   public boolean startWithCreate() {
-    startMode = Mode.Create;
     if (startIfNeeded() && fastStart()) {
       // container was running, fast start enabled and passed
       // so skip the usual checks for user, extensions and connectivity
@@ -75,7 +74,6 @@ public abstract class BaseDbContainer extends DbContainer implements Container {
    */
   @Override
   public boolean startWithDropCreate() {
-    startMode = Mode.DropCreate;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for container {}", config.containerName());

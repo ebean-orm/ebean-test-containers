@@ -51,7 +51,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * The mode used when starting (create, dropCreate, container [only]).
    */
-  protected String startMode = "create";
+  protected StartMode startMode = StartMode.Create;
 
   /**
    * The mode used when stopping (stop, remove).
@@ -126,7 +126,7 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   @Override
-  public void setStartMode(String startMode) {
+  public void setStartMode(StartMode startMode) {
     this.startMode = startMode;
   }
 
@@ -186,8 +186,8 @@ public abstract class BaseConfig implements ContainerConfig {
     characterSet = prop(properties, "characterSet", characterSet);
     collation = prop(properties, "collation", collation);
 
-    startMode = properties.getProperty("startMode", startMode);
-    startMode = prop(properties, "startMode", startMode);
+    String sm = properties.getProperty("startMode", startMode.name());
+    startMode = StartMode.of(prop(properties, "startMode", sm));
 
     stopMode = properties.getProperty("stopMode", stopMode);
     stopMode = prop(properties, "stopMode", stopMode);
@@ -317,7 +317,7 @@ public abstract class BaseConfig implements ContainerConfig {
     return image;
   }
 
-  public String getStartMode() {
+  public StartMode getStartMode() {
     return startMode;
   }
 

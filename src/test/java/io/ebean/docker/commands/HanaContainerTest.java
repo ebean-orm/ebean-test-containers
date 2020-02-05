@@ -142,13 +142,13 @@ public class HanaContainerTest {
     Container container = factory.container("hana");
     ContainerConfig config = container.config();
 
-    config.setStartMode("dropCreate");
+    config.setStartMode(StartMode.DropCreate);
     assertTrue(container.start());
 
-    config.setStartMode("container");
+    config.setStartMode(StartMode.Container);
     assertTrue(container.start());
 
-    config.setStartMode("create");
+    config.setStartMode(StartMode.Create);
     assertTrue(container.start());
 
     try (Connection connection = config.createConnection();) {

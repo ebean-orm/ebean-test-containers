@@ -64,13 +64,13 @@ public class OracleContainerTest {
     Container container = factory.container("oracle");
     ContainerConfig config = container.config();
 
-    config.setStartMode("dropCreate");
+    config.setStartMode(StartMode.DropCreate);
     container.start();
 
-    config.setStartMode("container");
+    config.setStartMode(StartMode.Container);
     container.start();
 
-    config.setStartMode("create");
+    config.setStartMode(StartMode.Create);
     container.start();
 
     try(Connection connection = config.createConnection()) {

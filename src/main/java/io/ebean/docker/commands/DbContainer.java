@@ -18,15 +18,7 @@ import java.util.function.Consumer;
 
 abstract class DbContainer extends BaseContainer implements Container {
 
-  enum Mode {
-    Create,
-    DropCreate,
-    ContainerOnly
-  }
-
   final DbConfig dbConfig;
-
-  Mode startMode;
 
   boolean checkConnectivityUsingAdmin;
 
@@ -39,17 +31,17 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Log that the container is already running.
    */
   void logRunning() {
-    log.info("Container {} running with {} mode:{} shutdown:{}", config.containerName(), dbConfig.summary(), startMode, logShutdown());
+    log.info("Container {} running with {} shutdown:{}", config.containerName(), dbConfig.summary(), logShutdown());
   }
 
   @Override
   void logRun() {
-    log.info("Run container {} with {} mode:{} shutdown:{}", config.containerName(), dbConfig.summary(), startMode, logShutdown());
+    log.info("Run container {} with {} shutdown:{}", config.containerName(), dbConfig.summary(), logShutdown());
   }
 
   @Override
   void logStart() {
-    log.info("Start container {} with {} mode:{} shutdown:{}", config.containerName(), dbConfig.summary(), startMode, logShutdown());
+    log.info("Start container {} with {} shutdown:{}", config.containerName(), dbConfig.summary(), logShutdown());
   }
 
   private String logShutdown() {
@@ -81,11 +73,10 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Expected that mode create will be best most of the time.
    */
   protected boolean startForMode() {
-    String mode = config.getStartMode().toLowerCase().trim();
-    switch (mode) {
-      case "dropcreate":
+    switch (config.getStartMode()) {
+      case DropCreate:
         return startWithDropCreate();
-      case "container":
+      case Container:
         return startContainerOnly();
       default:
         return startWithCreate();
@@ -96,7 +87,6 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Start the DB container ensuring the DB and user exist creating them if necessary.
    */
   public boolean startWithCreate() {
-    startMode = Mode.Create;
     return startWithConnectivity();
   }
 
@@ -104,7 +94,6 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Start the DB container ensuring the DB and user are dropped and then created.
    */
   public boolean startWithDropCreate() {
-    startMode = Mode.DropCreate;
     return startWithConnectivity();
   }
 
@@ -112,7 +101,6 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Start the container only without creating database, user, extensions etc.
    */
   public boolean startContainerOnly() {
-    startMode = Mode.ContainerOnly;
     startIfNeeded();
     if (!waitForDatabaseReady()) {
       log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
