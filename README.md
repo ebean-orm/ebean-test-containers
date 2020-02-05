@@ -8,7 +8,7 @@ Ability to control docker containers. e.g. Postgres running as docker container 
 
 The issues this solves for us is to:
 - create databases and database users as needed
-- wait for databases to be in ready state 
+- wait for databases to be in ready state
 
 
 The needs of this project are primarily driven by the needs/desires of using docker
@@ -17,11 +17,11 @@ containers to make testing nice for Ebean ORM - https://ebean-orm.github.io/
 
 ## Supported Containers
 
-- Postgres 
-- MySql 
+- Postgres
+- MySql
 - SqlServer (via https://hub.docker.com/r/microsoft/mssql-server-linux/)
 - Oracle (via https://hub.docker.com/r/sath89/oracle-12c/)
-- ElasticSearch 
+- ElasticSearch
 - HANA (via https://store.docker.com/images/sap-hana-express-edition)
 
 
@@ -51,29 +51,10 @@ container.stopOnly();
 ```
 
 
-## AutoStart use
-Alternatively we can get them to run via `AutoRun`. This is a good approach
-when we want to start multiple containers (like Postgres + ElasticSearch).
-
-1. Add a docker-run.properties 
-2. Execute AutoStart.run()
-
-Example docker-run.properties
-
-```properties
-
-elastic.version=5.6.0
-
-postgres.version=9.6
-postgres.dbName=junk_db
-postgres.dbUser=rob
-postgres.dbExtensions=hstore,pgcrypto
-postgres.port=6432
-
-```
 
 ## Ebean ORM use
 
-We use `ebean-test-config` (https://github.com/ebean-orm/ebean-test-config) ... to hook into the
-Ebean lifecycle and automatically start the docker containers as needed (prior to running tests etc).
+Refer to the ebean testing documentation (https://ebean.io/docs/testing/) ...
+where we use ebean-test to hook into the Ebean lifecycle and automatically
+start the docker containers as needed (prior to running tests etc).
 
