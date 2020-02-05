@@ -19,19 +19,19 @@ public class PostgresContainerTest {
   public void startPortBased() {
     PostgresConfig config = new PostgresConfig("11");
     config.setContainerName("junk_postgres11");
-    config.setPort("9823");
+    config.setPort(9823);
 
     PostgresContainer dummy = new PostgresContainer(config);
 
     dummy.stopRemove();
     dummy.startContainerOnly();
 
-    runBasedOnPort("9823");
+    runBasedOnPort(9823);
 
     dummy.stopRemove();
   }
 
-  private void runBasedOnPort(String port) {
+  private void runBasedOnPort(int port) {
     System.out.println("runBasedOnPort ... will connect and not start docker container");
     PostgresConfig config = new PostgresConfig("12");
     config.setContainerName("not_started");
@@ -58,7 +58,7 @@ public class PostgresContainerTest {
 
     PostgresConfig config = new PostgresConfig("11");
     config.setContainerName("junk_postgres11");
-    config.setPort("9823");
+    config.setPort(9823);
     config.setExtensions(" hstore, , pgcrypto ");
     config.setInMemory(true);
     config.setUser("main_user");
@@ -107,6 +107,7 @@ public class PostgresContainerTest {
 
     Container container = factory.container("postgres");
     ContainerConfig config = container.config();
+    assertEquals(9823, ((DbConfig)config).getPort());
 
     config.setStartMode("dropCreate");
     container.start();

@@ -12,9 +12,8 @@ public class RedisContainerTest {
   @Test
   public void checkConnectivity() {
 
-
     RedisConfig config = new RedisConfig("latest", new Properties());
-    config.setPort("7379");
+    config.setPort(7379);
     config.setContainerName("redis_junk7379");
 
     RedisContainer container = new RedisContainer(config);
@@ -60,8 +59,8 @@ public class RedisContainerTest {
   }
 
   private void assertProperties( RedisConfig config) {
-    assertEquals(config.getPort(), "7380");
-    assertEquals(config.getInternalPort(), "5379");
+    assertEquals(config.getPort(), 7380);
+    assertEquals(config.getInternalPort(), 5379);
     assertEquals(config.getImage(), "foo");
     assertEquals(config.getStartMode(), "baz");
     assertEquals(config.getStopMode(), "bar");

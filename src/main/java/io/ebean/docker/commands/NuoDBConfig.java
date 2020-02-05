@@ -20,7 +20,7 @@ public class NuoDBConfig extends DbConfig {
   }
 
   public NuoDBConfig(String version) {
-    super("nuodb", "8888", "8888", version);
+    super("nuodb", 8888, 8888, version);
     this.containerName = platform;
     this.image = "nuodb/nuodb-ce:" + version;
     this.adminUsername = "dba";

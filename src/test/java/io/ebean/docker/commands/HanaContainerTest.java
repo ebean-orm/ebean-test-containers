@@ -95,7 +95,7 @@ public class HanaContainerTest {
     //System.setProperty("hana.agreeToSapLicense", "true");
 
     HanaConfig config = new HanaConfig("2.00.033.00.20180925.2");
-    config.setPort("39117");
+    config.setPort(39117);
     config.setInstanceNumber("91");
     try {
       config.setPasswordsUrl(new URL("file:///hana/mounts/" + this.passwordsFile.getFileName()));
@@ -173,7 +173,7 @@ public class HanaContainerTest {
   public void noLicense() {
 
     HanaConfig config = new HanaConfig("2.00.033.00.20180925.2");
-    config.setPort("39117");
+    config.setPort(39117);
     config.setInstanceNumber("91");
     try {
       config.setPasswordsUrl(new URL("file:///hana/mounts/" + this.passwordsFile.getFileName()));

@@ -20,7 +20,7 @@ public class MySqlContainerTest {
 
     MySqlConfig config = new MySqlConfig(MYSQL_VER);
     config.setContainerName("temp_mysql");
-    config.setPort("7306");
+    config.setPort(7306);
     config.setCharacterSet("utf8mb4");
     config.setCollation("utf8mb4_unicode_ci");
 
@@ -36,7 +36,7 @@ public class MySqlContainerTest {
 
     MySqlConfig config = new MySqlConfig(MYSQL_VER);
     config.setContainerName("temp_mysql");
-    config.setPort("7306");
+    config.setPort(7306);
 
     MySqlContainer container = new MySqlContainer(config);
 
@@ -50,7 +50,7 @@ public class MySqlContainerTest {
 
     MySqlConfig config = new MySqlConfig(MYSQL_VER);
     config.setContainerName("temp_mysql");
-    config.setPort("7306");
+    config.setPort(7306);
     config.setCollation("default");
 
     MySqlContainer container = new MySqlContainer(config);
@@ -64,7 +64,7 @@ public class MySqlContainerTest {
 
     MySqlConfig config = new MySqlConfig(MYSQL_VER);
     config.setContainerName("temp_mysql");
-    config.setPort("7306");
+    config.setPort(7306);
     config.setFastStartMode(true);
 
     MySqlContainer container = new MySqlContainer(config);

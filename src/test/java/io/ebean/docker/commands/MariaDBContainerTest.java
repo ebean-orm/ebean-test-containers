@@ -17,7 +17,7 @@ public class MariaDBContainerTest {
 
     MariaDBConfig config = new MariaDBConfig("latest");
     config.setContainerName("temp_mariadb");
-    config.setPort("8306");
+    config.setPort(8306);
     config.setFastStartMode(true);
 
     MariaDBContainer container = new MariaDBContainer(config);

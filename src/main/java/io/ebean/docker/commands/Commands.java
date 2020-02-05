@@ -167,7 +167,7 @@ public class Commands {
   /**
    * Check if the port matches the existing port bindings and if not return the existing port bindings.
    */
-  public String registeredPortMatch(String containerName, String matchPort) {
+  public String registeredPortMatch(String containerName, int matchPort) {
     ProcessResult result = ProcessHandler.command(docker, "container", "inspect", containerName, "--format={{.HostConfig.PortBindings}}");
     List<String> outLines = result.getOutLines();
     for (String outLine : outLines) {

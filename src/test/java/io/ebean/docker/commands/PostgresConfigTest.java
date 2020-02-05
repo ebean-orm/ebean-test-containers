@@ -48,7 +48,7 @@ public class PostgresConfigTest {
 
     PostgresConfig config = new PostgresConfig("11", properties);
     assertEquals(config.containerName(), "ut_postgres");
-    assertEquals(config.getPort(), "6432");
+    assertEquals(config.getPort(), 6432);
     assertEquals(config.getImage(), "postgres:11");
     assertEquals(config.getDbName(), "test_db");
     assertEquals(config.getUsername(), "test_user");
@@ -79,7 +79,7 @@ public class PostgresConfigTest {
 
     PostgresConfig config = new PostgresConfig("11", properties);
     assertEquals(config.containerName(), "junk_postgres");
-    assertEquals(config.getPort(), "9823");
+    assertEquals(config.getPort(), 9823);
     assertEquals(config.getImage(), "postgres:11");
     assertEquals(config.getDbName(), "baz");
     assertEquals(config.getUsername(), "foo");

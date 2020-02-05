@@ -28,7 +28,7 @@ public class RedisContainer extends BaseContainer {
     }
 
     try {
-      ProcessBuilder pb = new ProcessBuilder("nc", "localhost", config.getPort());
+      ProcessBuilder pb = new ProcessBuilder("nc", "localhost", Integer.toString(config.getPort()));
       pb.redirectErrorStream(true);
 
       Process process = pb.start();

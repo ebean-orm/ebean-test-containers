@@ -10,10 +10,10 @@ public class CockroachConfig extends DbConfig {
   }
 
   public CockroachConfig(String version) {
-    super("cockroach", "26257", "26257", version);
+    super("cockroach", 26257, 26257, version);
     this.image = "cockroachdb/cockroach:" + version;
-    this.adminInternalPort = "8080";
-    this.adminPort = "8888";
+    this.adminInternalPort = 8080;
+    this.adminPort = 8888;
     this.setUser("root");
   }
 

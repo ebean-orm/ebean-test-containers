@@ -26,22 +26,22 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * The exposed port.
    */
-  protected String port;
+  protected int port;
 
   /**
    * The internal port.
    */
-  protected String internalPort;
+  protected int internalPort;
 
   /**
    * The exposed port.
    */
-  protected String adminPort;
+  protected int adminPort;
 
   /**
    * The internal port.
    */
-  protected String adminInternalPort;
+  protected int adminInternalPort;
 
   /**
    * Image name.
@@ -88,7 +88,7 @@ public abstract class BaseConfig implements ContainerConfig {
 
   protected final String version;
 
-  BaseConfig(String platform, String port, String internalPort, String version) {
+  BaseConfig(String platform, int port, int internalPort, String version) {
     this.platform = platform;
     this.port = port;
     this.internalPort = internalPort;
@@ -211,6 +211,12 @@ public abstract class BaseConfig implements ContainerConfig {
     return properties.getProperty(platform + "." + key, val);
   }
 
+  protected int prop(Properties properties, String key, int defaultValue) {
+    String val = properties.getProperty("ebean.test." + platform + "." + key);
+    val = properties.getProperty(platform + "." + key, val);
+    return val == null ? defaultValue : Integer.parseInt(val);
+  }
+
   /**
    * Set the container name.
    */
@@ -222,7 +228,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the exposed port.
    */
-  public BaseConfig setPort(String port) {
+  public BaseConfig setPort(int port) {
     this.port = port;
     return this;
   }
@@ -230,7 +236,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the internal (to the container) port.
    */
-  public BaseConfig setInternalPort(String internalPort) {
+  public BaseConfig setInternalPort(int internalPort) {
     this.internalPort = internalPort;
     return this;
   }
@@ -238,7 +244,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the exposed admin port.
    */
-  public BaseConfig setAdminPort(String adminPort) {
+  public BaseConfig setAdminPort(int adminPort) {
     this.adminPort = adminPort;
     return this;
   }
@@ -246,7 +252,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the internal admin (to the container) port.
    */
-  public BaseConfig setAdminInternalPort(String adminInternalPort) {
+  public BaseConfig setAdminInternalPort(int adminInternalPort) {
     this.adminInternalPort = adminInternalPort;
     return this;
   }
@@ -291,19 +297,19 @@ public abstract class BaseConfig implements ContainerConfig {
     return this;
   }
 
-  public String getPort() {
+  public int getPort() {
     return port;
   }
 
-  public String getInternalPort() {
+  public int getInternalPort() {
     return internalPort;
   }
 
-  public String getAdminPort() {
+  public int getAdminPort() {
     return adminPort;
   }
 
-  public String getAdminInternalPort() {
+  public int getAdminInternalPort() {
     return adminInternalPort;
   }
 

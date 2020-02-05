@@ -10,7 +10,7 @@ public class ClickHouseConfig extends DbConfig {
   }
 
   public ClickHouseConfig(String version) {
-    super("clickhouse", "8123", "8123", version);
+    super("clickhouse", 8123, 8123, version);
     this.image = "yandex/clickhouse-server:" + version;
     this.setUser("default");
     this.setPassword("");

@@ -25,8 +25,8 @@ public class SqlServerContainerTest {
 
     SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
     config.setContainerName("temp_sqls");
-    config.setPort("2433");
-    config.setCollation("defaullt");
+    config.setPort(2433);
+    config.setCollation("default");
 
     SqlServerContainer container = new SqlServerContainer(config);
 
@@ -40,7 +40,7 @@ public class SqlServerContainerTest {
 
     SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
     config.setContainerName("temp_sqls");
-    config.setPort("2433");
+    config.setPort(2433);
 
     SqlServerContainer container = new SqlServerContainer(config);
 
@@ -54,7 +54,7 @@ public class SqlServerContainerTest {
 
     SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
     config.setContainerName("temp_sqls");
-    config.setPort("2433");
+    config.setPort(2433);
     config.setCollation("SQL_Latin1_General_CP1_CS_AS");
 
     SqlServerContainer container = new SqlServerContainer(config);

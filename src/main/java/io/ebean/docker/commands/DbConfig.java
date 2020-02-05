@@ -80,7 +80,7 @@ public abstract class DbConfig extends BaseConfig {
    */
   boolean fastStartMode = true;
 
-  DbConfig(String platform, String port, String internalPort, String version) {
+  DbConfig(String platform, int port, int internalPort, String version) {
     super(platform, port, internalPort, version);
   }
 

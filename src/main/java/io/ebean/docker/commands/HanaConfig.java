@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * SAP HANA configuration.
- * 
+ *
  * For more information about the HANA docker configuration see the tutorial
  * <a href=
  * "https://developers.sap.com/tutorials/hxe-ua-install-using-docker.html">Installing
@@ -29,7 +29,7 @@ public class HanaConfig extends DbConfig {
   public HanaConfig(String version, Properties properties) {
     this(version);
     setProperties(properties);
-    if (!this.port.matches("\\d{5}")) {
+    if (!Integer.toString(this.port).matches("\\d{5}")) {
       throw new IllegalArgumentException("Invalid port: " + this.port + ". The port must consist of exactly 5 digits.");
     }
     this.mountsDirectory = prop(properties, "mountsDirectory", "/data/dockermounts");
@@ -53,13 +53,14 @@ public class HanaConfig extends DbConfig {
           + ". The instance number must consist of exactly two digits.");
     }
     if (!"90".equals(this.instanceNumber)) {
-      this.port = this.port.substring(0, 1) + this.instanceNumber + this.port.substring(3);
+      String portStr = Integer.toString(this.port);
+      this.port = Integer.parseInt(portStr.substring(0, 1) + this.instanceNumber + portStr.substring(3));
     }
     this.agreeToSapLicense = checkLicenseAgreement(properties);
   }
 
   public HanaConfig(String version) {
-    super("hana", "39017", "39017", version);
+    super("hana", 39017, 39017, version);
     this.image = "store/saplabs/hanaexpress:" + version;
     this.mountsDirectory = "/data/dockermounts";
     try {
@@ -89,12 +90,12 @@ public class HanaConfig extends DbConfig {
    * <p>
    * The directory must be created before starting the docker container, for
    * example, like this:
-   * 
+   *
    * <pre>
    * sudo mkdir -p /data/&lt;directory_name&gt;
    * sudo chown 12000:79 /data/&lt;directory_name&gt;
    * </pre>
-   * 
+   *
    * @return The path to the external directory
    */
   public String getMountsDirectory() {
@@ -104,7 +105,7 @@ public class HanaConfig extends DbConfig {
   /**
    * Set the path to the container-external mounts directory that can be used by
    * the HANA docker image to store its data.
-   * 
+   *
    * @param mountsDirectory The path to the external directory
    */
   public void setMountsDirectory(String mountsDirectory) {
@@ -116,17 +117,17 @@ public class HanaConfig extends DbConfig {
    * database users.
    * <p>
    * The file must contain passwords in a JSON format, for example:
-   * 
+   *
    * <pre>
    * {
    *   "master_password" : "HXEHana1"
    * }
    * </pre>
-   * 
+   *
    * If the file is located in the container-external mounts directory (see
    * {@link #getMountsDirectory()}), the URL should be
    * {@code file:///hana/mounts/<file_name>.json}
-   * 
+   *
    * @return The URL of the file containing the default password(s) for the HANA
    *         database users.
    */
@@ -137,7 +138,7 @@ public class HanaConfig extends DbConfig {
   /**
    * Set the URL of the file containing the default password(s) for the HANA
    * database users.
-   * 
+   *
    * @param passwordsUrl The URL of the file containing the default password(s)
    *                     for the HANA database users.
    */
@@ -147,11 +148,11 @@ public class HanaConfig extends DbConfig {
 
   /**
    * Return the container-external instance number of the HANA database.
-   * 
+   *
    * A different instance number is necessary when running more than one instance
    * of HANA on one host. The instance number can range from 00 to 99. The default
    * instance number is 90.
-   * 
+   *
    * @return The container-external instance number of the HANA database.
    */
   public String getInstanceNumber() {
@@ -160,7 +161,7 @@ public class HanaConfig extends DbConfig {
 
   /**
    * Set the container-external instance number of the HANA database.
-   * 
+   *
    * @param instanceNumber The container-external instance number of the HANA
    *                       database.
    */
@@ -172,7 +173,7 @@ public class HanaConfig extends DbConfig {
    * Returns whether the user agrees to the <a href=
    * "https://www.sap.com/docs/download/cmp/2016/06/sap-hana-express-dev-agmt-and-exhibit.pdf">SAP
    * license</a> for the HANA docker image.
-   * 
+   *
    * @return {@code true} if the user agrees to the license, {@code false}
    *         otherwise.
    */
@@ -184,7 +185,7 @@ public class HanaConfig extends DbConfig {
    * Set whether the user agrees to the <a href=
    * "https://www.sap.com/docs/download/cmp/2016/06/sap-hana-express-dev-agmt-and-exhibit.pdf">SAP
    * license</a> for the HANA docker image.
-   * 
+   *
    * @param agreeToSapLicense Whether the user agrees to the license or not
    */
   public void setAgreeToSapLicense(boolean agreeToSapLicense) {
@@ -195,7 +196,7 @@ public class HanaConfig extends DbConfig {
    * Check if the user has agreed to the <a href=
    * "https://www.sap.com/docs/download/cmp/2016/06/sap-hana-express-dev-agmt-and-exhibit.pdf">SAP
    * license</a>
-   * 
+   *
    * @param properties The properties to check
    * @return {@code true} if the user has agreed to the license, {@code false}
    *         otherwise
@@ -216,7 +217,7 @@ public class HanaConfig extends DbConfig {
    * Check if the user has agreed to the <a href=
    * "https://www.sap.com/docs/download/cmp/2016/06/sap-hana-express-dev-agmt-and-exhibit.pdf">SAP
    * license</a>
-   * 
+   *
    * @return {@code true} if the user has agreed to the license, {@code false}
    *         otherwise
    */

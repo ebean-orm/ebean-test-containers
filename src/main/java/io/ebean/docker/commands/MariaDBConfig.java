@@ -13,7 +13,7 @@ public class MariaDBConfig extends MySqlConfig {
   }
 
   public MariaDBConfig(String version) {
-    super("mariadb", "4306", "3306", version);
+    super("mariadb", 4306, 3306, version);
     this.adminUsername = "root";
     this.adminPassword = "admin";
     this.setTmpfs("/var/lib/mysql:rw");

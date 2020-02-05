@@ -10,7 +10,7 @@ public class MySqlConfig extends DbConfig {
   }
 
   public MySqlConfig(String version) {
-    super("mysql", "4306", "3306", version);
+    super("mysql", 4306, 3306, version);
     this.adminUsername = "root";
     this.adminPassword = "admin";
     this.setTmpfs("/var/lib/mysql:rw");
@@ -19,7 +19,7 @@ public class MySqlConfig extends DbConfig {
   /**
    * Expose for MariaDB config.
    */
-  protected MySqlConfig(String platform, String port, String internalPort, String version) {
+  protected MySqlConfig(String platform, int port, int internalPort, String version) {
     super(platform, port, internalPort, version);
   }
 

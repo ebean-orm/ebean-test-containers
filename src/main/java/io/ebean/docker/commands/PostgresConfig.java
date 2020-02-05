@@ -10,7 +10,7 @@ public class PostgresConfig extends DbConfig {
   }
 
   public PostgresConfig(String version) {
-    super("postgres", "6432", "5432", version);
+    super("postgres", 6432, 5432, version);
     this.adminUsername = "postgres";
     this.adminPassword = "";
     setTmpfs("/var/lib/postgresql/data:rw");
