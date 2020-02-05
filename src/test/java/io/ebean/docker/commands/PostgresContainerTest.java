@@ -16,20 +16,56 @@ import static org.junit.Assert.assertTrue;
 public class PostgresContainerTest {
 
   @Test
+  public void startPortBased() {
+    PostgresConfig config = new PostgresConfig("11");
+    config.setContainerName("junk_postgres11");
+    config.setPort("9823");
+
+    PostgresContainer dummy = new PostgresContainer(config);
+
+    dummy.stopRemove();
+    dummy.startContainerOnly();
+
+    runBasedOnPort("9823");
+
+    dummy.stopRemove();
+  }
+
+  private void runBasedOnPort(String port) {
+    System.out.println("runBasedOnPort ... will connect and not start docker container");
+    PostgresConfig config = new PostgresConfig("12");
+    config.setContainerName("not_started");
+    config.setPort(port);
+    config.setExtensions("hstore");
+    config.setStopMode("remove");
+
+    PostgresContainer dummy = new PostgresContainer(config);
+
+    dummy.start();
+
+    try {
+      Connection connection = config.createConnection();
+      exeSql(connection, "create table test_junk2 (acol integer, map hstore)");
+      exeSql(connection, "insert into test_junk2 (acol) values (42)");
+      exeSql(connection, "insert into test_junk2 (acol) values (43)");
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  @Test
   public void start() throws SQLException {
 
     PostgresConfig config = new PostgresConfig("11");
-    config.setContainerName("junk_postgres10");
+    config.setContainerName("junk_postgres11");
     config.setPort("9823");
     config.setExtensions(" hstore, , pgcrypto ");
     config.setInMemory(true);
-//    config.setFastStartMode(true);
     config.setUser("main_user");
     config.setDbName("main_db");
     config.setInitSqlFile("init-main-database.sql");
     config.setSeedSqlFile("seed-main-database.sql");
 
-//    config.setExtraDbUser("extra_user");
     config.setExtraDb("extra");
     config.setExtraDbInitSqlFile("init-extra-database.sql");
     config.setExtraDbSeedSqlFile("seed-extra-database.sql");
@@ -50,15 +86,15 @@ public class PostgresContainerTest {
 
     final String url = container.jdbcUrl();
     assertEquals(url, "jdbc:postgresql://localhost:9823/main_db");
-    //container.stopOnly();
+//    container.stopRemove();
   }
 
   @Test
   public void viaContainerFactory() {
 
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "10.1");
-    properties.setProperty("postgres.containerName", "junk_postgres10");
+    properties.setProperty("postgres.version", "11");
+    properties.setProperty("postgres.containerName", "junk_postgres11");
     properties.setProperty("postgres.port", "9823");
 
     properties.setProperty("postgres.extensions", "hstore,pgcrypto");

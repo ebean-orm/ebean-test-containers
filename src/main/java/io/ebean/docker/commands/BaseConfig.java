@@ -346,4 +346,15 @@ public abstract class BaseConfig implements ContainerConfig {
   public boolean isDefaultCollation() {
     return "default".equals(collation);
   }
+
+  public boolean isStopModeNone() {
+    return "none".equals(stopMode);
+  }
+
+  /**
+   * Clear the stopMode when detect already running.
+   */
+  public void clearStopMode() {
+    this.stopMode = "none";
+  }
 }

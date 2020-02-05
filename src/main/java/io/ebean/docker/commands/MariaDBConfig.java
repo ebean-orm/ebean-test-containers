@@ -14,10 +14,18 @@ public class MariaDBConfig extends MySqlConfig {
 
   public MariaDBConfig(String version) {
     super("mariadb", "4306", "3306", version);
+    this.adminUsername = "root";
+    this.adminPassword = "admin";
     this.setTmpfs("/var/lib/mysql:rw");
   }
 
+  @Override
   public String jdbcUrl() {
     return "jdbc:mysql://localhost:" + getPort() + "/" + getDbName();
+  }
+
+  @Override
+  public String jdbcAdminUrl() {
+    return "jdbc:mysql://localhost:" + getPort() + "/mysql";
   }
 }

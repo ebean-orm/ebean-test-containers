@@ -69,7 +69,6 @@ abstract class BaseContainer implements Container {
   }
 
   protected boolean shutdownHook(boolean started) {
-
     String mode = config.shutdownMode();
     if (mode != null && !mode.equalsIgnoreCase("none")) {
       registerShutdownHook(mode);
@@ -190,7 +189,9 @@ abstract class BaseContainer implements Container {
    * Stop and remove the container effectively deleting the database.
    */
   public void stopRemove() {
-    commands.stopRemove(config.containerName());
+    if (!config.isStopModeNone()) {
+      commands.stopRemove(config.containerName());
+    }
   }
 
   /**
@@ -198,7 +199,9 @@ abstract class BaseContainer implements Container {
    */
   @Override
   public void stopOnly() {
-    commands.stopIfRunning(config.containerName());
+    if (!config.isStopModeNone()) {
+      commands.stopIfRunning(config.containerName());
+    }
   }
 
   protected ProcessBuilder createProcessBuilder(List<String> args) {

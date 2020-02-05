@@ -16,11 +16,17 @@ public class SqlServerConfig extends DbConfig {
     super("sqlserver", "1433", "1433", version);
     this.image = "mcr.microsoft.com/mssql/server:" + version;
     // default password that satisfies sql server
-    setAdminPassword("SqlS3rv#r");
-    setPassword("SqlS3rv#r");
+    this.adminUsername = "sa";
+    this.adminPassword = "SqlS3rv#r";
+    this.password = "SqlS3rv#r";
   }
 
   public String jdbcUrl() {
     return "jdbc:sqlserver://localhost:" + getPort() + ";databaseName=" + getDbName();
+  }
+
+  @Override
+  public String jdbcAdminUrl() {
+    return "jdbc:sqlserver://localhost:" + getPort();
   }
 }

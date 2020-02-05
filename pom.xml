@@ -10,7 +10,7 @@
 
   <groupId>io.ebean.test</groupId>
   <artifactId>ebean-test-docker</artifactId>
-  <version>2.11.3-SNAPSHOT</version>
+  <version>3.0.2-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:ebean-orm/ebean-test-docker.git</developerConnection>
@@ -50,7 +50,7 @@
     <dependency>
       <groupId>ru.yandex.clickhouse</groupId>
       <artifactId>clickhouse-jdbc</artifactId>
-      <version>0.1.50</version>
+      <version>0.2.4</version>
       <scope>test</scope>
     </dependency>
 

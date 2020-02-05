@@ -53,7 +53,8 @@ public class PostgresConfigTest {
     assertEquals(config.getDbName(), "test_db");
     assertEquals(config.getUsername(), "test_user");
     assertEquals(config.getPassword(), "test");
-    assertEquals(config.getAdminPassword(), "admin");
+    assertEquals(config.getAdminUsername(), "postgres");
+    assertEquals(config.getAdminPassword(), "");
     assertTrue(config.isFastStartMode());
     assertFalse(config.isInMemory());
   }

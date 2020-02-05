@@ -36,8 +36,6 @@ public class Commands {
    * Stop the container checking to see if it is running first.
    */
   public void stopIfRunning(String containerName) {
-
-    log.debug("stopIfRunning {}", containerName);
     if (isRunning(containerName)) {
       stop(containerName);
     }
@@ -47,8 +45,6 @@ public class Commands {
    * Stop and remove the container.
    */
   public void stopRemove(String containerName) {
-
-    log.debug("stopRemove {}", containerName);
     if (isRunning(containerName)) {
       stop(containerName);
     }
