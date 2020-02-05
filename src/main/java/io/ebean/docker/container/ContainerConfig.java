@@ -1,6 +1,7 @@
 package io.ebean.docker.container;
 
 import io.ebean.docker.commands.StartMode;
+import io.ebean.docker.commands.StopMode;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -58,7 +59,7 @@ public interface ContainerConfig {
   /**
    * Set the stop mode.
    */
-  void setStopMode(String stopMode);
+  void setStopMode(StopMode stopMode);
 
   /**
    * Set the shutdown hook mode to automatically stop/remove the container on JVM shutdown.

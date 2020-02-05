@@ -37,7 +37,7 @@ public class PostgresContainerTest {
     config.setContainerName("not_started");
     config.setPort(port);
     config.setExtensions("hstore");
-    config.setStopMode("remove");
+    config.setStopMode(StopMode.Remove);
 
     PostgresContainer dummy = new PostgresContainer(config);
 

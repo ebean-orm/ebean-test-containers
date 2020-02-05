@@ -177,11 +177,13 @@ abstract class BaseContainer implements Container {
    */
   @Override
   public void stop() {
-    String mode = config.getStopMode().toLowerCase().trim();
-    if ("remove".equals(mode)) {
-      stopRemove();
-    } else {
-      stopOnly();
+    switch (config.getStopMode()) {
+      case Remove:
+        stopRemove();
+        break;
+      case Stop:
+        stopOnly();
+        break;
     }
   }
 

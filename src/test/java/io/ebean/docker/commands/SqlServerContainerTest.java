@@ -1,8 +1,8 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
-import io.ebean.docker.container.Container;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -98,7 +98,7 @@ public class SqlServerContainerTest {
     ContainerConfig config = container.config();
 
     config.setStartMode(StartMode.DropCreate);
-    config.setStopMode("remove");
+    config.setStopMode(StopMode.Remove);
     container.start();
 
     config.setStartMode(StartMode.Container);

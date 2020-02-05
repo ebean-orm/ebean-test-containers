@@ -63,6 +63,6 @@ public class RedisContainerTest {
     assertEquals(config.getInternalPort(), 5379);
     assertEquals(config.getImage(), "foo");
     assertEquals(config.getStartMode(), StartMode.Create);
-    assertEquals(config.getStopMode(), "bar");
+    assertEquals(config.getStopMode(), StopMode.Stop);
   }
 }

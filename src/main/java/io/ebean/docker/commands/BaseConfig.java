@@ -56,7 +56,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * The mode used when stopping (stop, remove).
    */
-  protected String stopMode = "stop";
+  protected StopMode stopMode = StopMode.Stop;
 
   /**
    * Set when we want to automatically stop or remove the container via JVM shutdown hook.
@@ -131,7 +131,7 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   @Override
-  public void setStopMode(String stopMode) {
+  public void setStopMode(StopMode stopMode) {
     this.stopMode = stopMode;
   }
 
@@ -186,11 +186,11 @@ public abstract class BaseConfig implements ContainerConfig {
     characterSet = prop(properties, "characterSet", characterSet);
     collation = prop(properties, "collation", collation);
 
-    String sm = properties.getProperty("startMode", startMode.name());
-    startMode = StartMode.of(prop(properties, "startMode", sm));
+    String start = properties.getProperty("startMode", startMode.name());
+    startMode = StartMode.of(prop(properties, "startMode", start));
 
-    stopMode = properties.getProperty("stopMode", stopMode);
-    stopMode = prop(properties, "stopMode", stopMode);
+    String stop = properties.getProperty("stopMode", stopMode.name());
+    stopMode = StopMode.of(prop(properties, "stopMode", stop));
 
     shutdownMode = properties.getProperty("shutdown", shutdownMode);
     shutdownMode = prop(properties, "shutdown", shutdownMode);
@@ -321,7 +321,7 @@ public abstract class BaseConfig implements ContainerConfig {
     return startMode;
   }
 
-  public String getStopMode() {
+  public StopMode getStopMode() {
     return stopMode;
   }
 
@@ -354,13 +354,13 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   public boolean isStopModeNone() {
-    return "none".equals(stopMode);
+    return StopMode.None == stopMode;
   }
 
   /**
    * Clear the stopMode when detect already running.
    */
   public void clearStopMode() {
-    this.stopMode = "none";
+    this.stopMode = StopMode.None;
   }
 }

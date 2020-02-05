@@ -17,7 +17,7 @@ public class PostgresConfigTest {
     properties.setProperty("stopMode", "remove");
 
     PostgresConfig config = new PostgresConfig("11", properties);
-    assertEquals(config.getStopMode(), "remove");
+    assertEquals(config.getStopMode(), StopMode.Remove);
   }
 
   @Test
@@ -26,7 +26,7 @@ public class PostgresConfigTest {
     Properties properties = new Properties();
 
     PostgresConfig config = new PostgresConfig("11", properties);
-    assertEquals(config.getStopMode(), "stop");
+    assertEquals(config.getStopMode(), StopMode.Stop);
   }
 
   @Test
@@ -37,7 +37,7 @@ public class PostgresConfigTest {
     properties.setProperty("postgres.stopMode", "none");
 
     PostgresConfig config = new PostgresConfig("11", properties);
-    assertEquals(config.getStopMode(), "none");
+    assertEquals(config.getStopMode(), StopMode.None);
   }
 
 
