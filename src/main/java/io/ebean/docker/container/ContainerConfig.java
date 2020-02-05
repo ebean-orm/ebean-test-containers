@@ -57,14 +57,14 @@ public interface ContainerConfig {
   void setStartMode(StartMode startMode);
 
   /**
-   * Set the stop mode.
+   * Set the stop mode used when stop() is called.
    */
   void setStopMode(StopMode stopMode);
 
   /**
    * Set the shutdown hook mode to automatically stop/remove the container on JVM shutdown.
    */
-  void setShutdownMode(String shutdownHookMode);
+  void setShutdownMode(StopMode shutdownHookMode);
 
   /**
    * Return a good description for starting the container typically for logging.

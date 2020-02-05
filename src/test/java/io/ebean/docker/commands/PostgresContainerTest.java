@@ -78,7 +78,8 @@ public class PostgresContainerTest {
     container.startWithDropCreate();
 
     assertTrue(container.isRunning());
-    container.registerShutdownHook("stop");
+    config.setShutdownMode(StopMode.Stop);
+    container.registerShutdownHook();
 
     try (Connection connection = container.createConnection()) {
       exeSql(connection, "drop table if exists test_doesnotexist");

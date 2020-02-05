@@ -45,7 +45,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   private String logShutdown() {
-    return dbConfig.shutdownMode == null ? "" : dbConfig.shutdownMode;
+    return dbConfig.shutdownMode == null ? "" : dbConfig.shutdownMode.name();
   }
 
   /**

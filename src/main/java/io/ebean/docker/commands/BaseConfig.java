@@ -61,7 +61,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set when we want to automatically stop or remove the container via JVM shutdown hook.
    */
-  protected String shutdownMode;
+  protected StopMode shutdownMode = StopMode.None;
 
   /**
    * The character set to use.
@@ -136,7 +136,7 @@ public abstract class BaseConfig implements ContainerConfig {
   }
 
   @Override
-  public void setShutdownMode(String shutdownMode) {
+  public void setShutdownMode(StopMode shutdownMode) {
     this.shutdownMode = shutdownMode;
   }
 
@@ -192,8 +192,8 @@ public abstract class BaseConfig implements ContainerConfig {
     String stop = properties.getProperty("stopMode", stopMode.name());
     stopMode = StopMode.of(prop(properties, "stopMode", stop));
 
-    shutdownMode = properties.getProperty("shutdown", shutdownMode);
-    shutdownMode = prop(properties, "shutdown", shutdownMode);
+    String shutdown = properties.getProperty("shutdown", shutdownMode.name());
+    shutdownMode = StopMode.of(prop(properties, "shutdown", shutdown));
 
     String maxVal = prop(properties, "maxReadyAttempts", null);
     if (maxVal != null) {
@@ -333,7 +333,7 @@ public abstract class BaseConfig implements ContainerConfig {
     return docker;
   }
 
-  public String shutdownMode() {
+  public StopMode shutdownMode() {
     return shutdownMode;
   }
 

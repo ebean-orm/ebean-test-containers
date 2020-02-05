@@ -43,15 +43,15 @@ abstract class BaseContainer implements Container {
 
   private class Hook extends Thread {
 
-    private final String mode;
+    private final StopMode mode;
 
-    Hook(String mode) {
+    Hook(StopMode mode) {
       this.mode = mode;
     }
 
     @Override
     public void run() {
-      if ("remove".equalsIgnoreCase(mode)) {
+      if (StopMode.Remove == mode) {
         stopRemove();
       } else {
         stopOnly();
@@ -61,17 +61,14 @@ abstract class BaseContainer implements Container {
 
   /**
    * Register a JVM Shutdown hook to stop the container with the given mode.
-   *
-   * @param mode If "remove" then stop and remove the container and otherwise just stop the container.
    */
-  public void registerShutdownHook(String mode) {
-    Runtime.getRuntime().addShutdownHook(new Hook(mode));
+  public void registerShutdownHook() {
+    Runtime.getRuntime().addShutdownHook(new Hook(config.shutdownMode()));
   }
 
   protected boolean shutdownHook(boolean started) {
-    String mode = config.shutdownMode();
-    if (mode != null && !mode.equalsIgnoreCase("none")) {
-      registerShutdownHook(mode);
+    if (StopMode.None != config.shutdownMode()) {
+      registerShutdownHook();
     }
     return started;
   }
