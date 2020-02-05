@@ -50,7 +50,7 @@ public abstract class JdbcBaseDbContainer extends DbContainer {
   protected boolean checkAlreadyRunning() {
     try (Connection connection = dbConfig.createAdminConnection()) {
       return true;
-    } catch (SQLException e) {
+    } catch (Throwable e) {
       // no connectivity
       return false;
     }

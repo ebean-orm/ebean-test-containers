@@ -14,10 +14,17 @@ public class ClickHouseConfig extends DbConfig {
     this.image = "yandex/clickhouse-server:" + version;
     this.setUser("default");
     this.setPassword("");
+    this.adminUsername = "default";
+    this.adminPassword = "";
   }
 
   @Override
   public String jdbcUrl() {
     return "jdbc:clickhouse://localhost:" + getPort() + "/" + getDbName();
+  }
+
+  @Override
+  public String jdbcAdminUrl() {
+    return "jdbc:clickhouse://localhost:" + getPort()+ "/default";
   }
 }

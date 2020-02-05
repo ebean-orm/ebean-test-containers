@@ -214,7 +214,7 @@ abstract class DbContainer extends BaseContainer implements Container {
         log.debug("connectivity confirmed for {}", config.containerName);
       }
       return true;
-    } catch (SQLException e) {
+    } catch (Throwable e) {
       log.trace("connection failed: " + e.getMessage());
       return false;
     }
