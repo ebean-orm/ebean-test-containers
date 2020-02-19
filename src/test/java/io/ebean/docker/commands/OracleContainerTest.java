@@ -18,8 +18,8 @@ public class OracleContainerTest {
   public void start() {
 
     OracleConfig config = new OracleConfig("latest");
-    config.setUser("test_start");
-    config.setContainerName("test_ebean_migration_oracle");
+    config.setUser("test_ebean");
+    //config.setContainerName("test_ebean_migration_oracle");
 
     OracleContainer container = new OracleContainer(config);
 

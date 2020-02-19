@@ -1,13 +1,10 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.commands.process.ProcessHandler;
 import io.ebean.docker.container.Container;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
@@ -15,7 +12,7 @@ import java.util.Properties;
 /**
  * Commands for controlling an Oracle docker container.
  */
-public class OracleContainer extends DbContainer implements Container {
+public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
   /**
    * Create Postgres container with configuration from properties.
@@ -38,129 +35,53 @@ public class OracleContainer extends DbContainer implements Container {
   }
 
   @Override
-  protected ProcessBuilder runProcess() {
-
-    List<String> args = dockerRun();
-    args.add("-p");
-    args.add(oracleConfig.getApexPort() + ":" + oracleConfig.getInternalApexPort());
-    args.add(config.getImage());
-    return createProcessBuilder(args);
+  void createDatabase() {
+    createRoleAndDatabase(false);
   }
 
   @Override
-  protected boolean isDatabaseAdminReady() {
-    return checkConnectivity(true);
+  void dropCreateDatabase() {
+    createRoleAndDatabase(true);
   }
 
-  @Override
-  boolean checkConnectivity() {
-    return checkConnectivity(true);
-  }
-
-  @Override
-  void runContainer() {
-    log.info("Starting Oracle container, this will take some time ...");
-    ProcessHandler.process(runProcess());
-    waitForOracle();
-  }
-
-  /**
-   * Oracle starting up from scratch so this will likely take minutes.
-   * Tail the logs looking for Database Ready message.
-   */
-  private void waitForOracle() {
-    if (!checkConnectivity(true)) {
-      log.error("Ran out of time waiting for Oracle Database ready - probably not started.  Check via:  docker logs -f ut_oracle");
-    }
-  }
-
-  @Override
-  protected boolean isDatabaseReady() {
-    return logsContain("Starting Oracle Database", null);
-  }
-
-  /**
-   * Start the container and wait for it to be ready.
-   * <p>
-   * This checks if the container is already running.
-   * </p>
-   * <p>
-   * Returns false if the wait for ready was unsuccessful.
-   * </p>
-   */
-  @Override
-  public boolean startWithCreate() {
-    startIfNeeded();
-    if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
-      return false;
-    }
-    if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
-      return false;
-    }
-    return createUserIfNeeded();
-  }
-
-
-  /**
-   * Start with a drop and create of the database and user.
-   */
-  @Override
-  public boolean startWithDropCreate() {
-    startIfNeeded();
-    if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
-      return false;
-    }
-    if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
-      return false;
-    }
-    return dropCreateUser();
-  }
-
-  private boolean dropCreateUser() {
-    log.info("Drop and create database user {}", dbConfig.getUsername());
-    sqlProcess(connection -> {
-      if (userExists(connection)) {
-        sqlRun(connection, "drop user " + dbConfig.getUsername() + " cascade");
+  private void createRoleAndDatabase(boolean withDrop) {
+    try (Connection connection = config.createAdminConnection()) {
+      if (withDrop) {
+        dropUser(connection);
       }
-      sqlRun(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
-      sqlRun(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getUsername());
-    });
-    return true;
+      createUser(connection);
+
+    } catch (SQLException e) {
+      throw new RuntimeException("Error when creating database and role", e);
+    }
   }
 
-  /**
-   * Create the database user.
-   */
-  public boolean createUserIfNeeded() {
-    log.info("Create database user {} if not exists", dbConfig.getUsername());
-    sqlProcess(connection -> {
-      if (!userExists(connection)) {
-        sqlRun(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
-        sqlRun(connection, "grant connect, resource, create view, unlimited tablespace to " + dbConfig.getUsername());
-      }
-    });
-    return true;
+  private void dropUser(Connection connection) {
+    if (userExists(connection)) {
+      sqlRun(connection, "drop user " + dbConfig.getUsername() + " cascade");
+    }
+  }
+
+  private void createUser(Connection connection) {
+    sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
+    sqlRun(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
+    sqlRun(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getUsername());
   }
 
   private boolean userExists(Connection connection) {
-    String sql = "select count(*) from dba_users where lower(username) = ?";
-    log.debug("execute: " + sql);
-    try (PreparedStatement statement = connection.prepareStatement(sql)) {
-      statement.setString(1, dbConfig.getUsername().toLowerCase());
-      try (ResultSet resultSet = statement.executeQuery()){
-        if (resultSet.next()) {
-          int count = resultSet.getInt(1);
-          return count == 1;
-        }
-        return false;
-      }
-    } catch (SQLException e) {
-      throw new IllegalStateException("Failed to execute sql to check if user exists", e);
-    }
+    String sql = "select 1 from dba_users where lower(username) = '"+dbConfig.getUsername().toLowerCase()+"'";
+    return sqlHasRow(connection, sql);
+  }
+
+  @Override
+  protected ProcessBuilder runProcess() {
+    List<String> args = dockerRun();
+    args.add("-p");
+    args.add(oracleConfig.getApexPort() + ":" + oracleConfig.getInternalApexPort());
+    args.add("-e");
+    args.add("ORACLE_PWD=" + oracleConfig.getAdminPassword());
+    args.add(config.getImage());
+    return createProcessBuilder(args);
   }
 
 }

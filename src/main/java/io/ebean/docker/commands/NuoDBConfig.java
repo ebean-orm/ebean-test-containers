@@ -31,7 +31,7 @@ public class NuoDBConfig extends DbConfig {
   }
 
   public NuoDBConfig() {
-    this("4.0.0-2");
+    this("4.0");
   }
 
   @Override

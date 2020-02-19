@@ -28,7 +28,7 @@ public class NuoDBContainerTest {
     config.setPassword("test");
 
     NuoDBContainer container = new NuoDBContainer(config);
-    container.start();
+    container.startWithDropCreate();
 
     try (Connection connection = config.createConnection()) {
       final Random random = new Random();
@@ -45,7 +45,7 @@ public class NuoDBContainerTest {
       throw new RuntimeException(e);
 
     } finally {
-      container.stop();
+//      container.stop();
 //      container.stopRemove();
     }
   }
