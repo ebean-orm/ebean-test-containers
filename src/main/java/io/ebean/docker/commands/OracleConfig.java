@@ -21,6 +21,10 @@ public class OracleConfig extends DbConfig {
     setProperties(properties);
   }
 
+  public OracleConfig() {
+    this("latest");
+  }
+
   public OracleConfig(String version) {
     super("oracle", 1521, 1521, version);
     this.image = "vitorfec/oracle-xe-18c:" + version;

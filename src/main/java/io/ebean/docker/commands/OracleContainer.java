@@ -49,7 +49,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
       if (withDrop) {
         dropUser(connection);
       }
-      createUser(connection);
+      createUser(connection, withDrop);
 
     } catch (SQLException e) {
       throw new RuntimeException("Error when creating database and role", e);
@@ -58,14 +58,19 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
   private void dropUser(Connection connection) {
     if (userExists(connection)) {
+      sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
       sqlRun(connection, "drop user " + dbConfig.getUsername() + " cascade");
     }
   }
 
-  private void createUser(Connection connection) {
-    sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
-    sqlRun(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
-    sqlRun(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getUsername());
+  private void createUser(Connection connection, boolean withDrop) {
+    if (withDrop || !userExists(connection)) {
+      if (!withDrop) {
+        sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
+      }
+      sqlRun(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
+      sqlRun(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getUsername());
+    }
   }
 
   private boolean userExists(Connection connection) {
