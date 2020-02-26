@@ -17,7 +17,7 @@ public class SqlServerContainerTest {
 
   private static final Logger log = LoggerFactory.getLogger(SqlServerContainerTest.class);
 
-  static final String SQLSERVER_VER = "2017-GA-ubuntu";
+  static final String SQLSERVER_VER = "2019-GA-ubuntu-16.04";
 
   @Ignore
   @Test
@@ -31,7 +31,7 @@ public class SqlServerContainerTest {
     SqlServerContainer container = new SqlServerContainer(config);
 
     container.startWithCreate();
-    //container.stopRemove();
+    container.stopRemove();
   }
 
   @Ignore
@@ -45,7 +45,7 @@ public class SqlServerContainerTest {
     SqlServerContainer container = new SqlServerContainer(config);
 
     container.startWithCreate();
-    //container.stopRemove();
+    container.stopRemove();
   }
 
   @Ignore
@@ -60,7 +60,7 @@ public class SqlServerContainerTest {
     SqlServerContainer container = new SqlServerContainer(config);
 
     container.startWithCreate();
-    //container.stopRemove();
+    container.stopRemove();
   }
 
   @Test

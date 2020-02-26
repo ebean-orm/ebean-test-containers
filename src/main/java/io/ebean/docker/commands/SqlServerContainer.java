@@ -33,7 +33,6 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
   private void createRoleAndDatabase(boolean withDrop) {
     try (Connection connection = config.createAdminConnection()) {
       if (withDrop) {
-        dropLogin(connection);
         dropDatabaseIfExists(connection);
       }
       createDatabase(connection);
@@ -82,11 +81,11 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
     sqlRun(connection, "drop database " + dbName);
   }
 
-  private void dropLogin(Connection connection) {
-    if (loginExists(connection, dbConfig.username)) {
-      sqlRun(connection, "drop login " + dbConfig.username);
-    }
-  }
+//  private void dropLogin(Connection connection) {
+//    if (loginExists(connection, dbConfig.username)) {
+//      sqlRun(connection, "drop login " + dbConfig.username);
+//    }
+//  }
 
   private void createDatabase(Connection connection, String dbName) {
     sqlRun(connection, "create database " + dbName);
@@ -135,9 +134,7 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
       args.add("-e");
       args.add("MSSQL_COLLATION=Latin1_General_100_BIN2");
     }
-
     args.add(config.getImage());
-
     return createProcessBuilder(args);
   }
 
