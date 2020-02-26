@@ -190,7 +190,7 @@ public class PostgresContainer extends JdbcBaseDbContainer implements Container 
     }
     if (!dbConfig.adminPassword.isEmpty()) {
       args.add("-e");
-      args.add(dbConfig.getAdminPassword());
+      args.add("POSTGRES_PASSWORD=" + dbConfig.getAdminPassword());
     }
     args.add(config.getImage());
     return createProcessBuilder(args);
