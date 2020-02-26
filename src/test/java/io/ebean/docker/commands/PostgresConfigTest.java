@@ -54,7 +54,7 @@ public class PostgresConfigTest {
     assertEquals(config.getUsername(), "test_user");
     assertEquals(config.getPassword(), "test");
     assertEquals(config.getAdminUsername(), "postgres");
-    assertEquals(config.getAdminPassword(), "");
+    assertEquals(config.getAdminPassword(), "admin");
     assertEquals(config.getStartMode(), StartMode.Create);
     assertEquals(config.getStopMode(), StopMode.Stop);
     assertEquals(config.shutdownMode(), StopMode.None);
