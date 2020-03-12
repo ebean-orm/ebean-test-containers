@@ -95,7 +95,7 @@ public class PostgresContainer extends JdbcBaseDbContainer implements Container 
   }
 
   private void createDatabase(Connection connection, boolean withExtensions, String dbName,
-                                 String owner, String initSql, String seedSql) {
+                              String owner, String initSql, String seedSql) {
 
     sqlRun(connection, "create database " + dbName + " with owner " + owner);
     if (withExtensions) {
@@ -117,7 +117,7 @@ public class PostgresContainer extends JdbcBaseDbContainer implements Container 
     if (!extensions.isEmpty()) {
       try (Connection connection = dbConfig.createAdminConnection(dbConfig.jdbcUrl())) {
         for (String extension : extensions) {
-          sqlRun(connection, "create extension if not exists " + extension);
+          sqlRun(connection, "create extension if not exists \"" + extension + "\"");
         }
       } catch (SQLException e) {
         throw new RuntimeException(e);
