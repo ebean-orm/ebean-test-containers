@@ -25,6 +25,8 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
   private final OracleConfig oracleConfig;
 
+  private boolean oracleScript;
+
   /**
    * Create with configuration.
    */
@@ -56,18 +58,23 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     }
   }
 
+  private void sqlRunOracleScript(Connection connection) {
+    if (!oracleScript) {
+      sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
+      oracleScript = true;
+    }
+  }
+
   private void dropUser(Connection connection) {
     if (userExists(connection)) {
-      sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
+      sqlRunOracleScript(connection);
       sqlRun(connection, "drop user " + dbConfig.getUsername() + " cascade");
     }
   }
 
   private void createUser(Connection connection, boolean withDrop) {
     if (withDrop || !userExists(connection)) {
-      if (!withDrop) {
-        sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
-      }
+      sqlRunOracleScript(connection);
       sqlRun(connection, "create user " + dbConfig.getUsername() + " identified by " + dbConfig.getPassword());
       sqlRun(connection, "grant connect, resource,  create view, unlimited tablespace to " + dbConfig.getUsername());
     }
