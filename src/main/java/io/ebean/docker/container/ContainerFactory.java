@@ -155,7 +155,6 @@ public class ContainerFactory {
    * Stop all the containers with a consumer for logging stop descriptions.
    */
   public void stopContainers(Consumer<String> logging) {
-
     for (Container container : containers) {
       if (logging != null) {
         logging.accept(container.config().stopDescription());
@@ -175,7 +174,6 @@ public class ContainerFactory {
    * Stop all the containers (without remove) with a consumer for logging stop descriptions.
    */
   public void stopOnly(Consumer<String> logging) {
-
     for (Container container : containers) {
       if (logging != null) {
         logging.accept(container.config().stopDescription());
