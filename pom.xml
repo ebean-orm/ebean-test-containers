@@ -17,6 +17,10 @@
     <tag>HEAD</tag>
   </scm>
 
+  <properties>
+    <nexus.staging.autoReleaseAfterClose>false</nexus.staging.autoReleaseAfterClose>
+  </properties>
+
   <dependencies>
 
     <dependency>
