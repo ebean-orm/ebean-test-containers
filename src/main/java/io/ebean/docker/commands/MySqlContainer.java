@@ -118,8 +118,8 @@ public class MySqlContainer extends JdbcBaseDbContainer implements Container {
     }
     if (!dbConfig.version.startsWith("5")) {
       args.add("--default-authentication-plugin=mysql_native_password");
+      args.add("--skip-log-bin");
     }
-
     return createProcessBuilder(args);
   }
 
