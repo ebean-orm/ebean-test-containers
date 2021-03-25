@@ -17,8 +17,8 @@ public class PostgresContainerTest {
 
   @Test
   public void startPortBased() {
-    PostgresConfig config = new PostgresConfig("11");
-    config.setContainerName("junk_postgres11");
+    PostgresConfig config = new PostgresConfig("13");
+    config.setContainerName("junk_postgres13");
     config.setPort(9823);
 
     PostgresContainer dummy = new PostgresContainer(config);
@@ -56,8 +56,8 @@ public class PostgresContainerTest {
   @Test
   public void start() throws SQLException {
 
-    PostgresConfig config = new PostgresConfig("11");
-    config.setContainerName("junk_postgres11");
+    PostgresConfig config = new PostgresConfig("13");
+    config.setContainerName("junk_postgres13");
     config.setPort(9823);
     config.setExtensions(" hstore, , pgcrypto ");
     config.setInMemory(true);
@@ -94,8 +94,8 @@ public class PostgresContainerTest {
   public void viaContainerFactory() {
 
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "11");
-    properties.setProperty("postgres.containerName", "junk_postgres11");
+    properties.setProperty("postgres.version", "13");
+    properties.setProperty("postgres.containerName", "junk_postgres13");
     properties.setProperty("postgres.port", "9823");
 
     properties.setProperty("postgres.extensions", "hstore,pgcrypto");
