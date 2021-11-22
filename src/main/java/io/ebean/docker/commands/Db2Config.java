@@ -39,9 +39,9 @@ public class Db2Config extends DbConfig {
    * https://www.ibm.com/docs/en/db2/11.5?topic=commands-create-database Example:
    * 'USING CODESET UTF-8 TERRITORY DE COLLATE USING IDENTITY PAGESIZE 32768'
    */
-public void setCreateOptions(String createOptions) {
-  this.createOptions = createOptions;
-}
+  public void setCreateOptions(String createOptions) {
+    this.createOptions = createOptions;
+  }
 
   public String getConfigOptions() {
     return configOptions;
@@ -51,8 +51,6 @@ public void setCreateOptions(String createOptions) {
    * Sets DB2 config options. See
    * https://www.ibm.com/docs/en/db2/11.5?topic=commands-update-database-configuration
    * for details Example 'USING STRING_UNITS CODEUNITS32
-   * 
-   * @param db2ConfigOptions
    */
   public void setConfigOptions(String configOptions) {
     this.configOptions = configOptions;
