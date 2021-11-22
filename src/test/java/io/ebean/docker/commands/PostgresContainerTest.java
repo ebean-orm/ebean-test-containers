@@ -1,17 +1,17 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
-import io.ebean.docker.container.Container;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PostgresContainerTest {
 
@@ -108,7 +108,7 @@ public class PostgresContainerTest {
 
     Container container = factory.container("postgres");
     ContainerConfig config = container.config();
-    assertEquals(9823, ((DbConfig)config).getPort());
+    assertEquals(9823, ((DbConfig) config).getPort());
 
     config.setStartMode(StartMode.DropCreate);
     container.start();

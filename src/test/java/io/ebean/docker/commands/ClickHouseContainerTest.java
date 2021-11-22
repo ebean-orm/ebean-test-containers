@@ -1,6 +1,6 @@
 package io.ebean.docker.commands;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ClickHouseContainerTest {
 

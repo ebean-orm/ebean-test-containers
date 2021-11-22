@@ -1,17 +1,16 @@
 package io.ebean.docker.commands;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class RedisContainerTest {
 
   @Test
   public void checkConnectivity() {
-
     RedisConfig config = new RedisConfig("latest", new Properties());
     config.setPort(7379);
     config.setContainerName("redis_junk7379");
@@ -24,8 +23,6 @@ public class RedisContainerTest {
 
   @Test
   public void properties_with_noPrefix() {
-
-
     Properties properties = new Properties();
 
     properties.setProperty("redis.image", "foo");
@@ -42,8 +39,6 @@ public class RedisContainerTest {
 
   @Test
   public void properties_with_ebeanTestPrefix() {
-
-
     Properties properties = new Properties();
 
     properties.setProperty("ebean.test.redis.image", "foo");
@@ -58,7 +53,7 @@ public class RedisContainerTest {
     assertProperties(config);
   }
 
-  private void assertProperties( RedisConfig config) {
+  private void assertProperties(RedisConfig config) {
     assertEquals(config.getPort(), 7380);
     assertEquals(config.getInternalPort(), 5379);
     assertEquals(config.getImage(), "foo");

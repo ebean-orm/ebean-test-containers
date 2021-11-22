@@ -1,7 +1,7 @@
 package io.ebean.docker.commands;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,7 +9,7 @@ import java.sql.Statement;
 
 public class CockroachContainerTest {
 
-  @Ignore
+  @Disabled
   @Test
   public void start() throws SQLException {
 

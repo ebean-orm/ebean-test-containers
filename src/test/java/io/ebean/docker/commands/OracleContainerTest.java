@@ -3,8 +3,8 @@ package io.ebean.docker.commands;
 import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,7 +13,7 @@ import java.util.Properties;
 
 public class OracleContainerTest {
 
-  @Ignore
+  @Disabled
   @Test
   public void start() {
 
@@ -29,7 +29,7 @@ public class OracleContainerTest {
     //container.startContainerOnly();
     //container.startWithDropCreate();
 
-    try(Connection connection = config.createConnection()) {
+    try (Connection connection = config.createConnection()) {
       exeSql(connection, "create table test_junk (acol integer)");
       exeSql(connection, "insert into test_junk (acol) values (42)");
       exeSql(connection, "insert into test_junk (acol) values (43)");
@@ -45,7 +45,7 @@ public class OracleContainerTest {
     //container.stopRemove();
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void viaContainerFactory() {
 
@@ -73,7 +73,7 @@ public class OracleContainerTest {
     config.setStartMode(StartMode.Create);
     container.start();
 
-    try(Connection connection = config.createConnection()) {
+    try (Connection connection = config.createConnection()) {
       exeSql(connection, "create table test_junk (acol integer)");
       exeSql(connection, "insert into test_junk (acol) values (42)");
       exeSql(connection, "insert into test_junk (acol) values (43)");

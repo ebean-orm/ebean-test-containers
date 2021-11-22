@@ -2,8 +2,8 @@ package io.ebean.docker.commands;
 
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -29,7 +29,7 @@ public class MariaDBContainerTest {
     container.stopRemove();
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void viaContainerFactory() {
 

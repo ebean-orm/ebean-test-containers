@@ -3,8 +3,8 @@ package io.ebean.docker.commands;
 import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +19,7 @@ public class SqlServerContainerTest {
 
   static final String SQLSERVER_VER = "2019-GA-ubuntu-16.04";
 
-  @Ignore
+  @Disabled
   @Test
   public void start_when_defaultCollation() {
 
@@ -34,7 +34,7 @@ public class SqlServerContainerTest {
     container.stopRemove();
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void start_when_noCollation() {
 
@@ -48,7 +48,7 @@ public class SqlServerContainerTest {
     container.stopRemove();
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void start_when_explicitCollation() {
 

@@ -1,14 +1,13 @@
 package io.ebean.docker.container;
 
-import org.hamcrest.CoreMatchers;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assume.assumeThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class ContainerFactoryTest {
 
@@ -60,7 +59,7 @@ public class ContainerFactoryTest {
   @Test
   public void runWithHana() {
 
-    assumeThat(System.getProperty("os.name").toLowerCase(), CoreMatchers.containsString("linux"));
+    assumeThat(System.getProperty("os.name").toLowerCase()).contains("linux");
 
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");

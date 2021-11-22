@@ -4,21 +4,16 @@ import io.ebean.docker.commands.process.ProcessHandler;
 import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
-import org.hamcrest.CoreMatchers;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.FileVisitResult;
-import java.nio.file.FileVisitor;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.PosixFilePermissions;
 import java.sql.Connection;
@@ -26,16 +21,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.junit.Assume.assumeThat;
+import static org.assertj.core.api.Assumptions.assumeThat;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class HanaContainerTest {
 
   private Path tempDir;
   private Path passwordsFile;
 
-  @Before
+  @BeforeEach
   public void setUp() throws IOException {
 
     if (!System.getProperty("os.name").toLowerCase().contains("linux")) {
@@ -56,7 +50,7 @@ public class HanaContainerTest {
     }
   }
 
-  @After
+  @AfterEach
   public void tearDown() throws IOException {
 
     Files.walkFileTree(this.tempDir, new FileVisitor<Path>() {
@@ -87,11 +81,11 @@ public class HanaContainerTest {
   }
 
   // Setting ignore only because running this test takes a bit too long
-  @Ignore
+  @Disabled
   @Test
   public void start() {
 
-    assumeThat(System.getProperty("os.name").toLowerCase(), CoreMatchers.containsString("linux"));
+    assumeThat(System.getProperty("os.name").toLowerCase()).contains("linux");
     //System.setProperty("hana.agreeToSapLicense", "true");
 
     HanaConfig config = new HanaConfig("2.00.033.00.20180925.2");
@@ -115,11 +109,11 @@ public class HanaContainerTest {
   }
 
   // Setting ignore only because running this test takes a bit too long
-  @Ignore
+  @Disabled
   @Test
   public void viaContainerFactory() {
 
-    assumeThat(System.getProperty("os.name").toLowerCase(), CoreMatchers.containsString("linux"));
+    assumeThat(System.getProperty("os.name").toLowerCase()).contains("linux");
     //System.setProperty("hana.agreeToSapLicense", "true");
 
     Properties properties = new Properties();
@@ -169,7 +163,7 @@ public class HanaContainerTest {
     }
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void noLicense() {
 
     HanaConfig config = new HanaConfig("2.00.033.00.20180925.2");
@@ -182,10 +176,10 @@ public class HanaContainerTest {
     }
     config.setMountsDirectory(this.tempDir.toString());
     config.setAgreeToSapLicense(false);
-    new HanaContainer(config);
+    assertThrows(IllegalStateException.class, () -> new HanaContainer(config));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void noMountsDirectory() {
 
     Properties properties = new Properties();
@@ -200,7 +194,7 @@ public class HanaContainerTest {
     properties.setProperty("hana.passwordsUrl", "file:///hana/mounts/" + this.passwordsFile.getFileName());
     properties.setProperty("hana.mountsDirectory", "does not exist");
 
-    new ContainerFactory(properties);
+    assertThrows(IllegalArgumentException.class, () -> new ContainerFactory(properties));
   }
 
   private void exeSql(Connection connection, String sql) throws SQLException {

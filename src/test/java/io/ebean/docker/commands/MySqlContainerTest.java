@@ -2,8 +2,8 @@ package io.ebean.docker.commands;
 
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,7 +14,7 @@ public class MySqlContainerTest {
 
   static final String MYSQL_VER = "8.0";
 
-  @Ignore
+  @Disabled
   @Test
   public void start_when_explicitCollation() {
 
@@ -30,7 +30,7 @@ public class MySqlContainerTest {
     container.stopRemove();
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void start_when_noCollation() {
 
@@ -44,7 +44,7 @@ public class MySqlContainerTest {
     container.stopRemove();
   }
 
-  @Ignore
+  @Disabled
   @Test
   public void start_when_defaultCollation() {
 
