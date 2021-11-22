@@ -2,6 +2,7 @@ package io.ebean.docker.container;
 
 import io.ebean.docker.commands.ClickHouseContainer;
 import io.ebean.docker.commands.CockroachContainer;
+import io.ebean.docker.commands.Db2Container;
 import io.ebean.docker.commands.ElasticContainer;
 import io.ebean.docker.commands.HanaContainer;
 import io.ebean.docker.commands.MariaDBContainer;
@@ -106,6 +107,10 @@ public class ContainerFactory {
     String cockroachVersion = runWithVersion("cockroach");
     if (cockroachVersion != null) {
       containers.add(CockroachContainer.create(cockroachVersion, properties));
+    }
+    String db2Version = runWithVersion("db2");
+    if (db2Version != null) {
+      containers.add(Db2Container.create(db2Version, properties));
     }
   }
 
