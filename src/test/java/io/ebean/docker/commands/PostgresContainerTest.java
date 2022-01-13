@@ -96,6 +96,7 @@ public class PostgresContainerTest {
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "13");
     properties.setProperty("postgres.containerName", "junk_postgres13");
+    properties.setProperty("postgres.host", "127.0.0.1");
     properties.setProperty("postgres.port", "9823");
 
     properties.setProperty("postgres.extensions", "hstore,pgcrypto");

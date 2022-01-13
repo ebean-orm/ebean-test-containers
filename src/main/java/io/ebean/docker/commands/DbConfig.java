@@ -96,7 +96,7 @@ public abstract class DbConfig extends BaseConfig {
    * Return summary of the port db name and other details.
    */
   public String summary() {
-    return "port:" + port + " db:" + dbName + " user:" + username + "/" + password;
+    return "host:" + host + " port:" + port + " db:" + dbName + " user:" + username + "/" + password;
   }
 
   /**

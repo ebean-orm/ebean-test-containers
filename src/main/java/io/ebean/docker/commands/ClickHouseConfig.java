@@ -20,11 +20,11 @@ public class ClickHouseConfig extends DbConfig {
 
   @Override
   public String jdbcUrl() {
-    return "jdbc:clickhouse://localhost:" + getPort() + "/" + getDbName();
+    return "jdbc:clickhouse://" + getHost() + ":" + getPort() + "/" + getDbName();
   }
 
   @Override
   public String jdbcAdminUrl() {
-    return "jdbc:clickhouse://localhost:" + getPort()+ "/default";
+    return "jdbc:clickhouse://" + getHost() + ":" + getPort()+ "/default";
   }
 }

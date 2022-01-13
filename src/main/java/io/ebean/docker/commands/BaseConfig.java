@@ -24,6 +24,11 @@ public abstract class BaseConfig implements ContainerConfig {
   protected String containerName;
 
   /**
+   * The host name. When running in Docker this is often set to <code>172.17.0.1</code.
+   */
+  protected String host = "localhost";
+
+  /**
    * The exposed port.
    */
   protected int port;
@@ -179,6 +184,7 @@ public abstract class BaseConfig implements ContainerConfig {
 
     containerName = prop(properties, "containerName", containerName);
     image = prop(properties, "image", image);
+    host = prop(properties, "host", host);
     port = prop(properties, "port", port);
     internalPort = prop(properties, "internalPort", internalPort);
     adminPort = prop(properties, "adminPort", adminPort);
@@ -295,6 +301,10 @@ public abstract class BaseConfig implements ContainerConfig {
   public BaseConfig setDocker(String docker) {
     this.docker = docker;
     return this;
+  }
+
+  public String getHost() {
+    return host;
   }
 
   public int getPort() {

@@ -22,11 +22,11 @@ public class SqlServerConfig extends DbConfig {
   }
 
   public String jdbcUrl() {
-    return "jdbc:sqlserver://localhost:" + getPort() + ";databaseName=" + getDbName();
+    return "jdbc:sqlserver://" + getHost() + ":" + getPort() + ";databaseName=" + getDbName();
   }
 
   @Override
   public String jdbcAdminUrl() {
-    return "jdbc:sqlserver://localhost:" + getPort();
+    return "jdbc:sqlserver://" + getHost() + ":" + getPort();
   }
 }

@@ -22,6 +22,6 @@ public class CockroachConfig extends DbConfig {
   }
 
   public String jdbcUrl() {
-    return "jdbc:postgresql://localhost:" + getPort() + "/" + getDbName() + "?sslmode=disable";
+    return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/" + getDbName() + "?sslmode=disable";
   }
 }

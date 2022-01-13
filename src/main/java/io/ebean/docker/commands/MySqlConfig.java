@@ -25,11 +25,11 @@ public class MySqlConfig extends DbConfig {
 
   @Override
   public String jdbcUrl() {
-    return "jdbc:mysql://localhost:" + getPort() + "/" + getDbName();
+    return "jdbc:mysql://" + getHost() + ":" + getPort() + "/" + getDbName();
   }
 
   @Override
   public String jdbcAdminUrl() {
-    return "jdbc:mysql://localhost:" + getPort() + "/mysql";
+    return "jdbc:mysql://" + getHost() + ":" + getPort() + "/mysql";
   }
 }

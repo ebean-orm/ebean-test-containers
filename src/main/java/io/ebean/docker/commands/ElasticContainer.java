@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -24,13 +25,12 @@ public class ElasticContainer extends BaseContainer {
 
   @Override
   boolean checkConnectivity() {
-
     try {
-      URL url = new URL("http://localhost:" + config.getPort() + "/");
+      URL url = new URL("http://" + config.getHost() + ":" + config.getPort() + "/");
       URLConnection yc = url.openConnection();
 
       StringBuilder sb = new StringBuilder(300);
-      try (BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream()))) {
+      try (BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8))) {
         String inputLine;
         while ((inputLine = in.readLine()) != null)
           sb.append(inputLine).append("\n");

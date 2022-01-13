@@ -228,35 +228,35 @@ abstract class BaseContainer implements Container {
    * Log that the container is already running.
    */
   void logRunning() {
-    log.info("Container {} already running with port:{}", config.containerName(), config.getPort());
+    log.info("Container {} already running with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
    * Log that we are about to run an existing container.
    */
   void logRun() {
-    log.info("Run container {} with port:{}", config.containerName(), config.getPort());
+    log.info("Run container {} with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
    * Log that we are about to start a container.
    */
   void logStart() {
-    log.info("Start container {} with port:{}", config.containerName(), config.getPort());
+    log.info("Start container {} with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
    * Log that the container failed to start.
    */
   void logNotStarted() {
-    log.warn("Failed to start container {} with port {}", config.containerName(), config.getPort());
+    log.warn("Failed to start container {} with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
    * Log that the container has started.
    */
   void logStarted() {
-    log.debug("Container {} ready with port {}", config.containerName(), config.getPort());
+    log.debug("Container {} ready with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
