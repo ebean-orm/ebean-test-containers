@@ -10,7 +10,7 @@
 
   <groupId>io.ebean</groupId>
   <artifactId>ebean-test-docker</artifactId>
-  <version>4.5-SNAPSHOT</version>
+  <version>4.4</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:ebean-orm/ebean-test-docker.git</developerConnection>
