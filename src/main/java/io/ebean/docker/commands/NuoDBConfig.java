@@ -36,11 +36,11 @@ public class NuoDBConfig extends DbConfig {
 
   @Override
   public String summary() {
-    return "port:" + port + " db:" + dbName + " schema:" + schema + " user:" + username + "/" + password;
+    return "host:" + host + " port:" + port + " db:" + dbName + " schema:" + schema + " user:" + username + "/" + password;
   }
 
   public String jdbcUrl() {
-    return "jdbc:com.nuodb://localhost/" + getDbName();
+    return "jdbc:com.nuodb://" + getHost() + "/" + getDbName();
   }
 
   public int getPort2() {

@@ -34,7 +34,7 @@ public class OracleConfig extends DbConfig {
   }
 
   public String jdbcUrl() {
-    return "jdbc:oracle:thin:@localhost:" + getPort() + ":" + getDbName();
+    return "jdbc:oracle:thin:@" + getHost() + ":" + getPort() + ":" + getDbName();
   }
 
   public String getApexPort() {
