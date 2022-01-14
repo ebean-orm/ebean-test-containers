@@ -21,6 +21,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   final DbConfig dbConfig;
 
   boolean checkConnectivityUsingAdmin;
+  int conditionPauseMillis = 100;
 
   DbContainer(DbConfig config) {
     super(config);
@@ -179,7 +180,7 @@ abstract class DbContainer extends BaseContainer implements Container {
 
   private void pause() {
     try {
-      Thread.sleep(100);
+      Thread.sleep(conditionPauseMillis);
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
     }

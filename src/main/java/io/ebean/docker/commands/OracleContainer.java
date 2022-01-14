@@ -1,8 +1,6 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.container.Container;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -21,8 +19,6 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     return new OracleContainer(new OracleConfig(version, properties));
   }
 
-  private static final Logger log = LoggerFactory.getLogger(Commands.class);
-
   private final OracleConfig oracleConfig;
 
   private boolean oracleScript;
@@ -34,6 +30,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     super(config);
     this.oracleConfig = config;
     this.checkConnectivityUsingAdmin = true;
+    this.waitForConnectivityAttempts = 2000;
   }
 
   @Override

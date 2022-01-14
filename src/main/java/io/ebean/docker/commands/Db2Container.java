@@ -19,6 +19,7 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
 
   public Db2Container(Db2Config config) {
     super(config);
+    this.waitForConnectivityAttempts = 2000;
   }
 
   @Override

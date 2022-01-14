@@ -14,8 +14,8 @@ abstract class BaseContainer implements Container {
   static final Logger log = LoggerFactory.getLogger(Commands.class);
 
   protected final BaseConfig config;
-
   protected final Commands commands;
+  protected int waitForConnectivityAttempts = 200;
 
   BaseContainer(BaseConfig config) {
     this.config = config;
@@ -151,14 +151,17 @@ abstract class BaseContainer implements Container {
    * Return true when we can make IP connections to the database (JDBC).
    */
   boolean waitForConnectivity() {
-    log.debug("waitForConnectivity {} ... ", config.containerName());
-    for (int i = 0; i < 200; i++) {
+    log.debug("waitForConnectivity {} max attempts:{} ... ", config.containerName(), waitForConnectivityAttempts);
+    for (int i = 0; i < waitForConnectivityAttempts; i++) {
       if (checkConnectivity()) {
         return true;
       }
       try {
         int sleep = (i < 10) ? 10 : (i < 20) ? 20 : 200;
         Thread.sleep(sleep);
+        if (i > 200 && i % 100 == 0) {
+          log.info("waitForConnectivity {} attempts {} of {} ... ", config.containerName(), i, waitForConnectivityAttempts);
+        }
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         return false;
