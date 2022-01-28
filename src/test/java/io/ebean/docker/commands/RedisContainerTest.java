@@ -7,13 +7,13 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class RedisContainerTest {
+class RedisContainerTest {
 
   @Test
-  public void checkConnectivity() {
+  void checkConnectivity() {
     RedisConfig config = new RedisConfig("latest", new Properties());
     config.setPort(7379);
-    config.setContainerName("redis_junk7379");
+    config.setContainerName("temp_redis");
 
     RedisContainer container = new RedisContainer(config);
     assertTrue(container.start());
@@ -22,9 +22,8 @@ public class RedisContainerTest {
   }
 
   @Test
-  public void properties_with_noPrefix() {
+  void properties_with_noPrefix() {
     Properties properties = new Properties();
-
     properties.setProperty("redis.image", "foo");
     properties.setProperty("redis.port", "7380");
     properties.setProperty("redis.containerName", "redis_junk8");
@@ -38,9 +37,8 @@ public class RedisContainerTest {
   }
 
   @Test
-  public void properties_with_ebeanTestPrefix() {
+  void properties_with_ebeanTestPrefix() {
     Properties properties = new Properties();
-
     properties.setProperty("ebean.test.redis.image", "foo");
     properties.setProperty("ebean.test.redis.port", "7380");
     properties.setProperty("ebean.test.redis.containerName", "redis_junk8");

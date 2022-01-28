@@ -13,18 +13,32 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class SqlServerContainerTest {
+class SqlServerContainerTest {
 
   private static final Logger log = LoggerFactory.getLogger(SqlServerContainerTest.class);
 
-  static final String SQLSERVER_VER = "2019-GA-ubuntu-16.04";
+  static final String SQLSERVER_VER = "2019-CU14-ubuntu-20.04";
+
+  @Test
+  void start() {
+    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
+    config.setContainerName("temp_sqlserver");
+    config.setPort(11433);
+    config.setStopMode(StopMode.Remove);
+    //config.setFastStartMode(true);
+
+    SqlServerContainer container = new SqlServerContainer(config);
+    //container.startWithCreate();
+    //container.startContainerOnly();
+    container.startWithDropCreate();
+    container.stopRemove();
+  }
 
   @Disabled
   @Test
-  public void start_when_defaultCollation() {
-
+  void start_when_defaultCollation() {
     SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
-    config.setContainerName("temp_sqls");
+    config.setContainerName("temp_sqlserver");
     config.setPort(2433);
     config.setCollation("default");
 
@@ -36,10 +50,9 @@ public class SqlServerContainerTest {
 
   @Disabled
   @Test
-  public void start_when_noCollation() {
-
+  void start_when_noCollation() {
     SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
-    config.setContainerName("temp_sqls");
+    config.setContainerName("temp_sqlserver");
     config.setPort(2433);
 
     SqlServerContainer container = new SqlServerContainer(config);
@@ -50,10 +63,9 @@ public class SqlServerContainerTest {
 
   @Disabled
   @Test
-  public void start_when_explicitCollation() {
-
+  void start_when_explicitCollation() {
     SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
-    config.setContainerName("temp_sqls");
+    config.setContainerName("temp_sqlserver");
     config.setPort(2433);
     config.setCollation("SQL_Latin1_General_CP1_CS_AS");
 
@@ -63,27 +75,12 @@ public class SqlServerContainerTest {
     container.stopRemove();
   }
 
+  @Disabled
   @Test
-  public void start() {
-
-    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
-    config.setFastStartMode(true);
-
-    SqlServerContainer container = new SqlServerContainer(config);
-
-    container.startWithCreate();
-    container.startContainerOnly();
-    container.startWithDropCreate();
-
-    //container.stopOnly();
-  }
-
-  @Test
-  public void viaContainerFactory() {
-
+  void viaContainerFactory() {
     Properties properties = new Properties();
     properties.setProperty("sqlserver.version", SQLSERVER_VER);
-    properties.setProperty("sqlserver.containerName", "junk_sqlserver");
+    properties.setProperty("sqlserver.containerName", "temp2_sqlserver");
     properties.setProperty("sqlserver.port", "2433");
 
     properties.setProperty("sqlserver.dbName", "test_other");
@@ -105,6 +102,7 @@ public class SqlServerContainerTest {
     container.start();
 
     config.setStartMode(StartMode.Create);
+    config.setStopMode(StopMode.Remove);
     container.start();
 
     try {
