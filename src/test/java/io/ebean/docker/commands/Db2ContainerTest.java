@@ -10,12 +10,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class Db2ContainerTest {
+class Db2ContainerTest {
 
+  // run manually as it is soo slow
+  @Disabled
   @Test
-  public void start() {
-
-    Db2Config config = new Db2Config("latest");
+  void start() {
+    Db2Config config = new Db2Config("11.5.4.0"); // "latest");
     config.setContainerName("temp_db2");
     config.setPort(50050);
     config.setFastStartMode(true);
@@ -31,8 +32,7 @@ public class Db2ContainerTest {
 
   @Disabled
   @Test
-  public void viaContainerFactory() {
-
+  void viaContainerFactory() {
     Properties properties = new Properties();
     properties.setProperty("db2.version", "11.5.4.0");
     properties.setProperty("db2.containerName", "temp_db2");
