@@ -12,6 +12,8 @@ import java.util.Properties;
 
 class Db2ContainerTest {
 
+  // run manually as it is soo slow
+  @Disabled
   @Test
   void start() {
     Db2Config config = new Db2Config("11.5.4.0"); // "latest");
