@@ -1,17 +1,6 @@
 package io.ebean.docker.container;
 
-import io.ebean.docker.commands.ClickHouseContainer;
-import io.ebean.docker.commands.CockroachContainer;
-import io.ebean.docker.commands.Db2Container;
-import io.ebean.docker.commands.ElasticContainer;
-import io.ebean.docker.commands.HanaContainer;
-import io.ebean.docker.commands.MariaDBContainer;
-import io.ebean.docker.commands.MySqlContainer;
-import io.ebean.docker.commands.NuoDBContainer;
-import io.ebean.docker.commands.OracleContainer;
-import io.ebean.docker.commands.PostgresContainer;
-import io.ebean.docker.commands.RedisContainer;
-import io.ebean.docker.commands.SqlServerContainer;
+import io.ebean.docker.commands.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -26,9 +15,7 @@ import java.util.function.Consumer;
 public class ContainerFactory {
 
   private final Properties properties;
-
   private final List<Container> containers = new ArrayList<>();
-
   private final Set<String> runWith = new HashSet<>();
 
   private static String defaultRunWith() {
@@ -107,6 +94,10 @@ public class ContainerFactory {
     String cockroachVersion = runWithVersion("cockroach");
     if (cockroachVersion != null) {
       containers.add(CockroachContainer.create(cockroachVersion, properties));
+    }
+    String yugaVersion = runWithVersion("yugabyte");
+    if (yugaVersion != null) {
+      containers.add(YugabyteContainer.create(yugaVersion, properties));
     }
     String db2Version = runWithVersion("db2");
     if (db2Version != null) {

@@ -44,13 +44,26 @@ public class ContainerFactoryTest {
   }
 
   @Test
-  public void runWithCockroach() {
+  public void runWith_Cockroach() {
 
     Properties properties = new Properties();
     properties.setProperty("cockroach.version", "v19.1.4");
 
     ContainerFactory factory = new ContainerFactory(properties);
     assertEquals("v19.1.4", factory.runWithVersion("cockroach"));
+
+    factory.startContainers();
+    factory.stopContainers();
+  }
+
+  @Test
+  public void runWith_Yugabyte() {
+
+    Properties properties = new Properties();
+    properties.setProperty("yugabyte.version", "2.11.2.0-b89");
+
+    ContainerFactory factory = new ContainerFactory(properties);
+    assertEquals("2.11.2.0-b89", factory.runWithVersion("yugabyte"));
 
     factory.startContainers();
     factory.stopContainers();
@@ -117,6 +130,8 @@ public class ContainerFactoryTest {
     properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("sqlserver.version", "2017-CE");
     properties.setProperty("hana.version", "2.00.033.00.20180925.2");
+    properties.setProperty("yugabyte.version", "2.8");
+
 
     System.setProperty("docker_run_with", "mysql");
     try {
@@ -126,6 +141,7 @@ public class ContainerFactoryTest {
       assertNull(factory.runWithVersion("postgres"));
       assertNull(factory.runWithVersion("sqlserver"));
       assertNull(factory.runWithVersion("hana"));
+      assertNull(factory.runWithVersion("yugabyte"));
 
     } finally {
       System.clearProperty("docker_run_with");
