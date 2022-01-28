@@ -13,12 +13,12 @@ import java.util.Properties;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class PostgresContainerTest {
+class PostgresContainerTest {
 
   @Test
-  public void startPortBased() {
-    PostgresConfig config = new PostgresConfig("13");
-    config.setContainerName("junk_postgres13");
+  void startPortBased() {
+    PostgresConfig config = new PostgresConfig("14");
+    config.setContainerName("temp_postgres14");
     config.setPort(9823);
 
     PostgresContainer dummy = new PostgresContainer(config);
@@ -33,7 +33,7 @@ public class PostgresContainerTest {
 
   private void runBasedOnPort(int port) {
     System.out.println("runBasedOnPort ... will connect and not start docker container");
-    PostgresConfig config = new PostgresConfig("12");
+    PostgresConfig config = new PostgresConfig("14");
     config.setContainerName("not_started");
     config.setPort(port);
     config.setExtensions("hstore,uuid-ossp");
@@ -54,10 +54,9 @@ public class PostgresContainerTest {
   }
 
   @Test
-  public void start() throws SQLException {
-
-    PostgresConfig config = new PostgresConfig("13");
-    config.setContainerName("junk_postgres13");
+  void start() throws SQLException {
+    PostgresConfig config = new PostgresConfig("14");
+    config.setContainerName("temp_postgres14");
     config.setPort(9823);
     config.setExtensions(" hstore, , pgcrypto ");
     config.setInMemory(true);
@@ -91,11 +90,10 @@ public class PostgresContainerTest {
   }
 
   @Test
-  public void viaContainerFactory() {
-
+  void viaContainerFactory() {
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "13");
-    properties.setProperty("postgres.containerName", "junk_postgres13");
+    properties.setProperty("postgres.version", "14");
+    properties.setProperty("postgres.containerName", "temp_postgres14");
     properties.setProperty("postgres.host", "127.0.0.1");
     properties.setProperty("postgres.port", "9823");
 
