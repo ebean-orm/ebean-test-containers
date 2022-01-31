@@ -12,6 +12,7 @@ class YugabyteContainerTest {
   void start_run_stop() {
     YugabyteConfig config = new YugabyteConfig("2.11.2.0-b89");
     config.setContainerName("temp_yugabyte");
+    config.setExtensions("pgcrypto");
     config.setPort(9844);
 
     YugabyteContainer yugaContainer = new YugabyteContainer(config);
