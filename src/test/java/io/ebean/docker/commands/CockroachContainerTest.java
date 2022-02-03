@@ -7,18 +7,17 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class CockroachContainerTest {
+class CockroachContainerTest {
 
   @Disabled
   @Test
-  public void start() throws SQLException {
+  void start() throws SQLException {
 
-    CockroachConfig config = new CockroachConfig();//"v19.1.4");
+    CockroachConfig config = new CockroachConfig();//"v21.2.4");
     //config.setContainerName("junk_roach");
     config.setDbName("my_app");
 
     CockroachContainer container = new CockroachContainer(config);
-
     container.startWithDropCreate();
 
     try (Connection connection = container.createConnection()) {
@@ -28,7 +27,6 @@ public class CockroachContainerTest {
         statement.execute("insert into foobar2 (acol) values (42)");
       }
     }
-
 
     container.stopRemove();
   }
