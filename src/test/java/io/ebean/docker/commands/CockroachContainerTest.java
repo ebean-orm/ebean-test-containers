@@ -15,7 +15,9 @@ class CockroachContainerTest {
 
     CockroachConfig config = new CockroachConfig();//"v21.2.4");
     //config.setContainerName("junk_roach");
-    config.setDbName("my_app");
+    config.setDbName("unit");
+    //config.setUser("test_roach");
+    //config.setPassword("test");
 
     CockroachContainer container = new CockroachContainer(config);
     container.startWithDropCreate();

@@ -122,7 +122,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
     args.add("-d");
     args.add("--name");
     args.add(config.containerName());
-    args.add("--hostname=roach1");
+//    args.add("--hostname=roach1");
 //    args.add("--net=roachnet");
 //    args.add("--listen-addr=localhost");
     args.add("-p");
@@ -131,7 +131,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
     args.add(config.getAdminPort() + ":" + config.getAdminInternalPort());
 
     args.add(config.getImage());
-    args.add("start");
+    args.add("start-single-node");
     args.add("--insecure");
 
     return createProcessBuilder(args);
