@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java_version: [17,18,19] ## valhalla,metropolis,panama
+        java_version: [GA,EA] ## valhalla,metropolis,panama
         os: [ubuntu-latest]
 
     steps:
