@@ -23,6 +23,7 @@ class SqlServerContainerTest {
   void start() {
     SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
     config.setContainerName("temp_sqlserver");
+    config.setCollation("SQL_Latin1_General_CP1_CS_AS");
     config.setPort(11433);
     config.setStopMode(StopMode.Remove);
     //config.setFastStartMode(true);
