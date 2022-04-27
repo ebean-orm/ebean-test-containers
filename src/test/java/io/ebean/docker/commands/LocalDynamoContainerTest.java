@@ -11,7 +11,7 @@ class LocalDynamoContainerTest {
 
   @Test
   void start_via_LocalDynamoDB() {
-    LocalDynamoDBContainer container = new LocalDynamoDB("1.13.2")
+    LocalDynamoDBContainer container = LocalDynamoDBContainer.newBuilder("1.13.2")
       //.port(8001)
       //.containerName("ut_dynamodb")
       //.image("amazon/dynamodb-local:1.13.2")
