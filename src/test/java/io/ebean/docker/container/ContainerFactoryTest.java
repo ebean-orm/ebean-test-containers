@@ -1,5 +1,6 @@
 package io.ebean.docker.container;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -43,14 +44,15 @@ public class ContainerFactoryTest {
     //factory.stopContainers();
   }
 
+  @Disabled
   @Test
   public void runWith_Cockroach() {
 
     Properties properties = new Properties();
-    properties.setProperty("cockroach.version", "v19.1.4");
+    properties.setProperty("cockroach.version", "v21.2.9");
 
     ContainerFactory factory = new ContainerFactory(properties);
-    assertEquals("v19.1.4", factory.runWithVersion("cockroach"));
+    assertEquals("v21.2.9", factory.runWithVersion("cockroach"));
 
     factory.startContainers();
     factory.stopContainers();
