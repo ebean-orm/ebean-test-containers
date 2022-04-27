@@ -67,8 +67,8 @@ public class ContainerFactoryTest {
     ContainerFactory factory = new ContainerFactory(properties);
     assertEquals("2.11.2.0-b89", factory.runWithVersion("yugabyte"));
 
-    factory.startContainers();
-    factory.stopContainers();
+    // factory.startContainers();
+    // factory.stopContainers();
   }
 
   @Test
