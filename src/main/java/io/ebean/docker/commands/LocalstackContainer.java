@@ -9,6 +9,8 @@ import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
+import com.amazonaws.services.sqs.AmazonSQS;
+import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -104,15 +106,6 @@ public class LocalstackContainer extends BaseContainer {
      * Build and return the LocalstackContainer to then start().
      */
     public LocalstackContainer build() {
-//      System.setProperty("aws.region", config().awsRegion());
-//      System.setProperty("com.amazonaws.sdk.disableCbor", "true");
-//      System.setProperty("aws.accesskey", "localstack");
-//      System.setProperty("aws.secretkey", "localstack");
-
-//      System.setProperty("aws.lambda.function.name", "consolidation-test");
-//      System.setProperty("stream.name", randomAlphabetic(10));
-//      System.setProperty("stack.name", "consolidation-test");
-
       return new LocalstackContainer(config());
     }
   }
@@ -178,8 +171,21 @@ public class LocalstackContainer extends BaseContainer {
       .build();
   }
 
+  /**
+   * Return the AmazonSNS client for this container.
+   */
   public AmazonSNS sns() {
     return AmazonSNSClientBuilder.standard()
+      .withCredentials(credentials())
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, localConfig.awsRegion()))
+      .build();
+  }
+
+  /**
+   * Return the AmazonSQS client for this container.
+   */
+  public AmazonSQS sqs() {
+    return AmazonSQSClientBuilder.standard()
       .withCredentials(credentials())
       .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, localConfig.awsRegion()))
       .build();
