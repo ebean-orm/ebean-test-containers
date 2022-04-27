@@ -149,17 +149,7 @@ abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Cont
   }
 
   private List<String> parseExtensions(String dbExtn) {
-    if (dbExtn == null) {
-      return Collections.emptyList();
-    }
-    List<String> extensions = new ArrayList<>();
-    for (String extension : dbExtn.split(",")) {
-      extension = extension.trim();
-      if (!extension.isEmpty()) {
-        extensions.add(extension);
-      }
-    }
-    return extensions;
+    return TrimSplit.split(dbExtn);
   }
 
   private List<String> execPsql() {

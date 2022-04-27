@@ -54,6 +54,12 @@ public abstract class BaseConfig implements ContainerConfig {
   protected String image;
 
   /**
+   * When true check using SkipShutdown (presence of file <code>~/.ebean/ignore-docker-shutdown</code>) if
+   * shutdown hook should be used to stop/remove the container.
+   */
+  protected boolean checkSkipStop;
+
+  /**
    * The mode used when starting (create, dropCreate, container [only]).
    */
   protected StartMode startMode = StartMode.Create;
@@ -209,7 +215,15 @@ public abstract class BaseConfig implements ContainerConfig {
         // ignore error
       }
     }
+    extraProperties(properties);
     return this;
+  }
+
+  /**
+   * Override to configure extra properties.
+   */
+  protected void extraProperties(Properties properties) {
+    // nothing by default
   }
 
   protected String prop(Properties properties, String key, String defaultValue) {

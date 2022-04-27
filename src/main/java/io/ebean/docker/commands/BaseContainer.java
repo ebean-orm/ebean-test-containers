@@ -6,6 +6,12 @@ import io.ebean.docker.container.ContainerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +69,13 @@ abstract class BaseContainer implements Container {
    * Register a JVM Shutdown hook to stop the container with the given mode.
    */
   public void registerShutdownHook() {
-    Runtime.getRuntime().addShutdownHook(new Hook(config.shutdownMode()));
+    if (!skipShutdown()) {
+      Runtime.getRuntime().addShutdownHook(new Hook(config.shutdownMode()));
+    }
+  }
+
+  private boolean skipShutdown() {
+    return config.checkSkipStop && SkipShutdown.isSkip();
   }
 
   protected boolean shutdownHook(boolean started) {
@@ -272,5 +284,20 @@ abstract class BaseContainer implements Container {
       logStarted();
     }
     return started;
+  }
+
+  /**
+   * Return http GET content given the url.
+   */
+  protected String readUrlContent(String url) throws IOException {
+    URLConnection yc = new URL(url).openConnection();
+    StringBuilder sb = new StringBuilder(300);
+    try (BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8))) {
+      String inputLine;
+      while ((inputLine = in.readLine()) != null) {
+        sb.append(inputLine).append("\n");
+      }
+    }
+    return sb.toString();
   }
 }

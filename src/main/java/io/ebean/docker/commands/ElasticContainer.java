@@ -1,16 +1,12 @@
 package io.ebean.docker.commands;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
 public class ElasticContainer extends BaseContainer {
+
+  private final String healthUrl;
 
   /**
    * Create the ElasticContainer with configuration via properties.
@@ -21,29 +17,19 @@ public class ElasticContainer extends BaseContainer {
 
   public ElasticContainer(ElasticConfig config) {
     super(config);
+    this.healthUrl = String.format("http://%s:%s/", config.getHost(), config.getPort());
   }
 
   @Override
   boolean checkConnectivity() {
     try {
-      URL url = new URL("http://" + config.getHost() + ":" + config.getPort() + "/");
-      URLConnection yc = url.openConnection();
-
-      StringBuilder sb = new StringBuilder(300);
-      try (BufferedReader in = new BufferedReader(new InputStreamReader(yc.getInputStream(), StandardCharsets.UTF_8))) {
-        String inputLine;
-        while ((inputLine = in.readLine()) != null)
-          sb.append(inputLine).append("\n");
-      }
-      return sb.toString().contains("docker-cluster");
-
+      return readUrlContent(healthUrl).contains("docker-cluster");
     } catch (IOException e) {
       return false;
     }
   }
 
   protected ProcessBuilder runProcess() {
-
     List<String> args = dockerRun();
     args.add("-e");
     args.add("http.host=0.0.0.0");
@@ -51,7 +37,6 @@ public class ElasticContainer extends BaseContainer {
     args.add("transport.host=127.0.0.1");
     args.add("-e");
     args.add("xpack.security.enabled=false");
-
     args.add(config.image);
     return createProcessBuilder(args);
   }
