@@ -9,11 +9,11 @@
 
   <groupId>io.ebean</groupId>
   <artifactId>ebean-test-docker</artifactId>
-  <version>4.7</version>
+  <version>4.8-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:ebean-orm/ebean-test-docker.git</developerConnection>
-    <tag>ebean-test-docker-4.7</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
