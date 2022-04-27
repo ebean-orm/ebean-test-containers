@@ -17,7 +17,7 @@ class SqlServerContainerTest {
 
   private static final Logger log = LoggerFactory.getLogger(SqlServerContainerTest.class);
 
-  static final String SQLSERVER_VER = "2019-CU14-ubuntu-20.04";
+  static final String SQLSERVER_VER = "2019-CU15-ubuntu-20.04";
 
   @Test
   void start() {
