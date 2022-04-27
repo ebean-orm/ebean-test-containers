@@ -81,12 +81,6 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
     sqlRun(connection, "drop database " + dbName);
   }
 
-//  private void dropLogin(Connection connection) {
-//    if (loginExists(connection, dbConfig.username)) {
-//      sqlRun(connection, "drop login " + dbConfig.username);
-//    }
-//  }
-
   private void createDatabase(Connection connection, String dbName) {
     sqlRun(connection, "create database " + dbName);
   }
@@ -112,6 +106,30 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
   }
 
   private boolean databaseExists(Connection connection, String dbName) {
+    Exception lastError = null;
+    for (int i = 0; i < 3; i++) {
+      try {
+        return databaseExistsAttempt(connection, dbName);
+      } catch (Exception e) {
+        log.info("Failed databaseExistsAttempt() {} with {}", i, e.getMessage());
+        lastError = e;
+        waitTime();
+      }
+    }
+    log.warn("Failed databaseExists() check with last error captured of ...", lastError);
+    throw new IllegalStateException("Failed databaseExists check with", lastError);
+  }
+
+  private void waitTime() {
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("Interrupted during databaseExists");
+    }
+  }
+
+  private boolean databaseExistsAttempt(Connection connection, String dbName) {
     return sqlHasRow(connection, "select 1 from sys.databases where name='" + dbName + "'");
   }
 
