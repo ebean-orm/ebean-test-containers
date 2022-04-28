@@ -2,11 +2,7 @@ package io.ebean.docker.container;
 
 import io.ebean.docker.commands.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -65,11 +61,11 @@ public class ContainerFactory {
     }
     String mysqlVersion = runWithVersion("mysql");
     if (mysqlVersion != null) {
-      containers.add(MySqlContainer.create(mysqlVersion, properties));
+      containers.add(MySqlContainer.newBuilder(mysqlVersion).setProperties(properties).build());
     }
     String mariadbVersion = runWithVersion("mariadb");
     if (mariadbVersion != null) {
-      containers.add(MariaDBContainer.create(mariadbVersion, properties));
+      containers.add(MariaDBContainer.newBuilder(mariadbVersion).setProperties(properties).build());
     }
     String nuodbVersion = runWithVersion("nuodb");
     if (nuodbVersion != null) {

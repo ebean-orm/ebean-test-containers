@@ -10,17 +10,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class MariaDBContainerTest {
+class MariaDBContainerTest {
 
   @Test
-  public void start() {
-
-    MariaDBConfig config = new MariaDBConfig("latest");
-    config.setContainerName("temp_mariadb");
-    config.setPort(8306);
-    config.setFastStartMode(true);
-
-    MariaDBContainer container = new MariaDBContainer(config);
+  void start() {
+    MariaDBContainer container = MariaDBContainer.newBuilder("latest")
+      .setContainerName("temp_mariadb")
+      .setPort(8306)
+      .setFastStartMode(true)
+      .build();
 
     container.startWithCreate();
     container.startContainerOnly();
@@ -31,8 +29,7 @@ public class MariaDBContainerTest {
 
   @Disabled
   @Test
-  public void viaContainerFactory() {
-
+  void viaContainerFactory() {
     Properties properties = new Properties();
     properties.setProperty("mariadb.version", "10.4");
     properties.setProperty("mariadb.containerName", "temp_mariadb");

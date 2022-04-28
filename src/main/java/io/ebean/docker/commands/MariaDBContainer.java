@@ -1,18 +1,54 @@
 package io.ebean.docker.commands;
 
-import java.util.Properties;
+import io.ebean.docker.container.CBuilder;
 
 /**
- * MariaDB container. Actually just the same as MySql.
+ * MariaDB container.
  */
-public class MariaDBContainer extends MySqlContainer {
+public class MariaDBContainer extends MySqlBaseContainer {
 
-  public static MariaDBContainer create(String version, Properties properties) {
-    return new MariaDBContainer(new MariaDBConfig(version, properties));
+  public static class Builder extends DbConfig<MariaDBContainer.Builder> implements CBuilder<MariaDBContainer, MariaDBContainer.Builder> {
+
+    private Builder(String version) {
+      super("mariadb", 4306, 3306, version);
+      this.adminUsername = "root";
+      this.adminPassword = "admin";
+      this.setTmpfs("/var/lib/mysql:rw");
+    }
+
+    /**
+     * Expose for MariaDB config.
+     */
+    protected Builder(String platform, int port, int internalPort, String version) {
+      super(platform, port, internalPort, version);
+    }
+
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:mysql://" + getHost() + ":" + getPort() + "/" + getDbName();
+    }
+
+    @Override
+    protected String buildJdbcAdminUrl() {
+      return "jdbc:mysql://" + getHost() + ":" + getPort() + "/mysql";
+    }
+
+    @Override
+    public MariaDBContainer build() {
+      return new MariaDBContainer(this);
+    }
   }
 
-  public MariaDBContainer(MariaDBConfig config) {
-    super(config);
+  /**
+   * Create a Builder for MySqlContainer.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
+  private MariaDBContainer(Builder builder) {
+    super(builder);
   }
 
 }
