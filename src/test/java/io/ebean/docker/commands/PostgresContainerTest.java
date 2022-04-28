@@ -39,12 +39,11 @@ class PostgresContainerTest {
     config.setExtensions("hstore,uuid-ossp");
     config.setStopMode(StopMode.Remove);
 
-    PostgresContainer dummy = new PostgresContainer(config);
-
-    dummy.start();
+    PostgresContainer container = new PostgresContainer(config);
+    container.start();
 
     try {
-      Connection connection = config.createConnection();
+      Connection connection = container.createConnection();
       exeSql(connection, "create table test_junk2 (acol integer, map hstore)");
       exeSql(connection, "insert into test_junk2 (acol) values (42)");
       exeSql(connection, "insert into test_junk2 (acol) values (43)");
@@ -77,8 +76,8 @@ class PostgresContainerTest {
     container.startWithDropCreate();
 
     assertTrue(container.isRunning());
-    config.setShutdownMode(StopMode.Stop);
-    container.registerShutdownHook();
+    //config.setShutdownMode(StopMode.Stop);
+    //container.registerShutdownHook();
 
     try (Connection connection = container.createConnection()) {
       exeSql(connection, "drop table if exists test_doesnotexist");
@@ -86,7 +85,7 @@ class PostgresContainerTest {
 
     final String url = container.jdbcUrl();
     assertEquals(url, "jdbc:postgresql://localhost:9823/main_db");
-//    container.stopRemove();
+    container.stopRemove();
   }
 
   @Test
@@ -101,21 +100,14 @@ class PostgresContainerTest {
 
     properties.setProperty("postgres.dbName", "test_roberto");
     properties.setProperty("postgres.username", "test_robino");
+    properties.setProperty("postgres.startMode", "dropCreate");
 
     ContainerFactory factory = new ContainerFactory(properties);
     //factory.startContainers();
 
     Container container = factory.container("postgres");
     ContainerConfig config = container.config();
-    assertEquals(9823, ((DbConfig) config).getPort());
-
-    config.setStartMode(StartMode.DropCreate);
-    container.start();
-
-    config.setStartMode(StartMode.Container);
-    container.start();
-
-    config.setStartMode(StartMode.Create);
+    // assertEquals(9823, config.port());
     container.start();
 
     //String url = config.jdbcUrl();

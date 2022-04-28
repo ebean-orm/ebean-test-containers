@@ -20,12 +20,12 @@ public class YugabyteConfig extends DbConfig {
   }
 
   @Override
-  public String jdbcUrl() {
+  protected String buildJdbcUrl() {
     return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/" + getDbName();
   }
 
   @Override
-  public String jdbcAdminUrl() {
+  protected String buildJdbcAdminUrl() {
     return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/postgres";
   }
 }

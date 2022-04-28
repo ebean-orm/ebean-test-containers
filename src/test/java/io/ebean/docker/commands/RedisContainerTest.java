@@ -53,9 +53,10 @@ class RedisContainerTest {
 
   private void assertProperties(RedisConfig config) {
     assertEquals(config.getPort(), 7380);
-    assertEquals(config.getInternalPort(), 5379);
-    assertEquals(config.getImage(), "foo");
-    assertEquals(config.getStartMode(), StartMode.Create);
-    assertEquals(config.getStopMode(), StopMode.Stop);
+    InternalConfig state = config.internalConfig();
+    assertEquals(state.getInternalPort(), 5379);
+    assertEquals(state.getImage(), "foo");
+    assertEquals(state.getStartMode(), StartMode.Create);
+    assertEquals(state.getStopMode(), StopMode.Stop);
   }
 }

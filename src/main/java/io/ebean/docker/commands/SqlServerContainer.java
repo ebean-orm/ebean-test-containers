@@ -142,9 +142,9 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
     args.add("-e");
     args.add("SA_PASSWORD=" + dbConfig.getAdminPassword());
 
-    if (config.isDefaultCollation()) {
+    if (dbConfig.isDefaultCollation()) {
       // do nothing, use server default
-    } else if (config.isExplicitCollation()) {
+    } else if (dbConfig.isExplicitCollation()) {
       args.add("-e");
       args.add("MSSQL_COLLATION=" + dbConfig.getCollation());
     } else {

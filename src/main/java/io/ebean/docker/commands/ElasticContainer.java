@@ -37,7 +37,7 @@ public class ElasticContainer extends BaseContainer {
     args.add("transport.host=127.0.0.1");
     args.add("-e");
     args.add("xpack.security.enabled=false");
-    args.add(config.image);
+    args.add(config.image());
     return createProcessBuilder(args);
   }
 

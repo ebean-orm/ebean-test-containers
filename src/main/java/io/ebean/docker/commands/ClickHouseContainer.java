@@ -52,7 +52,7 @@ public class ClickHouseContainer extends JdbcBaseDbContainer {
     //$ docker run -d --name some-clickhouse-server --ulimit nofile=262144:262144 yandex/clickhouse-server
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");

@@ -26,7 +26,7 @@ public class Db2Config extends DbConfig {
   }
 
   @Override
-  public String jdbcUrl() {
+  protected String buildJdbcUrl() {
     return "jdbc:db2://" + getHost() + ":" + getPort() + "/" + getDbName();
   }
 

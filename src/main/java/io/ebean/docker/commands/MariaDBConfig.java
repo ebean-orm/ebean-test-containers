@@ -20,12 +20,12 @@ public class MariaDBConfig extends MySqlConfig {
   }
 
   @Override
-  public String jdbcUrl() {
+  protected String buildJdbcUrl() {
     return "jdbc:mysql://" + getHost() + ":" + getPort() + "/" + getDbName();
   }
 
   @Override
-  public String jdbcAdminUrl() {
+  protected String buildJdbcAdminUrl() {
     return "jdbc:mysql://" + getHost() + ":" + getPort() + "/mysql";
   }
 }

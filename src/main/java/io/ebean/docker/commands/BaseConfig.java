@@ -1,6 +1,6 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.container.ContainerConfig;
+import io.ebean.docker.container.ContainerBuilder;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -9,7 +9,7 @@ import java.util.Properties;
 /**
  * Configuration for an DBMS like Postgres, MySql, Oracle, SQLServer
  */
-public abstract class BaseConfig implements ContainerConfig {
+abstract class BaseConfig<SELF extends BaseConfig<SELF>> implements ContainerBuilder<SELF> {
 
   /**
    * The database platform.
@@ -26,7 +26,7 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * The host name. When running in Docker this is often set to <code>172.17.0.1</code.
    */
-  protected String host = "localhost";
+  protected String host = DockerHost.host();
 
   /**
    * The exposed port.
@@ -74,15 +74,6 @@ public abstract class BaseConfig implements ContainerConfig {
    */
   protected StopMode shutdownMode = StopMode.None;
 
-  /**
-   * The character set to use.
-   */
-  protected String characterSet;
-
-  /**
-   * The collation to use.
-   */
-  protected String collation;
 
   /**
    * Maximum number of attempts to find the 'database ready to accept connections' log message in the container.
@@ -108,86 +99,50 @@ public abstract class BaseConfig implements ContainerConfig {
     this.version = version;
   }
 
-  /**
-   * Return a description of the configuration.
-   */
-  @Override
-  public String startDescription() {
-    return "starting " + platform + " container:" + containerName + " port:" + port + " startMode:" + startMode;
+  protected String docker() {
+    return docker;
+  }
+
+  protected String getHost() {
+    return host;
+  }
+
+  protected int getPort() {
+    return port;
+  }
+
+  @SuppressWarnings("unchecked")
+  protected SELF self() {
+    return (SELF) this;
   }
 
   @Override
-  public String stopDescription() {
-    return "stopping " + platform + " container:" + containerName + " stopMode:" + stopMode;
-  }
-
-  @Override
-  public String platform() {
-    return platform;
-  }
-
-  @Override
-  public String containerName() {
-    return containerName;
-  }
-
-  @Override
-  public String version() {
-    return version;
-  }
-
-  @Override
-  public void setStartMode(StartMode startMode) {
+  public SELF setStartMode(StartMode startMode) {
     this.startMode = startMode;
+    return self();
   }
 
   @Override
-  public void setStopMode(StopMode stopMode) {
+  public SELF setStopMode(StopMode stopMode) {
     this.stopMode = stopMode;
+    return self();
   }
 
   @Override
-  public void setShutdownMode(StopMode shutdownMode) {
+  public SELF setShutdownMode(StopMode shutdownMode) {
     this.shutdownMode = shutdownMode;
-  }
-
-  /**
-   * Return a Connection to the database (make sure you close it).
-   */
-  @Override
-  public Connection createConnection() throws SQLException {
-    throw new IllegalStateException("Not valid for this type");
-  }
-
-  @Override
-  public Connection createConnectionNoSchema() throws SQLException {
-    throw new IllegalStateException("Not valid for this type");
-  }
-
-  @Override
-  public Connection createAdminConnection() throws SQLException {
-    throw new IllegalStateException("Not valid for this type");
-  }
-
-  @Override
-  public String jdbcUrl() {
-    throw new IllegalStateException("Not valid for this type");
-  }
-
-  @Override
-  public String jdbcAdminUrl() {
-    return jdbcUrl();
+    return self();
   }
 
   /**
    * Load configuration from properties.
    */
-  public BaseConfig setProperties(Properties properties) {
+  @Override
+  public SELF setProperties(Properties properties) {
     if (properties == null) {
-      return this;
+      return self();
     }
     docker = properties.getProperty("docker", docker);
-
     containerName = prop(properties, "containerName", containerName);
     image = prop(properties, "image", image);
     host = prop(properties, "host", host);
@@ -195,15 +150,10 @@ public abstract class BaseConfig implements ContainerConfig {
     internalPort = prop(properties, "internalPort", internalPort);
     adminPort = prop(properties, "adminPort", adminPort);
     adminInternalPort = prop(properties, "adminInternalPort", adminInternalPort);
-    characterSet = prop(properties, "characterSet", characterSet);
-    collation = prop(properties, "collation", collation);
-
     String start = properties.getProperty("startMode", startMode.name());
     startMode = StartMode.of(prop(properties, "startMode", start));
-
     String stop = properties.getProperty("stopMode", stopMode.name());
     stopMode = StopMode.of(prop(properties, "stopMode", stop));
-
     String shutdown = properties.getProperty("shutdown", shutdownMode.name());
     shutdownMode = StopMode.of(prop(properties, "shutdown", shutdown));
 
@@ -216,7 +166,7 @@ public abstract class BaseConfig implements ContainerConfig {
       }
     }
     extraProperties(properties);
-    return this;
+    return self();
   }
 
   /**
@@ -240,151 +190,242 @@ public abstract class BaseConfig implements ContainerConfig {
   /**
    * Set the container name.
    */
-  public BaseConfig setContainerName(String containerName) {
+  @Override
+  public SELF setContainerName(String containerName) {
     this.containerName = containerName;
-    return this;
+    return self();
   }
 
   /**
    * Set the exposed port.
    */
-  public BaseConfig setPort(int port) {
+  @Override
+  public SELF setPort(int port) {
     this.port = port;
-    return this;
+    return self();
   }
 
   /**
    * Set the internal (to the container) port.
    */
-  public BaseConfig setInternalPort(int internalPort) {
+  @Override
+  public SELF setInternalPort(int internalPort) {
     this.internalPort = internalPort;
-    return this;
+    return self();
   }
 
   /**
    * Set the exposed admin port.
    */
-  public BaseConfig setAdminPort(int adminPort) {
+  @Override
+  public SELF setAdminPort(int adminPort) {
     this.adminPort = adminPort;
-    return this;
+    return self();
   }
 
   /**
    * Set the internal admin (to the container) port.
    */
-  public BaseConfig setAdminInternalPort(int adminInternalPort) {
+  @Override
+  public SELF setAdminInternalPort(int adminInternalPort) {
     this.adminInternalPort = adminInternalPort;
-    return this;
+    return self();
   }
 
   /**
    * Set the docker image to use.
    */
-  public BaseConfig setImage(String image) {
+  @Override
+  public SELF setImage(String image) {
     this.image = image;
-    return this;
-  }
-
-  /**
-   * Set the character set to use.
-   */
-  public BaseConfig setCharacterSet(String characterSet) {
-    this.characterSet = characterSet;
-    return this;
-  }
-
-  /**
-   * Set the collation to use.
-   */
-  public BaseConfig setCollation(String collation) {
-    this.collation = collation;
-    return this;
+    return self();
   }
 
   /**
    * Set the max attempts to wait for DB ready.
    */
-  public BaseConfig setMaxReadyAttempts(int maxReadyAttempts) {
+  @Override
+  public SELF setMaxReadyAttempts(int maxReadyAttempts) {
     this.maxReadyAttempts = maxReadyAttempts;
-    return this;
+    return self();
   }
 
   /**
    * Set the docker command to use (defaults to 'docker').
    */
-  public BaseConfig setDocker(String docker) {
+  @Override
+  public SELF setDocker(String docker) {
     this.docker = docker;
-    return this;
-  }
-
-  public String getHost() {
-    return host;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  public int getInternalPort() {
-    return internalPort;
-  }
-
-  public int getAdminPort() {
-    return adminPort;
-  }
-
-  public int getAdminInternalPort() {
-    return adminInternalPort;
-  }
-
-  public String getImage() {
-    return image;
-  }
-
-  public StartMode getStartMode() {
-    return startMode;
-  }
-
-  public StopMode getStopMode() {
-    return stopMode;
-  }
-
-  public int getMaxReadyAttempts() {
-    return maxReadyAttempts;
-  }
-
-  public String getDocker() {
-    return docker;
-  }
-
-  public StopMode shutdownMode() {
-    return shutdownMode;
-  }
-
-  public String getCharacterSet() {
-    return characterSet;
-  }
-
-  public String getCollation() {
-    return collation;
-  }
-
-  public boolean isExplicitCollation() {
-    return collation != null || characterSet != null;
-  }
-
-  public boolean isDefaultCollation() {
-    return "default".equals(collation);
-  }
-
-  public boolean isStopModeNone() {
-    return StopMode.None == stopMode;
+    return self();
   }
 
   /**
    * Clear the stopMode when detect already running.
    */
-  public void clearStopMode() {
+  private void internalClearStopMode() {
     this.stopMode = StopMode.None;
+  }
+
+  /**
+   * Return the internal configuration.
+   */
+  protected InternalConfig internalConfig() {
+    return new Inner();
+  }
+
+  /**
+   * Override to build appropriate jdbc url.
+   */
+  protected String buildJdbcUrl() {
+    throw new IllegalStateException("Not valid for this type");
+  }
+
+  protected String buildJdbcAdminUrl() {
+    return buildJdbcUrl();
+  }
+
+  protected class Inner implements InternalConfig {
+
+    /**
+     * Return a Connection to the database (make sure you close it).
+     */
+    @Override
+    public Connection createConnection() throws SQLException {
+      throw new IllegalStateException("Not valid for this type");
+    }
+
+    @Override
+    public Connection createConnectionNoSchema() throws SQLException {
+      throw new IllegalStateException("Not valid for this type");
+    }
+
+    @Override
+    public Connection createAdminConnection() throws SQLException {
+      throw new IllegalStateException("Not valid for this type");
+    }
+
+    @Override
+    public Connection createAdminConnection(String url) throws SQLException {
+      throw new IllegalStateException("Not valid for this type");
+    }
+
+    @Override
+    public String jdbcUrl() {
+      return buildJdbcUrl();
+    }
+
+    @Override
+    public String jdbcAdminUrl() {
+      return buildJdbcAdminUrl();
+    }
+
+    /**
+     * Return a description of the configuration.
+     */
+    @Override
+    public String startDescription() {
+      return "starting " + platform + " container:" + containerName + " port:" + port + " startMode:" + startMode;
+    }
+
+    @Override
+    public String stopDescription() {
+      return "stopping " + platform + " container:" + containerName + " stopMode:" + stopMode;
+    }
+
+    @Override
+    public String platform() {
+      return platform;
+    }
+
+    @Override
+    public String containerName() {
+      return containerName;
+    }
+
+    @Override
+    public String version() {
+      return version;
+    }
+
+    @Override
+    public String getHost() {
+      return host;
+    }
+
+    @Override
+    public int getPort() {
+      return port;
+    }
+
+    @Override
+    public int getInternalPort() {
+      return internalPort;
+    }
+
+    @Override
+    public int getAdminPort() {
+      return adminPort;
+    }
+
+    @Override
+    public int getAdminInternalPort() {
+      return adminInternalPort;
+    }
+
+    @Override
+    public String getImage() {
+      return image;
+    }
+
+    @Override
+    public StartMode getStartMode() {
+      return startMode;
+    }
+
+    @Override
+    public StopMode getStopMode() {
+      return stopMode;
+    }
+
+    @Override
+    public int getMaxReadyAttempts() {
+      return maxReadyAttempts;
+    }
+
+    @Override
+    public String getDocker() {
+      return docker;
+    }
+
+    @Override
+    public StopMode shutdownMode() {
+      return shutdownMode;
+    }
+
+
+    @Override
+    public boolean isStopModeNone() {
+      return StopMode.None == stopMode;
+    }
+
+    @Override
+    public boolean checkSkipStop() {
+      return checkSkipStop;
+    }
+
+    @Override
+    public String docker() {
+      return docker;
+    }
+
+    @Override
+    public String image() {
+      return image;
+    }
+
+    @Override
+    public void clearStopMode() {
+      internalClearStopMode();
+    }
   }
 }

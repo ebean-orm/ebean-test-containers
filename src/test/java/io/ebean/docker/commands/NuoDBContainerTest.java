@@ -30,7 +30,7 @@ public class NuoDBContainerTest {
     NuoDBContainer container = new NuoDBContainer(config);
     container.startWithDropCreate();
 
-    try (Connection connection = config.createConnection()) {
+    try (Connection connection = container.createConnection()) {
       final Random random = new Random();
 
       exeSql(connection, "drop table if exists test_junk");

@@ -19,13 +19,15 @@ abstract class BaseContainer implements Container {
 
   static final Logger log = LoggerFactory.getLogger(Commands.class);
 
-  protected final BaseConfig config;
+  protected final BaseConfig<?> buildConfig;
+  protected InternalConfig config;
   protected final Commands commands;
   protected int waitForConnectivityAttempts = 200;
 
-  BaseContainer(BaseConfig config) {
-    this.config = config;
-    this.commands = new Commands(config.docker);
+  BaseContainer(BaseConfig<?> buildConfig) {
+    this.buildConfig = buildConfig;
+    this.commands = new Commands(buildConfig.docker);
+    this.config = buildConfig.internalConfig();
   }
 
   /**
@@ -75,7 +77,7 @@ abstract class BaseContainer implements Container {
   }
 
   private boolean skipShutdown() {
-    return config.checkSkipStop && SkipShutdown.isSkip();
+    return config.checkSkipStop() && SkipShutdown.isSkip();
   }
 
   protected boolean shutdownHook(boolean started) {
@@ -229,7 +231,7 @@ abstract class BaseContainer implements Container {
 
   protected List<String> dockerRun() {
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");

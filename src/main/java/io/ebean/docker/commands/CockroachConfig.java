@@ -21,7 +21,8 @@ public class CockroachConfig extends DbConfig {
     this("v21.2.9");
   }
 
-  public String jdbcUrl() {
+  @Override
+  protected String buildJdbcUrl() {
     return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/" + getDbName() + "?sslmode=disable";
   }
 }

@@ -1,5 +1,7 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.ContainerBuilderDb;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -8,7 +10,7 @@ import java.util.Properties;
 /**
  * Configuration for an DBMS like Postgres, MySql, Oracle, SQLServer
  */
-public abstract class DbConfig extends BaseConfig {
+abstract class DbConfig<SELF extends DbConfig<SELF>> extends BaseConfig<SELF> implements ContainerBuilderDb<SELF> {
 
   /**
    * Set for in-memory tmpfs use.
@@ -80,80 +82,35 @@ public abstract class DbConfig extends BaseConfig {
    */
   boolean fastStartMode = true;
 
+  /**
+   * The character set to use.
+   */
+  protected String characterSet;
+
+  /**
+   * The collation to use.
+   */
+  protected String collation;
+
   DbConfig(String platform, int port, int internalPort, String version) {
     super(platform, port, internalPort, version);
   }
 
-  /**
-   * Return a description of the configuration.
-   */
-  @Override
-  public String startDescription() {
-    return "starting " + platform + " container:" + containerName + " port:" + port + " db:" + dbName + " user:" + username + " extensions:" + extensions + " startMode:" + startMode;
-  }
-
-  /**
-   * Return summary of the port db name and other details.
-   */
-  public String summary() {
-    return "host:" + host + " port:" + port + " db:" + dbName + " user:" + username + "/" + password;
-  }
-
-  /**
-   * Set the schema if it hasn't already set. Some databases (NuoDB) effectively require a
-   * default schema and it is reasonable for this to default to the username.
-   */
-  public void initDefaultSchema() {
-    if (schema == null) {
-      schema = username;
-    }
-  }
-
-  /**
-   * Return a Connection to the database (make sure you close it).
-   */
-  @Override
-  public Connection createConnection() throws SQLException {
-    Properties props = new java.util.Properties();
-    props.put("user", username);
-    props.put("password", password);
-    if (schema != null) {
-      props.put("schema", schema);
-    }
-    return DriverManager.getConnection(jdbcUrl(), props);
-  }
-
-  @Override
-  public Connection createConnectionNoSchema() throws SQLException {
-    Properties props = new java.util.Properties();
-    props.put("user", username);
-    props.put("password", password);
-    return DriverManager.getConnection(jdbcUrl(), props);
-  }
-
-  /**
-   * Return a Connection to the database using the admin user.
-   */
-  public Connection createAdminConnection(String url) throws SQLException {
-    Properties props = new java.util.Properties();
-    props.put("user", adminUsername);
-    props.put("password", adminPassword);
-    return DriverManager.getConnection(url, props);
-  }
-
-  public Connection createAdminConnection() throws SQLException {
-    return createAdminConnection(jdbcAdminUrl());
+  protected String getDbName() {
+    return dbName;
   }
 
   /**
    * Load configuration from properties.
    */
-  public DbConfig setProperties(Properties properties) {
+  @Override
+  public SELF setProperties(Properties properties) {
     if (properties == null) {
-      return this;
+      return self();
     }
     super.setProperties(properties);
-
+    characterSet = prop(properties, "characterSet", characterSet);
+    collation = prop(properties, "collation", collation);
     inMemory = Boolean.parseBoolean(prop(properties, "inMemory", Boolean.toString(inMemory)));
     fastStartMode = Boolean.parseBoolean(prop(properties, "fastStartMode", Boolean.toString(fastStartMode)));
 
@@ -173,212 +130,363 @@ public abstract class DbConfig extends BaseConfig {
     extraDbPassword = prop(properties, "extraDb.password", extraDbPassword);
     extraDbInitSqlFile = prop(properties, "extraDb.initSqlFile", extraDbInitSqlFile);
     extraDbSeedSqlFile = prop(properties, "extraDb.seedSqlFile", extraDbSeedSqlFile);
-    return this;
+    return self();
   }
 
   /**
    * Set the password for the DB admin user.
    */
-  public DbConfig setAdminUser(String dbAdminUser) {
+  @Override
+  public SELF setAdminUser(String dbAdminUser) {
     this.adminUsername = dbAdminUser;
-    return this;
+    return self();
   }
 
   /**
    * Set the password for the DB admin user.
    */
-  public DbConfig setAdminPassword(String adminPassword) {
+  @Override
+  public SELF setAdminPassword(String adminPassword) {
     this.adminPassword = adminPassword;
-    return this;
+    return self();
   }
 
   /**
    * Set the temp fs for in-memory use.
    */
-  public DbConfig setTmpfs(String tmpfs) {
+  @Override
+  public SELF setTmpfs(String tmpfs) {
     this.tmpfs = tmpfs;
-    return this;
+    return self();
   }
 
   /**
    * Set to true to use fast start mode.
    */
-  public DbConfig setFastStartMode(boolean fastStartMode) {
+  @Override
+  public SELF setFastStartMode(boolean fastStartMode) {
     this.fastStartMode = fastStartMode;
-    return this;
+    return self();
   }
 
   /**
    * Set the DB name.
    */
-  public DbConfig setDbName(String dbName) {
+  @Override
+  public SELF setDbName(String dbName) {
     this.dbName = dbName;
-    return this;
+    return self();
   }
 
   /**
    * Set the DB user.
    */
-  public DbConfig setUser(String user) {
+  @Override
+  public SELF setUser(String user) {
     this.username = user;
-    return this;
+    return self();
   }
 
   /**
    * Set the DB password.
    */
-  public DbConfig setPassword(String password) {
+  @Override
+  public SELF setPassword(String password) {
     this.password = password;
-    return this;
+    return self();
   }
 
   /**
    * Set the DB schema.
    */
-  public DbConfig setSchema(String schema) {
+  @Override
+  public SELF setSchema(String schema) {
     this.schema = schema;
-    return this;
+    return self();
+  }
+
+  /**
+   * Set the character set to use.
+   */
+  @Override
+  public SELF setCharacterSet(String characterSet) {
+    this.characterSet = characterSet;
+    return self();
+  }
+
+  /**
+   * Set the collation to use.
+   */
+  @Override
+  public SELF setCollation(String collation) {
+    this.collation = collation;
+    return self();
   }
 
   /**
    * Set the DB extensions to install (Postgres hstore, pgcrypto etc)
    */
-  public DbConfig setExtensions(String extensions) {
+  @Override
+  public SELF setExtensions(String extensions) {
     this.extensions = extensions;
-    return this;
+    return self();
   }
 
   /**
    * Set the SQL file to execute after creating the database.
    */
-  public DbConfig setInitSqlFile(String initSqlFile) {
+  @Override
+  public SELF setInitSqlFile(String initSqlFile) {
     this.initSqlFile = initSqlFile;
-    return this;
+    return self();
   }
 
   /**
    * Set the SQL file to execute after creating the database and initSqlFile.
    */
-  public DbConfig setSeedSqlFile(String seedSqlFile) {
+  @Override
+  public SELF setSeedSqlFile(String seedSqlFile) {
     this.seedSqlFile = seedSqlFile;
-    return this;
+    return self();
   }
 
   /**
    * Set the name of an extra database to create.
    */
-  public DbConfig setExtraDb(String extraDb) {
+  @Override
+  public SELF setExtraDb(String extraDb) {
     this.extraDb = extraDb;
-    return this;
+    return self();
   }
 
   /**
    * Set the name of an extra user to create. If an extra database is also created this would be the
    * owner of that extra database.
    */
-  public DbConfig setExtraDbUser(String extraDbUser) {
+  @Override
+  public SELF setExtraDbUser(String extraDbUser) {
     this.extraDbUser = extraDbUser;
-    return this;
+    return self();
   }
 
   /**
    * Set the password for an extra user. If nothing is set this would default to be the same as
    * the main users password.
    */
-  public DbConfig setExtraDbPassword(String extraDbPassword) {
+  @Override
+  public SELF setExtraDbPassword(String extraDbPassword) {
     this.extraDbPassword = extraDbPassword;
-    return this;
+    return self();
   }
 
   /**
    * Set a file to execute after creating the extra database.
    */
-  public DbConfig setExtraDbInitSqlFile(String extraDbInitSqlFile) {
+  @Override
+  public SELF setExtraDbInitSqlFile(String extraDbInitSqlFile) {
     this.extraDbInitSqlFile = extraDbInitSqlFile;
-    return this;
+    return self();
   }
 
   /**
    * Set a file to execute after creating the extra database.
    */
-  public DbConfig setExtraDbSeedSqlFile(String extraDbSeedSqlFile) {
+  @Override
+  public SELF setExtraDbSeedSqlFile(String extraDbSeedSqlFile) {
     this.extraDbSeedSqlFile = extraDbSeedSqlFile;
-    return this;
+    return self();
   }
 
   /**
    * Set to true to run using in memory storage for data via tmpfs.
    */
-  public DbConfig setInMemory(boolean inMemory) {
+  @Override
+  public SELF setInMemory(boolean inMemory) {
     this.inMemory = inMemory;
-    return this;
+    return self();
   }
 
-  public boolean isInMemory() {
-    return inMemory;
+  /**
+   * Set the schema if it hasn't already set. Some databases (NuoDB) effectively require a
+   * default schema and it is reasonable for this to default to the username.
+   */
+  protected void initDefaultSchema() {
+    if (schema == null) {
+      schema = username;
+    }
   }
 
-  public String getTmpfs() {
-    return tmpfs;
+  /**
+   * Return summary of the port db name and other details.
+   */
+  protected String buildSummary() {
+    return "host:" + host + " port:" + port + " db:" + dbName + " user:" + username + "/" + password;
   }
 
-  public String getAdminUsername() {
-    return adminUsername;
+  @Override
+  protected InternalConfigDb internalConfig() {
+    return new InnerConfig();
   }
 
-  public String getAdminPassword() {
-    return adminPassword;
-  }
+  private class InnerConfig extends BaseConfig<?>.Inner implements InternalConfigDb {
 
-  public String getDbName() {
-    return dbName;
-  }
+    /**
+     * Return a description of the configuration.
+     */
+    @Override
+    public String startDescription() {
+      return "starting " + platform + " container:" + containerName + " port:" + port + " db:" + dbName + " user:" + username + " extensions:" + extensions + " startMode:" + startMode;
+    }
 
-  public String getUsername() {
-    return username;
-  }
+    /**
+     * Return summary of the port db name and other details.
+     */
+    @Override
+    public String summary() {
+      return buildSummary();
+    }
 
-  public String getPassword() {
-    return password;
-  }
+    /**
+     * Return a Connection to the database (make sure you close it).
+     */
+    @Override
+    public Connection createConnection() throws SQLException {
+      Properties props = new java.util.Properties();
+      props.put("user", username);
+      props.put("password", password);
+      if (schema != null) {
+        props.put("schema", schema);
+      }
+      return DriverManager.getConnection(jdbcUrl(), props);
+    }
 
-  public String getSchema() {
-    return schema;
-  }
+    @Override
+    public Connection createConnectionNoSchema() throws SQLException {
+      Properties props = new java.util.Properties();
+      props.put("user", username);
+      props.put("password", password);
+      return DriverManager.getConnection(jdbcUrl(), props);
+    }
 
-  public String getExtensions() {
-    return extensions;
-  }
+    /**
+     * Return a Connection to the database using the admin user.
+     */
+    @Override
+    public Connection createAdminConnection(String url) throws SQLException {
+      Properties props = new java.util.Properties();
+      props.put("user", adminUsername);
+      props.put("password", adminPassword);
+      return DriverManager.getConnection(url, props);
+    }
 
-  public String getInitSqlFile() {
-    return initSqlFile;
-  }
+    @Override
+    public Connection createAdminConnection() throws SQLException {
+      return createAdminConnection(jdbcAdminUrl());
+    }
 
-  public String getSeedSqlFile() {
-    return seedSqlFile;
-  }
+    @Override
+    public boolean isInMemory() {
+      return inMemory;
+    }
 
-  public String getExtraDb() {
-    return extraDb;
-  }
+    @Override
+    public String getTmpfs() {
+      return tmpfs;
+    }
 
-  public String getExtraDbUser() {
-    return extraDbUser;
-  }
+    @Override
+    public String getAdminUsername() {
+      return adminUsername;
+    }
 
-  public String getExtraDbPassword() {
-    return extraDbPassword;
-  }
+    @Override
+    public String getAdminPassword() {
+      return adminPassword;
+    }
 
-  public String getExtraDbInitSqlFile() {
-    return extraDbInitSqlFile;
-  }
+    @Override
+    public String getDbName() {
+      return dbName;
+    }
 
-  public String getExtraDbSeedSqlFile() {
-    return extraDbSeedSqlFile;
-  }
+    @Override
+    public String getUsername() {
+      return username;
+    }
 
-  public boolean isFastStartMode() {
-    return fastStartMode;
+    @Override
+    public String getPassword() {
+      return password;
+    }
+
+    @Override
+    public String getSchema() {
+      return schema;
+    }
+
+    @Override
+    public String getExtensions() {
+      return extensions;
+    }
+
+    @Override
+    public String getInitSqlFile() {
+      return initSqlFile;
+    }
+
+    @Override
+    public String getSeedSqlFile() {
+      return seedSqlFile;
+    }
+
+    @Override
+    public String getExtraDb() {
+      return extraDb;
+    }
+
+    @Override
+    public String getExtraDbUser() {
+      return extraDbUser;
+    }
+
+    @Override
+    public String getExtraDbPassword() {
+      return extraDbPassword;
+    }
+
+    @Override
+    public String getExtraDbInitSqlFile() {
+      return extraDbInitSqlFile;
+    }
+
+    @Override
+    public String getExtraDbSeedSqlFile() {
+      return extraDbSeedSqlFile;
+    }
+
+    @Override
+    public boolean isFastStartMode() {
+      return fastStartMode;
+    }
+
+    @Override
+    public String getCharacterSet() {
+      return characterSet;
+    }
+
+    @Override
+    public String getCollation() {
+      return collation;
+    }
+
+    @Override
+    public boolean isExplicitCollation() {
+      return collation != null || characterSet != null;
+    }
+
+    @Override
+    public boolean isDefaultCollation() {
+      return "default".equals(collation);
+    }
   }
 }

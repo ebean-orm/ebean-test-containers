@@ -88,7 +88,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     args.add("-p");
     args.add(oracleConfig.getApexPort() + ":" + oracleConfig.getInternalApexPort());
     args.add("-e");
-    args.add("ORACLE_PWD=" + oracleConfig.getAdminPassword());
+    args.add("ORACLE_PWD=" + dbConfig.getAdminPassword());
     args.add(config.getImage());
     return createProcessBuilder(args);
   }

@@ -93,7 +93,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
 
   private ProcessBuilder sqlProcess(String sql) {
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(config.containerName());
@@ -117,7 +117,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
 //    cockroachdb/cockroach:v19.1.4 start --insecure
 //
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");

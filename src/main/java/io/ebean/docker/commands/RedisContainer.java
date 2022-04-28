@@ -59,7 +59,7 @@ public class RedisContainer extends BaseContainer {
   protected ProcessBuilder runProcess() {
 
     List<String> args = dockerRun();
-    args.add(config.image);
+    args.add(config.image());
     return createProcessBuilder(args);
   }
 

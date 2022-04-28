@@ -136,14 +136,14 @@ public class HanaContainerTest {
     Container container = factory.container("hana");
     ContainerConfig config = container.config();
 
-    config.setStartMode(StartMode.DropCreate);
+    //config.setStartMode(StartMode.DropCreate);
     assertTrue(container.start());
 
-    config.setStartMode(StartMode.Container);
-    assertTrue(container.start());
-
-    config.setStartMode(StartMode.Create);
-    assertTrue(container.start());
+//    config.setStartMode(StartMode.Container);
+//    assertTrue(container.start());
+//
+//    config.setStartMode(StartMode.Create);
+//    assertTrue(container.start());
 
     try (Connection connection = config.createConnection();) {
       try {
@@ -204,7 +204,8 @@ public class HanaContainerTest {
   }
 
   private void cleanupContainer(HanaConfig config) {
-    ProcessHandler.command(config.getDocker(), "exec", "-i", config.containerName(), "bash", "-c",
+    InternalConfigDb state = config.internalConfig();
+    ProcessHandler.command(state.docker(), "exec", "-i", state.containerName(), "bash", "-c",
       "rm -rf /hana/mounts/*");
   }
 }

@@ -36,13 +36,13 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private final String smName;
   private final String teName;
 
-  public NuoDBContainer(NuoDBConfig config) {
-    super(config);
+  public NuoDBContainer(NuoDBConfig nuoConfig) {
+    super(nuoConfig);
     this.checkConnectivityUsingAdmin = true;
-    config.initDefaultSchema();
-    this.nuoConfig = config;
-    this.network = config.getNetwork();
-    this.adName = nuoConfig.containerName();
+    nuoConfig.initDefaultSchema();
+    this.nuoConfig = nuoConfig;
+    this.network = nuoConfig.getNetwork();
+    this.adName = config.containerName();
     this.smName = adName + "_" + nuoConfig.getSm1();
     this.teName = adName + "_" + nuoConfig.getTe1();
   }
@@ -70,7 +70,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
 
     //  nuocmd shutdown database --db-name testdb
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(adName);
@@ -199,7 +199,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private boolean checkDbStateOk() {
     //$ nuocmd show database  --db-format 'dbState:{state}'  --db-name testdb
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(adName);
@@ -258,7 +258,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder procNetworkCreate() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("network");
     args.add("create");
     args.add(network);
@@ -268,7 +268,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder procNetworkRemove() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("network");
     args.add("rm");
     args.add(network);
@@ -278,7 +278,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder procNetworkList() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("network");
     args.add("ls");
     args.add("-f");
@@ -294,7 +294,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder runAdminProcess() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");
@@ -327,7 +327,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     final Path archiveDir = archivePath();
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");
@@ -401,7 +401,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder runTransactionManager() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");

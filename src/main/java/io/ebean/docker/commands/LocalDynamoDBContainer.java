@@ -173,7 +173,7 @@ public class LocalDynamoDBContainer extends BaseContainer {
     args.add("AWS_ACCESS_KEY_ID=localstack");
     args.add("-e");
     args.add("AWS_SECRET_KEY=localstack");
-    args.add(config.image);
+    args.add(config.image());
     return createProcessBuilder(args);
   }
 

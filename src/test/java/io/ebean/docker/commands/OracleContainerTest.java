@@ -29,7 +29,7 @@ public class OracleContainerTest {
     //container.startContainerOnly();
     //container.startWithDropCreate();
 
-    try (Connection connection = config.createConnection()) {
+    try (Connection connection = container.createConnection()) {
       exeSql(connection, "create table test_junk (acol integer)");
       exeSql(connection, "insert into test_junk (acol) values (42)");
       exeSql(connection, "insert into test_junk (acol) values (43)");
@@ -64,14 +64,14 @@ public class OracleContainerTest {
     Container container = factory.container("oracle");
     ContainerConfig config = container.config();
 
-    config.setStartMode(StartMode.DropCreate);
+    //config.setStartMode(StartMode.DropCreate);
     container.start();
 
-    config.setStartMode(StartMode.Container);
-    container.start();
-
-    config.setStartMode(StartMode.Create);
-    container.start();
+//    config.setStartMode(StartMode.Container);
+//    container.start();
+//
+//    config.setStartMode(StartMode.Create);
+//    container.start();
 
     try (Connection connection = config.createConnection()) {
       exeSql(connection, "create table test_junk (acol integer)");

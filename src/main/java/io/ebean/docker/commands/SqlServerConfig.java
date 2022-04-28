@@ -21,12 +21,13 @@ public class SqlServerConfig extends DbConfig {
     this.password = "SqlS3rv#r";
   }
 
-  public String jdbcUrl() {
+  @Override
+  protected String buildJdbcUrl() {
     return "jdbc:sqlserver://" + getHost() + ":" + getPort() + ";databaseName=" + getDbName() + ";integratedSecurity=false;trustServerCertificate=true";
   }
 
   @Override
-  public String jdbcAdminUrl() {
+  protected String buildJdbcAdminUrl() {
     return "jdbc:sqlserver://" + getHost() + ":" + getPort()+ ";integratedSecurity=false;trustServerCertificate=true";
   }
 }

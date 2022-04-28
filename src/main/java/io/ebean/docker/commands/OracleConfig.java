@@ -33,7 +33,8 @@ public class OracleConfig extends DbConfig {
     setDbName("XE");
   }
 
-  public String jdbcUrl() {
+  @Override
+  protected String buildJdbcUrl() {
     return "jdbc:oracle:thin:@" + getHost() + ":" + getPort() + ":" + getDbName();
   }
 

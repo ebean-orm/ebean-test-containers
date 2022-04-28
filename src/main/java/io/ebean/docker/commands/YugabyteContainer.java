@@ -23,7 +23,7 @@ public class YugabyteContainer extends BasePostgresContainer {
   @Override
   protected ProcessBuilder runProcess() {
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");

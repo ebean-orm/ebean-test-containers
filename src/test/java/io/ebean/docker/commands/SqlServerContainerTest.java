@@ -95,16 +95,16 @@ class SqlServerContainerTest {
     Container container = factory.container("sqlserver");
     ContainerConfig config = container.config();
 
-    config.setStartMode(StartMode.DropCreate);
-    config.setStopMode(StopMode.Remove);
+    //config.setStartMode(StartMode.DropCreate);
+    //config.setStopMode(StopMode.Remove);
     container.start();
 
-    config.setStartMode(StartMode.Container);
-    container.start();
-
-    config.setStartMode(StartMode.Create);
-    config.setStopMode(StopMode.Remove);
-    container.start();
+//    config.setStartMode(StartMode.Container);
+//    container.start();
+//
+//    config.setStartMode(StartMode.Create);
+//    config.setStopMode(StopMode.Remove);
+//    container.start();
 
     try {
       Connection connection = config.createConnection();

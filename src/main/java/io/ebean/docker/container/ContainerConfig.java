@@ -1,8 +1,5 @@
 package io.ebean.docker.container;
 
-import io.ebean.docker.commands.StartMode;
-import io.ebean.docker.commands.StopMode;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -52,19 +49,9 @@ public interface ContainerConfig {
   Connection createAdminConnection() throws SQLException;
 
   /**
-   * Set the start mode.  One of create, dropCreate, or container [only].
+   * Return a DB connection using the admin user with the given jdbc url.
    */
-  void setStartMode(StartMode startMode);
-
-  /**
-   * Set the stop mode used when stop() is called.
-   */
-  void setStopMode(StopMode stopMode);
-
-  /**
-   * Set the shutdown hook mode to automatically stop/remove the container on JVM shutdown.
-   */
-  void setShutdownMode(StopMode shutdownHookMode);
+  Connection createAdminConnection(String url) throws SQLException;
 
   /**
    * Return a good description for starting the container typically for logging.

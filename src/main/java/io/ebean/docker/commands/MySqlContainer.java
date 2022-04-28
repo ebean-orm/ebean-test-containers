@@ -68,7 +68,7 @@ public class MySqlContainer extends JdbcBaseDbContainer implements Container {
   private void createDatabase(Connection connection) {
     if (!databaseExists(connection, dbConfig.getDbName())) {
       createDatabase(connection, dbConfig.getDbName());
-      if (!dbConfig.version.startsWith("5")) {
+      if (!dbConfig.version().startsWith("5")) {
         setLogBinTrustFunction(connection);
       }
     }
@@ -100,15 +100,15 @@ public class MySqlContainer extends JdbcBaseDbContainer implements Container {
     }
     args.add(config.getImage());
 
-    if (config.isDefaultCollation()) {
+    if (dbConfig.isDefaultCollation()) {
       // leaving it as mysql server default
 
-    } else if (config.isExplicitCollation()) {
-      String characterSet = config.getCharacterSet();
+    } else if (dbConfig.isExplicitCollation()) {
+      String characterSet = dbConfig.getCharacterSet();
       if (characterSet != null) {
         args.add("--character-set-server=" + characterSet);
       }
-      String collation = config.getCollation();
+      String collation = dbConfig.getCollation();
       if (collation != null) {
         args.add("--collation-server=" + collation);
       }
@@ -116,7 +116,7 @@ public class MySqlContainer extends JdbcBaseDbContainer implements Container {
       args.add("--character-set-server=utf8mb4");
       args.add("--collation-server=utf8mb4_bin");
     }
-    if (!dbConfig.version.startsWith("5")) {
+    if (!dbConfig.version().startsWith("5")) {
       args.add("--default-authentication-plugin=mysql_native_password");
       args.add("--skip-log-bin");
     }

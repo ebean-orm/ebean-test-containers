@@ -80,7 +80,8 @@ public class HanaConfig extends DbConfig {
   /**
    * Return the JDBC URL for connecting to the database
    */
-  public String jdbcUrl() {
+  @Override
+  protected String buildJdbcUrl() {
     return "jdbc:sap://" + getHost() + ":" + getPort() + "/?databaseName=" + getDbName();
   }
 

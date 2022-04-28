@@ -108,7 +108,7 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
    */
   protected List<String> dockerSu(String user, String cmd) {
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(config.containerName());

@@ -20,7 +20,7 @@ class YugabyteContainerTest {
     yugaContainer.startWithDropCreate();
 
     try {
-      Connection connection = config.createConnection();
+      Connection connection = yugaContainer.createConnection();
       exeSql(connection, "create table test_junk2 (acol integer, aname varchar(20))");
       exeSql(connection, "insert into test_junk2 (acol) values (42)");
       exeSql(connection, "insert into test_junk2 (acol) values (43)");
