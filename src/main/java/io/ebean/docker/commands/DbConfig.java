@@ -170,7 +170,15 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   }
 
   /**
-   * Set the DB name.
+   * Set the DB name - e.g. my_app1, my_app2, my_app3 etc. Defaults to test_db.
+   * <p>
+   * The DB name should not have any special characters (alpha and underscore) and
+   * should be unique for the project.
+   * <p>
+   * ebean-test-docker is designed to share the same container across multiple projects. The
+   * way this works is that each project should have a unique db name. This means that as
+   * developers testing is faster as containers stay running and are shared and running
+   * tests for a project means setting up unique "database" using the dbName.
    */
   @Override
   public SELF dbName(String dbName) {
