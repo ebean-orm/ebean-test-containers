@@ -1,16 +1,13 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.container.CBuilder;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 public class ClickHouseContainer extends JdbcBaseDbContainer {
 
-  public static class Builder extends DbConfig<ClickHouseContainer.Builder> implements CBuilder<ClickHouseContainer, ClickHouseContainer.Builder> {
+  public static class Builder extends DbConfig<ClickHouseContainer, ClickHouseContainer.Builder> {
 
     private Builder(String version) {
       super("clickhouse", 8123, 8123, version);
@@ -28,7 +25,7 @@ public class ClickHouseContainer extends JdbcBaseDbContainer {
 
     @Override
     protected String buildJdbcAdminUrl() {
-      return "jdbc:clickhouse://" + getHost() + ":" + getPort()+ "/default";
+      return "jdbc:clickhouse://" + getHost() + ":" + getPort() + "/default";
     }
 
     @Override

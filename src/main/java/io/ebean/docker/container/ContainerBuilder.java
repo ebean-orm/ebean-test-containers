@@ -5,7 +5,12 @@ import java.util.Properties;
 /**
  * Builder for containers.
  */
-public interface ContainerBuilder<SELF extends ContainerBuilder<SELF>>  {
+public interface ContainerBuilder<C,SELF extends ContainerBuilder<C,SELF>>  {
+
+  /**
+   * Build the container.
+   */
+  C build();
 
   /**
    * Set configuration from properties.

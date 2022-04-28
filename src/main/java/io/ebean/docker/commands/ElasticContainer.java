@@ -1,6 +1,6 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.container.CBuilder;
+import io.ebean.docker.container.ContainerBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -13,7 +13,7 @@ public class ElasticContainer extends BaseContainer {
   /**
    * Builder for ElasticContainer.
    */
-  public static class Builder extends DbConfig<ElasticContainer.Builder> implements CBuilder<ElasticContainer, ElasticContainer.Builder> {
+  public static class Builder extends BaseConfig<ElasticContainer,ElasticContainer.Builder> {
 
     private Builder(String version) {
       super("elastic", 9201, 9200, version);

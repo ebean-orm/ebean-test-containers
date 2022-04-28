@@ -1,7 +1,6 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.commands.process.ProcessResult;
-import io.ebean.docker.container.CBuilder;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -15,7 +14,7 @@ import static io.ebean.docker.commands.process.ProcessHandler.process;
 
 public class NuoDBContainer extends JdbcBaseDbContainer {
 
-  public static class Builder extends DbConfig<NuoDBContainer.Builder> implements CBuilder<NuoDBContainer, NuoDBContainer.Builder> {
+  public static class Builder extends DbConfig<NuoDBContainer, NuoDBContainer.Builder> {
 
     private String network = "nuodb-net";
     private String sm1 = "sm";
@@ -103,15 +102,19 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     int getPort2() {
       return port2;
     }
+
     int getInternalPort2() {
       return internalPort2;
     }
+
     int getPort3() {
       return port3;
     }
+
     int getInternalPort3() {
       return internalPort3;
     }
+
     String getNetwork() {
       return network;
     }

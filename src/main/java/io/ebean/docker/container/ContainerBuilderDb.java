@@ -3,7 +3,7 @@ package io.ebean.docker.container;
 /**
  * Builder for DB containers.
  */
-public interface ContainerBuilderDb<SELF extends ContainerBuilderDb<SELF>> extends ContainerBuilder<SELF> {
+public interface ContainerBuilderDb<C,SELF extends ContainerBuilderDb<C,SELF>> extends ContainerBuilder<C,SELF> {
 
   /**
    * Set the database admin user.

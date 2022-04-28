@@ -8,7 +8,7 @@ import java.util.List;
 
 abstract class MySqlBaseContainer extends JdbcBaseDbContainer implements Container {
 
-  MySqlBaseContainer(DbConfig<?> config) {
+  MySqlBaseContainer(DbConfig<?, ?> config) {
     super(config);
   }
 

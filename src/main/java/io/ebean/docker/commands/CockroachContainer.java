@@ -1,12 +1,10 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.commands.process.ProcessHandler;
-import io.ebean.docker.container.CBuilder;
 import io.ebean.docker.container.Container;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Commands for controlling a CockroachDB docker container.
@@ -16,7 +14,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
   /**
    * Builder for CockroachContainer.
    */
-  public static class Builder extends DbConfig<CockroachContainer.Builder> implements CBuilder<CockroachContainer, CockroachContainer.Builder> {
+  public static class Builder extends DbConfig<CockroachContainer, CockroachContainer.Builder> {
 
     private Builder(String version) {
       super("cockroach", 26257, 26257, version);

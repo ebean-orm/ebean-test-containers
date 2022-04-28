@@ -20,12 +20,12 @@ abstract class BaseContainer implements Container {
 
   static final Logger log = LoggerFactory.getLogger(Commands.class);
 
-  protected final BaseConfig<?> buildConfig;
+  protected final BaseConfig<?, ?> buildConfig;
   protected InternalConfig config;
   protected final Commands commands;
   protected int waitForConnectivityAttempts = 200;
 
-  BaseContainer(BaseConfig<?> buildConfig) {
+  BaseContainer(BaseConfig<?, ?> buildConfig) {
     this.buildConfig = buildConfig;
     this.commands = new Commands(buildConfig.docker);
     this.config = buildConfig.internalConfig();

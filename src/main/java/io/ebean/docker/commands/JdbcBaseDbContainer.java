@@ -4,7 +4,7 @@ import java.sql.Connection;
 
 abstract class JdbcBaseDbContainer extends DbContainer {
 
-  JdbcBaseDbContainer(DbConfig<?> config) {
+  JdbcBaseDbContainer(DbConfig<?, ?> config) {
     super(config);
     this.checkConnectivityUsingAdmin = true;
   }

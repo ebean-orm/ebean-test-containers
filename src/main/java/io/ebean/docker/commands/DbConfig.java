@@ -10,7 +10,7 @@ import java.util.Properties;
 /**
  * Configuration for an DBMS like Postgres, MySql, Oracle, SQLServer
  */
-abstract class DbConfig<SELF extends DbConfig<SELF>> extends BaseConfig<SELF> implements ContainerBuilderDb<SELF> {
+abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SELF> implements ContainerBuilderDb<C,SELF> {
 
   /**
    * Set for in-memory tmpfs use.
@@ -328,7 +328,7 @@ abstract class DbConfig<SELF extends DbConfig<SELF>> extends BaseConfig<SELF> im
     return new InnerConfig();
   }
 
-  private class InnerConfig extends BaseConfig<?>.Inner implements InternalConfigDb {
+  private class InnerConfig extends BaseConfig<?,?>.Inner implements InternalConfigDb {
 
     /**
      * Return a description of the configuration.

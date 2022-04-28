@@ -1,13 +1,11 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.container.CBuilder;
-
 /**
  * MariaDB container.
  */
 public class MariaDBContainer extends MySqlBaseContainer {
 
-  public static class Builder extends DbConfig<MariaDBContainer.Builder> implements CBuilder<MariaDBContainer, MariaDBContainer.Builder> {
+  public static class Builder extends DbConfig<MariaDBContainer, MariaDBContainer.Builder> {
 
     private Builder(String version) {
       super("mariadb", 4306, 3306, version);

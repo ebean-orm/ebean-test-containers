@@ -1,9 +1,6 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.container.Container;
-import io.ebean.docker.container.CBuilder;
-
-import java.util.Properties;
 
 /**
  * Commands for controlling a postgres docker container.
@@ -13,7 +10,7 @@ public class PostgresContainer extends BasePostgresContainer implements Containe
   /**
    * Create a builder for the PostgresContainer.
    */
-  public static CBuilder<PostgresContainer, Builder> newBuilder(String version) {
+  public static Builder newBuilder(String version) {
     return new Builder(version);
   }
 
@@ -24,7 +21,7 @@ public class PostgresContainer extends BasePostgresContainer implements Containe
   /**
    * Builder for Postgres container.
    */
-  public static class Builder extends DbConfig<Builder> implements CBuilder<PostgresContainer, Builder> {
+  public static class Builder extends DbConfig<PostgresContainer, Builder> {
 
     protected Builder(String version) {
       super("postgres", 6432, 5432, version);

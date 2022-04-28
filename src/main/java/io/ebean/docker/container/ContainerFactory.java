@@ -53,7 +53,7 @@ public class ContainerFactory {
     }
     String redisVersion = version("redis");
     if (redisVersion != null) {
-      containers.add(RedisContainer.create(redisVersion, properties));
+      containers.add(RedisContainer.newBuilder(redisVersion).setProperties(properties).build());
     }
     String pgVersion = runWithVersion("postgres");
     if (pgVersion != null) {

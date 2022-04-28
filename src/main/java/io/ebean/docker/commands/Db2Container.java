@@ -2,7 +2,6 @@ package io.ebean.docker.commands;
 
 import io.ebean.docker.commands.process.ProcessHandler;
 import io.ebean.docker.commands.process.ProcessResult;
-import io.ebean.docker.container.CBuilder;
 import io.ebean.docker.container.Container;
 
 import java.util.ArrayList;
@@ -17,7 +16,7 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
   /**
    * Builder for Db2Container.
    */
-  public static class Builder extends DbConfig<Db2Container.Builder> implements CBuilder<Db2Container, Db2Container.Builder> {
+  public static class Builder extends DbConfig<Db2Container, Db2Container.Builder> {
 
     private String createOptions;
     private String configOptions;

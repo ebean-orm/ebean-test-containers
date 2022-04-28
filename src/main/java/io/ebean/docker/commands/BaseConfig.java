@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Configuration for an DBMS like Postgres, MySql, Oracle, SQLServer
  */
-abstract class BaseConfig<SELF extends BaseConfig<SELF>> implements ContainerBuilder<SELF> {
+abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements ContainerBuilder<C,SELF> {
 
   /**
    * The database platform.

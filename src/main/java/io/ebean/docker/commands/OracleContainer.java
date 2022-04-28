@@ -1,6 +1,5 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.container.CBuilder;
 import io.ebean.docker.container.Container;
 
 import java.sql.Connection;
@@ -12,7 +11,7 @@ import java.util.List;
  */
 public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
-  public static class Builder extends DbConfig<OracleContainer.Builder> implements CBuilder<OracleContainer, OracleContainer.Builder> {
+  public static class Builder extends DbConfig<OracleContainer, OracleContainer.Builder> {
 
     private String apexPort = "8181";
     private String internalApexPort = "8080";
@@ -141,7 +140,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
   }
 
   private boolean userExists(Connection connection) {
-    String sql = "select 1 from dba_users where lower(username) = '"+dbConfig.getUsername().toLowerCase()+"'";
+    String sql = "select 1 from dba_users where lower(username) = '" + dbConfig.getUsername().toLowerCase() + "'";
     return sqlHasRow(connection, sql);
   }
 

@@ -1,10 +1,8 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.container.CBuilder;
-
 public class MySqlContainer extends MySqlBaseContainer {
 
-  public static class Builder extends DbConfig<MySqlContainer.Builder> implements CBuilder<MySqlContainer, MySqlContainer.Builder> {
+  public static class Builder extends DbConfig<MySqlContainer, MySqlContainer.Builder> {
 
     private Builder(String version) {
       super("mysql", 4306, 3306, version);

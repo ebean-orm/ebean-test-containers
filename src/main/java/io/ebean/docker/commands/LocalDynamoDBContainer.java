@@ -5,7 +5,6 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import io.ebean.docker.container.CBuilder;
 import io.ebean.docker.container.StopMode;
 
 import java.util.List;
@@ -51,7 +50,7 @@ import java.util.Properties;
  */
 public class LocalDynamoDBContainer extends BaseContainer {
 
-  public static class Builder extends DbConfig<LocalDynamoDBContainer.Builder> implements CBuilder<LocalDynamoDBContainer, LocalDynamoDBContainer.Builder> {
+  public static class Builder extends DbConfig<LocalDynamoDBContainer, LocalDynamoDBContainer.Builder> {
 
     private String awsRegion = "ap-southeast-2";
 

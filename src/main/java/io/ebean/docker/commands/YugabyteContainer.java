@@ -1,7 +1,5 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.container.CBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,16 +8,16 @@ import java.util.List;
  */
 public class YugabyteContainer extends BasePostgresContainer {
 
-//  /**
-//   * Create Yugabyte container with configuration from properties.
-//   */
-//  public static YugabyteContainer create(String version, Properties properties) {
-//    return new YugabyteContainer(new YugabyteConfig(version, properties));
-//  }
+  /**
+   * Create a builder.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
 
-  public static class Builder extends DbConfig<YugabyteContainer.Builder> implements CBuilder<YugabyteContainer, YugabyteContainer.Builder> {
+  public static class Builder extends DbConfig<YugabyteContainer, YugabyteContainer.Builder> {
 
-    public Builder(String version) {
+    private Builder(String version) {
       super("yugabyte", 6433, 5433, version);
       this.image = "yugabytedb/yugabyte:" + version;
       this.adminUsername = "postgres";
@@ -40,13 +38,6 @@ public class YugabyteContainer extends BasePostgresContainer {
     public YugabyteContainer build() {
       return new YugabyteContainer(this);
     }
-  }
-
-  /**
-   * Create a builder.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   private YugabyteContainer(Builder builder) {

@@ -1,6 +1,5 @@
 package io.ebean.docker.commands;
 
-import io.ebean.docker.container.CBuilder;
 import io.ebean.docker.container.Container;
 
 import java.sql.Connection;
@@ -13,11 +12,18 @@ import java.util.List;
 public class SqlServerContainer extends JdbcBaseDbContainer implements Container {
 
   /**
+   * Create a builder for the PostgresContainer.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
+  /**
    * Builder for SqlServerContainer.
    */
-  public static class Builder extends DbConfig<SqlServerContainer.Builder> implements CBuilder<SqlServerContainer, SqlServerContainer.Builder> {
+  public static class Builder extends DbConfig<SqlServerContainer, SqlServerContainer.Builder> {
 
-    public Builder(String version) {
+    private Builder(String version) {
       super("sqlserver", 1433, 1433, version);
       this.image = "mcr.microsoft.com/mssql/server:" + version;
       // default password that satisfies sql server
@@ -33,20 +39,13 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
 
     @Override
     protected String buildJdbcAdminUrl() {
-      return "jdbc:sqlserver://" + getHost() + ":" + getPort()+ ";integratedSecurity=false;trustServerCertificate=true";
+      return "jdbc:sqlserver://" + getHost() + ":" + getPort() + ";integratedSecurity=false;trustServerCertificate=true";
     }
 
     @Override
     public SqlServerContainer build() {
       return new SqlServerContainer(this);
     }
-  }
-
-  /**
-   * Create a builder for the PostgresContainer.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   private SqlServerContainer(Builder builder) {
@@ -87,7 +86,7 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
 
   private void createLogin(Connection connection) {
     if (!loginExists(connection, dbConfig.getUsername())) {
-       createLogin(connection, dbConfig.getUsername(), dbConfig.getPassword());
+      createLogin(connection, dbConfig.getUsername(), dbConfig.getPassword());
     }
   }
 
