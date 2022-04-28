@@ -77,7 +77,7 @@ abstract class BaseContainer implements Container {
   }
 
   private boolean skipShutdown() {
-    return config.checkSkipStop() && SkipShutdown.isSkip();
+    return config.checkSkipShutdown() && SkipShutdown.isSkip();
   }
 
   protected boolean shutdownHook(boolean started) {

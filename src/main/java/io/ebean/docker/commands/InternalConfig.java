@@ -28,7 +28,11 @@ interface InternalConfig extends ContainerConfig {
 
   boolean isStopModeNone();
 
-  boolean checkSkipStop();
+  /**
+   * Return true if shutdown hook registration should be skipped by
+   * the presence of ~/.ebean/ignore-docker-shutdown file.
+   */
+  boolean checkSkipShutdown();
 
   String docker();
 

@@ -21,9 +21,10 @@ class LocalstackContainerTest {
   @Test
   void start_viaBuilder() {
     LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
+      .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs")
-      // .port(4566)
-      // .image("localstack/localstack:0.14")
+      .setPort(4566)
+      .setImage("localstack/localstack:0.14")
       .build();
 
     // container.stopRemove();
@@ -89,15 +90,16 @@ class LocalstackContainerTest {
 
   @Test
   void start() {
-    LocalstackConfig config = new LocalstackConfig("0.14", null);
 
-    LocalstackContainer container = new LocalstackContainer(config);
+    LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
+      //.setShutdownMode(StopMode.None)
+      .build();
     container.start();
 
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
     createTable(amazonDynamoDB);
 
-    //container.stopRemove();
+    container.stop();
   }
 
   private void createTable(AmazonDynamoDB dynamoDB) {

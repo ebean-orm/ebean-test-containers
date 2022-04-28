@@ -57,7 +57,7 @@ abstract class BaseConfig<SELF extends BaseConfig<SELF>> implements ContainerBui
    * When true check using SkipShutdown (presence of file <code>~/.ebean/ignore-docker-shutdown</code>) if
    * shutdown hook should be used to stop/remove the container.
    */
-  protected boolean checkSkipStop;
+  protected boolean checkSkipShutdown;
 
   /**
    * The mode used when starting (create, dropCreate, container [only]).
@@ -402,8 +402,8 @@ abstract class BaseConfig<SELF extends BaseConfig<SELF>> implements ContainerBui
     }
 
     @Override
-    public boolean checkSkipStop() {
-      return checkSkipStop;
+    public boolean checkSkipShutdown() {
+      return checkSkipShutdown;
     }
 
     @Override

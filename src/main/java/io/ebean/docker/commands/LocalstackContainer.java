@@ -11,6 +11,7 @@ import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import io.ebean.docker.container.CBuilder;
 
 import java.io.IOException;
 import java.util.List;
@@ -38,79 +39,78 @@ public class LocalstackContainer extends BaseContainer {
   /**
    * Builder for LocalstackContainer.
    */
-  public static class Builder {
+  public static class Builder extends DbConfig<LocalstackContainer.Builder> implements CBuilder<LocalstackContainer, LocalstackContainer.Builder> {
 
-    protected final String version;
-    protected final Properties properties;
-    protected LocalstackConfig config;
+    private String services = "dynamodb";
+    private String awsRegion = "ap-southeast-2";
+    private String startWeb = "0";
 
     /**
      * Create with a version of localstack/localstack (example, 0.14)
      */
     public Builder(String version) {
-      this.version = version;
-      this.properties = null;
+      super("localstack", 4566, 4566, version);
+      setAdminPort(4571);
+      setAdminInternalPort(4571);
+      this.checkSkipShutdown = true;
+      this.shutdownMode = StopMode.Remove;
+      this.image = "localstack/localstack:" + version;
+    }
+
+    @Override
+    protected void extraProperties(Properties properties) {
+      super.extraProperties(properties);
+      services = prop(properties, "services", services);
+      awsRegion = prop(properties, "awsRegion", awsRegion);
+      startWeb = prop(properties, "startWeb", startWeb);
     }
 
     /**
-     * Create with a version and properties.
-     */
-    public Builder(String version, Properties properties) {
-      this.version = version;
-      this.properties = properties;
-    }
-
-    /**
-     * Set the services desired in comma delimited form.
+     * Set the services desired (comma delimited). Defaults to dynamodb.
      */
     public Builder services(String services) {
-      config().services(services);
-      return this;
+      this.services = services;
+      return self();
+    }
+
+
+    /**
+     * Set the AWS region to use.
+     */
+    public Builder awsRegion(String awsRegion) {
+      this.awsRegion = awsRegion;
+      return self();
     }
 
     /**
-     * Explicitly set the image to use. Defaults to localstack/localstack:version.
+     * Set the start web option.
      */
-    public Builder image(String image) {
-      config().setImage(image);
-      return this;
+    public Builder startWeb(String startWeb) {
+      this.startWeb = startWeb;
+      return self();
     }
 
-    /**
-     * Set the exposed port. Defaults to 4566.
-     */
-    public Builder port(int port) {
-      config().setPort(port);
-      return this;
+    private String services() {
+      return services;
     }
 
-    /**
-     * Set the container name. Defaults to ut_localstack.
-     */
-    public Builder containerName(String containerName) {
-      config().setContainerName(containerName);
-      return this;
+    private String awsRegion() {
+      return awsRegion;
     }
 
-    /**
-     * Return the underlying configuration.
-     */
-    public LocalstackConfig config() {
-      if (config == null) {
-        config = new LocalstackConfig(version, properties);
-      }
-      return config;
+    private String startWeb() {
+      return startWeb;
     }
 
     /**
      * Build and return the LocalstackContainer to then start().
      */
     public LocalstackContainer build() {
-      return new LocalstackContainer(config());
+      return new LocalstackContainer(this);
     }
   }
 
-  private final LocalstackConfig localConfig;
+  private final LocalstackContainer.Builder localConfig;
   private final List<String> serviceNames;
   private final String healthUrl;
   private final String endpointUrl;
@@ -118,10 +118,10 @@ public class LocalstackContainer extends BaseContainer {
   /**
    * Create the container using the given config.
    */
-  public LocalstackContainer(LocalstackConfig config) {
-    super(config);
-    this.localConfig = config;
-    this.serviceNames = TrimSplit.split(config.services());
+  public LocalstackContainer(LocalstackContainer.Builder builder) {
+    super(builder);
+    this.localConfig = builder;
+    this.serviceNames = TrimSplit.split(localConfig.services());
     this.healthUrl = String.format("http://%s:%s/health", config.getHost(), config.getPort());
     this.endpointUrl = String.format("http://%s:%s/", config.getHost(), config.getPort());
   }
@@ -134,17 +134,13 @@ public class LocalstackContainer extends BaseContainer {
   }
 
   /**
-   * Return the Builder given the localstack image version and properties.
-   */
-  public static Builder newBuilder(String version, Properties properties) {
-    return new Builder(version, properties);
-  }
-
-  /**
    * Create the ElasticContainer with configuration via properties.
    */
   public static LocalstackContainer create(String version, Properties properties) {
-    return new LocalstackContainer(new LocalstackConfig(version, properties));
+    return LocalstackContainer
+      .newBuilder(version)
+      .setProperties(properties)
+      .build();
   }
 
   /**

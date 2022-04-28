@@ -12,7 +12,7 @@ public class LocalDynamoDBConfig extends BaseConfig {
   public LocalDynamoDBConfig(String version, Properties properties) {
     super("dynamodb", 8001, 8000, version);
     this.image = "amazon/dynamodb-local:" + version; // ":1.13.2"
-    this.checkSkipStop = true;
+    this.checkSkipShutdown = true;
     this.shutdownMode = StopMode.Remove;
     setProperties(properties);
   }
