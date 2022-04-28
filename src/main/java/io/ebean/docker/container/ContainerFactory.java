@@ -97,7 +97,7 @@ public class ContainerFactory {
     }
     String yugaVersion = runWithVersion("yugabyte");
     if (yugaVersion != null) {
-      containers.add(YugabyteContainer.create(yugaVersion, properties));
+      containers.add(YugabyteContainer.newBuilder(yugaVersion).setProperties(properties).build());
     }
     String db2Version = runWithVersion("db2");
     if (db2Version != null) {

@@ -1,23 +1,56 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.CBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Creates Yugabyte container (with common commands for roles and database as Postgres).
  */
 public class YugabyteContainer extends BasePostgresContainer {
 
-  /**
-   * Create Yugabyte container with configuration from properties.
-   */
-  public static YugabyteContainer create(String version, Properties properties) {
-    return new YugabyteContainer(new YugabyteConfig(version, properties));
+//  /**
+//   * Create Yugabyte container with configuration from properties.
+//   */
+//  public static YugabyteContainer create(String version, Properties properties) {
+//    return new YugabyteContainer(new YugabyteConfig(version, properties));
+//  }
+
+  public static class Builder extends DbConfig<YugabyteContainer.Builder> implements CBuilder<YugabyteContainer, YugabyteContainer.Builder> {
+
+    public Builder(String version) {
+      super("yugabyte", 6433, 5433, version);
+      this.image = "yugabytedb/yugabyte:" + version;
+      this.adminUsername = "postgres";
+      //setTmpfs("/var/lib/postgresql/data:rw");
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/" + getDbName();
+    }
+
+    @Override
+    protected String buildJdbcAdminUrl() {
+      return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/postgres";
+    }
+
+    @Override
+    public YugabyteContainer build() {
+      return new YugabyteContainer(this);
+    }
   }
 
-  public YugabyteContainer(YugabyteConfig config) {
-    super(config);
+  /**
+   * Create a builder.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
+  private YugabyteContainer(Builder builder) {
+    super(builder);
   }
 
   @Override

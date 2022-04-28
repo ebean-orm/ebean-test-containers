@@ -10,12 +10,12 @@ class YugabyteContainerTest {
 
   @Test
   void start_run_stop() {
-    YugabyteConfig config = new YugabyteConfig("2.11.2.0-b89");
-    config.setContainerName("temp_yugabyte");
-    config.setExtensions("pgcrypto");
-    config.setPort(9844);
+    YugabyteContainer yugaContainer = YugabyteContainer.newBuilder("2.11.2.0-b89")
+      .setContainerName("temp_yugabyte")
+      .setExtensions("pgcrypto")
+      .setPort(9844)
+      .build();
 
-    YugabyteContainer yugaContainer = new YugabyteContainer(config);
     yugaContainer.stopRemove();
     yugaContainer.startWithDropCreate();
 
