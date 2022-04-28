@@ -1,6 +1,7 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.container.Container;
+import io.ebean.docker.container.StopMode;
 
 /**
  * Commands for controlling a postgres docker container.
@@ -14,7 +15,7 @@ public class PostgresContainer extends BasePostgresContainer implements Containe
     return new Builder(version);
   }
 
-  public PostgresContainer(Builder config) {
+  private PostgresContainer(Builder config) {
     super(config);
   }
 
@@ -23,9 +24,10 @@ public class PostgresContainer extends BasePostgresContainer implements Containe
    */
   public static class Builder extends DbConfig<PostgresContainer, Builder> {
 
-    protected Builder(String version) {
+    private Builder(String version) {
       super("postgres", 6432, 5432, version);
       this.adminUsername = "postgres";
+      stopMode(StopMode.Remove);
       tmpfs("/var/lib/postgresql/data:rw");
     }
 

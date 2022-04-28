@@ -18,29 +18,28 @@ class PostgresContainerTest {
 
   @Test
   void startPortBased() {
-    PostgresConfig config = new PostgresConfig("14");
-    config.containerName("temp_postgres14");
-    config.port(9823);
+    PostgresContainer container = PostgresContainer.newBuilder("14")
+      .containerName("temp_postgres14")
+      .port(9823)
+      .build();
 
-    PostgresContainer dummy = new PostgresContainer(config);
-
-    dummy.stopRemove();
-    dummy.startContainerOnly();
+    container.stopRemove();
+    container.startContainerOnly();
 
     runBasedOnPort(9823);
 
-    dummy.stopRemove();
+    container.stopRemove();
   }
 
   private void runBasedOnPort(int port) {
     System.out.println("runBasedOnPort ... will connect and not start docker container");
-    PostgresConfig config = new PostgresConfig("14");
-    config.containerName("not_started");
-    config.port(port);
-    config.extensions("hstore,uuid-ossp");
-    config.stopMode(StopMode.Remove);
+    PostgresContainer container = PostgresContainer.newBuilder("14")
+      .containerName("not_started")
+      .port(port)
+      .extensions("hstore,uuid-ossp")
+      .stopMode(StopMode.Remove)
+      .build();
 
-    PostgresContainer container = new PostgresContainer(config);
     container.start();
 
     try {
@@ -55,21 +54,19 @@ class PostgresContainerTest {
 
   @Test
   void start() throws SQLException {
-    PostgresConfig config = new PostgresConfig("14");
-    config.containerName("temp_postgres14");
-    config.port(9823);
-    config.extensions(" hstore, , pgcrypto ");
-    config.inMemory(true);
-    config.user("main_user");
-    config.dbName("main_db");
-    config.initSqlFile("init-main-database.sql");
-    config.seedSqlFile("seed-main-database.sql");
-
-    config.extraDb("extra");
-    config.extraDbInitSqlFile("init-extra-database.sql");
-    config.extraDbSeedSqlFile("seed-extra-database.sql");
-
-    PostgresContainer container = new PostgresContainer(config);
+    PostgresContainer container = PostgresContainer.newBuilder("14")
+      .containerName("temp_postgres14")
+      .port(9823)
+      .extensions(" hstore, , pgcrypto ")
+      .inMemory(true)
+      .user("main_user")
+      .dbName("main_db")
+      .initSqlFile("init-main-database.sql")
+      .seedSqlFile("seed-main-database.sql")
+      .extraDb("extra")
+      .extraDbInitSqlFile("init-extra-database.sql")
+      .extraDbSeedSqlFile("seed-extra-database.sql")
+      .build();
 
     container.stopRemove();
     container.startWithCreate();
