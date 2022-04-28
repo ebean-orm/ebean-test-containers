@@ -11,13 +11,12 @@ class RedisContainerTest {
 
   @Test
   void checkConnectivity() {
-    RedisConfig config = new RedisConfig("latest", new Properties());
-    config.setPort(7379);
-    config.setContainerName("temp_redis");
+    RedisContainer container = RedisContainer.newBuilder("latest")
+      .setPort(7379)
+      .setContainerName("temp_redis")
+      .build();
 
-    RedisContainer container = new RedisContainer(config);
     assertTrue(container.start());
-
     container.stopRemove();
   }
 
@@ -31,8 +30,9 @@ class RedisContainerTest {
     properties.setProperty("redis.startMode", "baz");
     properties.setProperty("redis.stopMode", "bar");
 
-    RedisConfig config = new RedisConfig("latest", properties);
-
+    InternalConfig config = RedisContainer.newBuilder("latest")
+      .setProperties(properties)
+      .internalConfig();
     assertProperties(config);
   }
 
@@ -46,17 +46,18 @@ class RedisContainerTest {
     properties.setProperty("ebean.test.redis.startMode", "baz");
     properties.setProperty("ebean.test.redis.stopMode", "bar");
 
-    RedisConfig config = new RedisConfig("latest", properties);
+    InternalConfig config = RedisContainer.newBuilder("latest")
+      .setProperties(properties)
+      .internalConfig();
 
     assertProperties(config);
   }
 
-  private void assertProperties(RedisConfig config) {
+  private void assertProperties(InternalConfig config) {
     assertEquals(config.getPort(), 7380);
-    InternalConfig state = config.internalConfig();
-    assertEquals(state.getInternalPort(), 5379);
-    assertEquals(state.getImage(), "foo");
-    assertEquals(state.getStartMode(), StartMode.Create);
-    assertEquals(state.getStopMode(), StopMode.Stop);
+    assertEquals(config.getInternalPort(), 5379);
+    assertEquals(config.getImage(), "foo");
+    assertEquals(config.getStartMode(), StartMode.Create);
+    assertEquals(config.getStopMode(), StopMode.Stop);
   }
 }

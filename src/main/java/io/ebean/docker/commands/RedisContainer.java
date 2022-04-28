@@ -1,7 +1,8 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.CBuilder;
+
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -12,11 +13,33 @@ public class RedisContainer extends BaseContainer {
    * Create the RedisContainer with configuration via properties.
    */
   public static RedisContainer create(String redisVersion, Properties properties) {
-    return new RedisContainer(new RedisConfig(redisVersion, properties));
+    return new RedisContainer(new Builder(redisVersion).setProperties(properties));
   }
 
-  public RedisContainer(RedisConfig config) {
-    super(config);
+  /**
+   * Create a builder for RedisContainer.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
+  /**
+   * The RedisContainer builder.
+   */
+  public static class Builder extends DbConfig<RedisContainer.Builder> implements CBuilder<RedisContainer, RedisContainer.Builder> {
+
+    public Builder(String version) {
+      super("redis", 6379, 6379, version);
+    }
+
+    @Override
+    public RedisContainer build() {
+      return new RedisContainer(this);
+    }
+  }
+
+  private RedisContainer(Builder builder) {
+    super(builder);
   }
 
   @Override
