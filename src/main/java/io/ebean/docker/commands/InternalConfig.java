@@ -33,6 +33,4 @@ interface InternalConfig extends ContainerConfig {
   String docker();
 
   String image();
-
-  void clearStopMode();
 }

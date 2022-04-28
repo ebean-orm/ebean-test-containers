@@ -260,13 +260,6 @@ abstract class BaseConfig<SELF extends BaseConfig<SELF>> implements ContainerBui
   }
 
   /**
-   * Clear the stopMode when detect already running.
-   */
-  private void internalClearStopMode() {
-    this.stopMode = StopMode.None;
-  }
-
-  /**
    * Return the internal configuration.
    */
   protected InternalConfig internalConfig() {
@@ -423,9 +416,5 @@ abstract class BaseConfig<SELF extends BaseConfig<SELF>> implements ContainerBui
       return image;
     }
 
-    @Override
-    public void clearStopMode() {
-      internalClearStopMode();
-    }
   }
 }

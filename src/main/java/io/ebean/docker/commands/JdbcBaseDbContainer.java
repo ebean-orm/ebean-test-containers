@@ -33,8 +33,6 @@ abstract class JdbcBaseDbContainer extends DbContainer {
 
   private boolean startContainerWithWait() {
     if (checkAlreadyRunning()) {
-      // Removing to simplify the stopping mode behavior
-      // dbConfig.clearStopMode();
       return true;
     }
     startIfNeeded();
