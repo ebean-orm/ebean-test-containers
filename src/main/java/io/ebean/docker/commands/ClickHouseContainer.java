@@ -1,5 +1,7 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.CBuilder;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -8,12 +10,39 @@ import java.util.Properties;
 
 public class ClickHouseContainer extends JdbcBaseDbContainer {
 
-  public static ClickHouseContainer create(String version, Properties properties) {
-    return new ClickHouseContainer(new ClickHouseConfig(version, properties));
+  public static class Builder extends DbConfig<ClickHouseContainer.Builder> implements CBuilder<ClickHouseContainer, ClickHouseContainer.Builder> {
+
+    private Builder(String version) {
+      super("clickhouse", 8123, 8123, version);
+      this.image = "yandex/clickhouse-server:" + version;
+      this.setUser("default");
+      this.setPassword("");
+      this.adminUsername = "default";
+      this.adminPassword = "";
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:clickhouse://" + getHost() + ":" + getPort() + "/" + getDbName();
+    }
+
+    @Override
+    protected String buildJdbcAdminUrl() {
+      return "jdbc:clickhouse://" + getHost() + ":" + getPort()+ "/default";
+    }
+
+    @Override
+    public ClickHouseContainer build() {
+      return new ClickHouseContainer(this);
+    }
   }
 
-  ClickHouseContainer(ClickHouseConfig config) {
-    super(config);
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
+  ClickHouseContainer(Builder builder) {
+    super(builder);
   }
 
   @Override

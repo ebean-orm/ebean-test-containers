@@ -89,7 +89,7 @@ public class ContainerFactory {
     }
     String clickhouseVersion = runWithVersion("clickhouse");
     if (clickhouseVersion != null) {
-      containers.add(ClickHouseContainer.create(clickhouseVersion, properties));
+      containers.add(ClickHouseContainer.newBuilder(clickhouseVersion).setProperties(properties).build());
     }
     String cockroachVersion = runWithVersion("cockroach");
     if (cockroachVersion != null) {
