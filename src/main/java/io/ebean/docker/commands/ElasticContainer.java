@@ -1,22 +1,42 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.CBuilder;
+
 import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 
+/**
+ * ElasticSearch container commands.
+ */
 public class ElasticContainer extends BaseContainer {
+
+  /**
+   * Builder for ElasticContainer.
+   */
+  public static class Builder extends DbConfig<ElasticContainer.Builder> implements CBuilder<ElasticContainer, ElasticContainer.Builder> {
+
+    private Builder(String version) {
+      super("elastic", 9201, 9200, version);
+      this.image = "docker.elastic.co/elasticsearch/elasticsearch:" + version;
+    }
+
+    @Override
+    public ElasticContainer build() {
+      return new ElasticContainer(this);
+    }
+  }
 
   private final String healthUrl;
 
   /**
-   * Create the ElasticContainer with configuration via properties.
+   * Create new Builder for ElasticContainer.
    */
-  public static ElasticContainer create(String elasticVersion, Properties properties) {
-    return new ElasticContainer(new ElasticConfig(elasticVersion, properties));
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
   }
 
-  public ElasticContainer(ElasticConfig config) {
-    super(config);
+  private ElasticContainer(Builder builder) {
+    super(builder);
     this.healthUrl = String.format("http://%s:%s/", config.getHost(), config.getPort());
   }
 

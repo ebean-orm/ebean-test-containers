@@ -78,8 +78,11 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
     return new Builder(version);
   }
 
+  private final Builder db2Config;
+
   private Db2Container(Builder builder) {
     super(builder);
+    this.db2Config = builder;
     this.waitForConnectivityAttempts = 2000;
   }
 
@@ -98,14 +101,14 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
 
     // #2 create database (with optional create options)
     String cmd = "db2 create database " + dbConfig.getDbName();
-    if (defined(((Db2Config) dbConfig).getCreateOptions())) {
-      cmd = cmd + " " + ((Db2Config) dbConfig).getCreateOptions();
+    if (defined(db2Config.getCreateOptions())) {
+      cmd = cmd + " " + db2Config.getCreateOptions();
     }
     dockerSu(cmd);
 
     // #3 set optional config options
-    if (defined(((Db2Config) dbConfig).getConfigOptions())) {
-      cmd = "db2 update database config for " + dbConfig.getDbName() + " " + ((Db2Config) dbConfig).getConfigOptions();
+    if (defined(db2Config.getConfigOptions())) {
+      cmd = "db2 update database config for " + dbConfig.getDbName() + " " + db2Config.getConfigOptions();
       dockerSu(dbConfig.getAdminUsername(), cmd);
     }
 

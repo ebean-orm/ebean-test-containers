@@ -53,7 +53,7 @@ public class ContainerFactory {
   private void init() {
     String elasticVersion = version("elastic");
     if (elasticVersion != null) {
-      containers.add(ElasticContainer.create(elasticVersion, properties));
+      containers.add(ElasticContainer.newBuilder(elasticVersion).setProperties(properties).build());
     }
     String redisVersion = version("redis");
     if (redisVersion != null) {
