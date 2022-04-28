@@ -77,7 +77,7 @@ public class ContainerFactory {
     }
     String sqlServerVersion = runWithVersion("sqlserver");
     if (sqlServerVersion != null) {
-      containers.add(SqlServerContainer.create(sqlServerVersion, properties));
+      containers.add(SqlServerContainer.newBuilder(sqlServerVersion).setProperties(properties).build());
     }
     String oracleVersion = runWithVersion("oracle");
     if (oracleVersion != null) {

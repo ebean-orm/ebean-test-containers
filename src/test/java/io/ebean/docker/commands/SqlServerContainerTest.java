@@ -22,14 +22,14 @@ class SqlServerContainerTest {
 
   @Test
   void start() {
-    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
-    config.setContainerName("temp_sqlserver");
-    config.setCollation("SQL_Latin1_General_CP1_CS_AS");
-    config.setPort(11433);
-    config.setStopMode(StopMode.Remove);
+    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+      .setContainerName("temp_sqlserver")
+      .setCollation("SQL_Latin1_General_CP1_CS_AS")
+      .setPort(11433)
+      .setStopMode(StopMode.Remove)
+      .build();
     //config.setFastStartMode(true);
 
-    SqlServerContainer container = new SqlServerContainer(config);
     //container.startWithCreate();
     //container.startContainerOnly();
     container.startWithDropCreate();
@@ -39,12 +39,11 @@ class SqlServerContainerTest {
   @Disabled
   @Test
   void start_when_defaultCollation() {
-    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
-    config.setContainerName("temp_sqlserver");
-    config.setPort(2433);
-    config.setCollation("default");
-
-    SqlServerContainer container = new SqlServerContainer(config);
+    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+      .setContainerName("temp_sqlserver")
+      .setPort(2433)
+      .setCollation("default")
+      .build();
 
     container.startWithCreate();
     container.stopRemove();
@@ -53,11 +52,10 @@ class SqlServerContainerTest {
   @Disabled
   @Test
   void start_when_noCollation() {
-    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
-    config.setContainerName("temp_sqlserver");
-    config.setPort(2433);
-
-    SqlServerContainer container = new SqlServerContainer(config);
+    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+      .setContainerName("temp_sqlserver")
+      .setPort(2433)
+      .build();
 
     container.startWithCreate();
     container.stopRemove();
@@ -66,12 +64,11 @@ class SqlServerContainerTest {
   @Disabled
   @Test
   void start_when_explicitCollation() {
-    SqlServerConfig config = new SqlServerConfig(SQLSERVER_VER);
-    config.setContainerName("temp_sqlserver");
-    config.setPort(2433);
-    config.setCollation("SQL_Latin1_General_CP1_CS_AS");
-
-    SqlServerContainer container = new SqlServerContainer(config);
+    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+      .setContainerName("temp_sqlserver")
+      .setPort(2433)
+      .setCollation("SQL_Latin1_General_CP1_CS_AS")
+      .build();
 
     container.startWithCreate();
     container.stopRemove();
