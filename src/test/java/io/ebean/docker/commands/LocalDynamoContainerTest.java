@@ -30,9 +30,7 @@ class LocalDynamoContainerTest {
 
   @Test
   void start() {
-    LocalDynamoDBConfig config = new LocalDynamoDBConfig("1.13.2", null);
-    //config.setPort(8001);
-    LocalDynamoDBContainer container = new LocalDynamoDBContainer(config);
+    LocalDynamoDBContainer container = LocalDynamoDBContainer.newBuilder("1.13.2").build();
     container.start();
 
     AmazonDynamoDB dynamoDB = container.dynamoDB();

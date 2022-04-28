@@ -5,6 +5,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
+import io.ebean.docker.container.CBuilder;
 
 import java.util.List;
 import java.util.Properties;
@@ -49,78 +50,51 @@ import java.util.Properties;
  */
 public class LocalDynamoDBContainer extends BaseContainer {
 
+  public static class Builder extends DbConfig<LocalDynamoDBContainer.Builder> implements CBuilder<LocalDynamoDBContainer, LocalDynamoDBContainer.Builder> {
 
-  public static class Builder {
-
-    protected final String version;
-    protected final Properties properties;
-    protected LocalDynamoDBConfig config;
+    private String awsRegion = "ap-southeast-2";
 
     /**
      * Create with a version of amazon/dynamodb-local (example, 1.13.2)
      */
     public Builder(String version) {
-      this.version = version;
-      this.properties = null;
+      super("dynamodb", 8001, 8000, version);
+      this.image = "amazon/dynamodb-local:" + version; // ":1.13.2"
+      this.checkSkipShutdown = true;
+      this.shutdownMode = StopMode.Remove;
+    }
+
+    @Override
+    protected void extraProperties(Properties properties) {
+      awsRegion = prop(properties, "awsRegion", awsRegion);
     }
 
     /**
-     * Create with a version and properties.
+     * Set the AWS region to use.
      */
-    public Builder(String version, Properties properties) {
-      this.version = version;
-      this.properties = properties;
-    }
-
-    /**
-     * Explicitly set the image to use. Defaults to amazon/dynamodb-local:version.
-     */
-    public Builder image(String image) {
-      config().setImage(image);
+    public Builder awsRegion(String awsRegion) {
+      this.awsRegion = awsRegion;
       return this;
     }
 
-    /**
-     * Set the exposed port. Defaults to 8001.
-     */
-    public Builder port(int port) {
-      config().setPort(port);
-      return this;
-    }
-
-    /**
-     * Set the container name. Defaults to ut_dynamodb.
-     */
-    public Builder containerName(String containerName) {
-      config().setContainerName(containerName);
-      return this;
-    }
-
-    /**
-     * Return the underlying configuration.
-     */
-    public LocalDynamoDBConfig config() {
-      if (config == null) {
-        config = new LocalDynamoDBConfig(version, properties);
-      }
-      return config;
+    private String awsRegion() {
+      return awsRegion;
     }
 
     /**
      * Build and return the LocalDynamoContainer to then start().
      */
     public LocalDynamoDBContainer build() {
-      return new LocalDynamoDBContainer(config());
+      return new LocalDynamoDBContainer(this);
     }
   }
 
-
-  private final LocalDynamoDBConfig localConfig;
+  private final Builder localConfig;
   private final String endpointUrl;
 
-  public LocalDynamoDBContainer(LocalDynamoDBConfig config) {
-    super(config);
-    this.localConfig = config;
+  public LocalDynamoDBContainer(Builder builder) {
+    super(builder);
+    this.localConfig = builder;
     this.endpointUrl = String.format("http://%s:%s", config.getHost(), config.getPort());
   }
 
@@ -129,20 +103,6 @@ public class LocalDynamoDBContainer extends BaseContainer {
    */
   public static Builder newBuilder(String version) {
     return new Builder(version);
-  }
-
-  /**
-   * Return the Builder given the localstack image version and properties.
-   */
-  public static Builder newBuilder(String version, Properties properties) {
-    return new Builder(version, properties);
-  }
-
-  /**
-   * Create the LocalDynamoContainer with configuration via properties.
-   */
-  public static LocalDynamoDBContainer create(String version, Properties properties) {
-    return new LocalDynamoDBContainer(new LocalDynamoDBConfig(version, properties));
   }
 
   /**
