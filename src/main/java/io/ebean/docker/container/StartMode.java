@@ -1,4 +1,4 @@
-package io.ebean.docker.commands;
+package io.ebean.docker.container;
 
 public enum StartMode {
   Create,

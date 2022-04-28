@@ -3,6 +3,7 @@ package io.ebean.docker.commands;
 import io.ebean.docker.commands.process.ProcessHandler;
 import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
+import io.ebean.docker.container.StopMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

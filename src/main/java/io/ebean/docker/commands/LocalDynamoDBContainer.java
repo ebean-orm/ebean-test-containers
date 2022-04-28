@@ -6,6 +6,7 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import io.ebean.docker.container.CBuilder;
+import io.ebean.docker.container.StopMode;
 
 import java.util.List;
 import java.util.Properties;

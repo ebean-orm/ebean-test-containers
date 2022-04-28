@@ -3,6 +3,7 @@ package io.ebean.docker.commands;
 import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
+import io.ebean.docker.container.StopMode;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;

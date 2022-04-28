@@ -12,6 +12,7 @@ import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import io.ebean.docker.container.CBuilder;
+import io.ebean.docker.container.StopMode;
 
 import java.io.IOException;
 import java.util.List;

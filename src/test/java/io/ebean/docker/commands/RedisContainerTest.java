@@ -1,5 +1,7 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.StartMode;
+import io.ebean.docker.container.StopMode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;

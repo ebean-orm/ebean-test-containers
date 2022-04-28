@@ -1,6 +1,8 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.container.ContainerConfig;
+import io.ebean.docker.container.StartMode;
+import io.ebean.docker.container.StopMode;
 
 interface InternalConfig extends ContainerConfig {
 

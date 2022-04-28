@@ -1,8 +1,5 @@
 package io.ebean.docker.container;
 
-import io.ebean.docker.commands.StartMode;
-import io.ebean.docker.commands.StopMode;
-
 import java.util.Properties;
 
 /**

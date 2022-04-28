@@ -1,6 +1,8 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.container.ContainerBuilder;
+import io.ebean.docker.container.StartMode;
+import io.ebean.docker.container.StopMode;
 
 import java.sql.Connection;
 import java.sql.SQLException;

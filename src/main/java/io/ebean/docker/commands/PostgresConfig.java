@@ -1,5 +1,7 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.StopMode;
+
 import java.util.Properties;
 
 public class PostgresConfig extends PostgresContainer.Builder {
