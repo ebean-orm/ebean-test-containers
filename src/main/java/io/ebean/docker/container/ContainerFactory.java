@@ -61,7 +61,7 @@ public class ContainerFactory {
     }
     String pgVersion = runWithVersion("postgres");
     if (pgVersion != null) {
-      containers.add(PostgresContainer.create(pgVersion, properties));
+      containers.add(PostgresContainer.newBuilder(pgVersion).setProperties(properties).build());
     }
     String mysqlVersion = runWithVersion("mysql");
     if (mysqlVersion != null) {

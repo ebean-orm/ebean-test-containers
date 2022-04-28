@@ -11,13 +11,6 @@ import java.util.Properties;
 public class PostgresContainer extends BasePostgresContainer implements Container {
 
   /**
-   * Create Postgres container with configuration from properties.
-   */
-  public static PostgresContainer create(String pgVersion, Properties properties) {
-    return new PostgresContainer(new PostgresConfig(pgVersion, properties));
-  }
-
-  /**
    * Create a builder for the PostgresContainer.
    */
   public static CBuilder<PostgresContainer, Builder> newBuilder(String version) {
@@ -33,7 +26,7 @@ public class PostgresContainer extends BasePostgresContainer implements Containe
    */
   public static class Builder extends DbConfig<Builder> implements CBuilder<PostgresContainer, Builder> {
 
-    public Builder(String version) {
+    protected Builder(String version) {
       super("postgres", 6432, 5432, version);
       this.adminUsername = "postgres";
       setTmpfs("/var/lib/postgresql/data:rw");
