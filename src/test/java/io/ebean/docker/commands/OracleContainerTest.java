@@ -16,12 +16,9 @@ public class OracleContainerTest {
   @Disabled
   @Test
   public void start() {
-
-    OracleConfig config = new OracleConfig();
-    config.setUser("test_ebean");
-    //config.setContainerName("test_ebean_migration_oracle");
-
-    OracleContainer container = new OracleContainer(config);
+    OracleContainer container = OracleContainer.newBuilder("latest")
+      .setUser("test_ebean")
+      .build();
 
     if (!container.startWithDropCreate()) {
       throw new IllegalStateException("Failed to start?");
@@ -41,8 +38,7 @@ public class OracleContainerTest {
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
-
-    //container.stopRemove();
+    // container.stop();
   }
 
   @Disabled
@@ -56,7 +52,7 @@ public class OracleContainerTest {
     //properties.setProperty("oracle.dbName", "test_rob");
 
     properties.setProperty("oracle.dbUser", "test_robino");
-    //properties.setProperty("oracle.startMode", "dropcreate");
+    properties.setProperty("oracle.startMode", "dropcreate");
 
     ContainerFactory factory = new ContainerFactory(properties);
     factory.startContainers();

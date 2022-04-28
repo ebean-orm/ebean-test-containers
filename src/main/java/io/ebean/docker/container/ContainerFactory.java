@@ -81,7 +81,7 @@ public class ContainerFactory {
     }
     String oracleVersion = runWithVersion("oracle");
     if (oracleVersion != null) {
-      containers.add(OracleContainer.create(oracleVersion, properties));
+      containers.add(OracleContainer.newBuilder(oracleVersion).setProperties(properties).build());
     }
     String hanaVersion = runWithVersion("hana");
     if (hanaVersion != null) {
