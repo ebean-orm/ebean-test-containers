@@ -11,6 +11,13 @@ import java.util.List;
  */
 public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
+  /**
+   * Create a builder.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
   public static class Builder extends DbConfig<OracleContainer, OracleContainer.Builder> {
 
     private String apexPort = "8181";
@@ -20,7 +27,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
      */
     private int startupWaitMinutes = 8;
 
-    public Builder(String version) {
+    private Builder(String version) {
       super("oracle", 1521, 1521, version);
       this.image = "vitorfec/oracle-xe-18c:" + version;
       setAdminUser("system");
@@ -73,13 +80,6 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     public OracleContainer build() {
       return new OracleContainer(this);
     }
-  }
-
-  /**
-   * Create a builder.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   private final Builder oracleConfig;

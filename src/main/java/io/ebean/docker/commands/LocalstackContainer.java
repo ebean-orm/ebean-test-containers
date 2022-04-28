@@ -37,6 +37,13 @@ import java.util.Properties;
 public class LocalstackContainer extends BaseContainer {
 
   /**
+   * Return the Builder given the localstack image version.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
+  /**
    * Builder for LocalstackContainer.
    */
   public static class Builder extends DbConfig<LocalstackContainer, LocalstackContainer.Builder> {
@@ -48,7 +55,7 @@ public class LocalstackContainer extends BaseContainer {
     /**
      * Create with a version of localstack/localstack (example, 0.14)
      */
-    public Builder(String version) {
+    private Builder(String version) {
       super("localstack", 4566, 4566, version);
       setAdminPort(4571);
       setAdminInternalPort(4571);
@@ -124,13 +131,6 @@ public class LocalstackContainer extends BaseContainer {
     this.serviceNames = TrimSplit.split(localConfig.services());
     this.healthUrl = String.format("http://%s:%s/health", config.getHost(), config.getPort());
     this.endpointUrl = String.format("http://%s:%s/", config.getHost(), config.getPort());
-  }
-
-  /**
-   * Return the Builder given the localstack image version.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   /**

@@ -50,6 +50,13 @@ import java.util.Properties;
  */
 public class LocalDynamoDBContainer extends BaseContainer {
 
+  /**
+   * Return the Builder given the localstack image version.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
   public static class Builder extends DbConfig<LocalDynamoDBContainer, LocalDynamoDBContainer.Builder> {
 
     private String awsRegion = "ap-southeast-2";
@@ -57,7 +64,7 @@ public class LocalDynamoDBContainer extends BaseContainer {
     /**
      * Create with a version of amazon/dynamodb-local (example, 1.13.2)
      */
-    public Builder(String version) {
+    private Builder(String version) {
       super("dynamodb", 8001, 8000, version);
       this.image = "amazon/dynamodb-local:" + version; // ":1.13.2"
       this.checkSkipShutdown = true;
@@ -96,13 +103,6 @@ public class LocalDynamoDBContainer extends BaseContainer {
     super(builder);
     this.localConfig = builder;
     this.endpointUrl = String.format("http://%s:%s", config.getHost(), config.getPort());
-  }
-
-  /**
-   * Return the Builder given the localstack image version.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   /**
