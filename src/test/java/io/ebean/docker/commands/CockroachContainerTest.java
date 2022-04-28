@@ -13,13 +13,13 @@ class CockroachContainerTest {
   @Test
   void start() throws SQLException {
 
-    CockroachConfig config = new CockroachConfig();//"v21.2.4");
-    //config.setContainerName("junk_roach");
-    config.setDbName("unit");
+    CockroachContainer container = CockroachContainer.newBuilder("v21.2.9")
+      //.setContainerName("junk_roach")
+      .setDbName("unit")
+      .build();
     //config.setUser("test_roach");
     //config.setPassword("test");
 
-    CockroachContainer container = new CockroachContainer(config);
     container.startWithDropCreate();
 
     try (Connection connection = container.createConnection()) {

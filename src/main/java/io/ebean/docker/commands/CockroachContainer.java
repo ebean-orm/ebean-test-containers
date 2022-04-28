@@ -1,6 +1,7 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.commands.process.ProcessHandler;
+import io.ebean.docker.container.CBuilder;
 import io.ebean.docker.container.Container;
 
 import java.util.ArrayList;
@@ -8,22 +9,46 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Commands for controlling a cockroachDB docker container.
+ * Commands for controlling a CockroachDB docker container.
  */
 public class CockroachContainer extends BaseDbContainer implements Container {
 
   /**
-   * Create Postgres container with configuration from properties.
+   * Builder for CockroachContainer.
    */
-  public static CockroachContainer create(String version, Properties properties) {
-    return new CockroachContainer(new CockroachConfig(version, properties));
+  public static class Builder extends DbConfig<CockroachContainer.Builder> implements CBuilder<CockroachContainer, CockroachContainer.Builder> {
+
+    private Builder(String version) {
+      super("cockroach", 26257, 26257, version);
+      this.image = "cockroachdb/cockroach:" + version;
+      this.adminInternalPort = 8080;
+      this.adminPort = 8888;
+      this.setUser("root");
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/" + getDbName() + "?sslmode=disable";
+    }
+
+    @Override
+    public CockroachContainer build() {
+      return new CockroachContainer(this);
+    }
+  }
+
+  /**
+   * Create a Builder for CockroachContainer.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
   }
 
   /**
    * Create with configuration.
    */
-  public CockroachContainer(CockroachConfig config) {
-    super(config);
+  private CockroachContainer(Builder builder) {
+    super(builder);
   }
 
   @Override

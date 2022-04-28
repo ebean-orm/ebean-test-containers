@@ -93,7 +93,7 @@ public class ContainerFactory {
     }
     String cockroachVersion = runWithVersion("cockroach");
     if (cockroachVersion != null) {
-      containers.add(CockroachContainer.create(cockroachVersion, properties));
+      containers.add(CockroachContainer.newBuilder(cockroachVersion).setProperties(properties).build());
     }
     String yugaVersion = runWithVersion("yugabyte");
     if (yugaVersion != null) {
