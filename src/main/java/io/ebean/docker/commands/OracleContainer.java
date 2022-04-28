@@ -30,9 +30,9 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     private Builder(String version) {
       super("oracle", 1521, 1521, version);
       this.image = "vitorfec/oracle-xe-18c:" + version;
-      setAdminUser("system");
-      setAdminPassword("oracle");
-      setDbName("XE");
+      adminUser("system");
+      adminPassword("oracle");
+      dbName("XE");
     }
 
     @Override

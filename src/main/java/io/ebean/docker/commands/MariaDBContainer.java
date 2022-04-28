@@ -11,7 +11,7 @@ public class MariaDBContainer extends MySqlBaseContainer {
       super("mariadb", 4306, 3306, version);
       this.adminUsername = "root";
       this.adminPassword = "admin";
-      this.setTmpfs("/var/lib/mysql:rw");
+      this.tmpfs("/var/lib/mysql:rw");
     }
 
     /**

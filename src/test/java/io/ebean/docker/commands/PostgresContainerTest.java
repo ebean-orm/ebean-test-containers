@@ -19,8 +19,8 @@ class PostgresContainerTest {
   @Test
   void startPortBased() {
     PostgresConfig config = new PostgresConfig("14");
-    config.setContainerName("temp_postgres14");
-    config.setPort(9823);
+    config.containerName("temp_postgres14");
+    config.port(9823);
 
     PostgresContainer dummy = new PostgresContainer(config);
 
@@ -35,10 +35,10 @@ class PostgresContainerTest {
   private void runBasedOnPort(int port) {
     System.out.println("runBasedOnPort ... will connect and not start docker container");
     PostgresConfig config = new PostgresConfig("14");
-    config.setContainerName("not_started");
-    config.setPort(port);
-    config.setExtensions("hstore,uuid-ossp");
-    config.setStopMode(StopMode.Remove);
+    config.containerName("not_started");
+    config.port(port);
+    config.extensions("hstore,uuid-ossp");
+    config.stopMode(StopMode.Remove);
 
     PostgresContainer container = new PostgresContainer(config);
     container.start();
@@ -56,18 +56,18 @@ class PostgresContainerTest {
   @Test
   void start() throws SQLException {
     PostgresConfig config = new PostgresConfig("14");
-    config.setContainerName("temp_postgres14");
-    config.setPort(9823);
-    config.setExtensions(" hstore, , pgcrypto ");
-    config.setInMemory(true);
-    config.setUser("main_user");
-    config.setDbName("main_db");
-    config.setInitSqlFile("init-main-database.sql");
-    config.setSeedSqlFile("seed-main-database.sql");
+    config.containerName("temp_postgres14");
+    config.port(9823);
+    config.extensions(" hstore, , pgcrypto ");
+    config.inMemory(true);
+    config.user("main_user");
+    config.dbName("main_db");
+    config.initSqlFile("init-main-database.sql");
+    config.seedSqlFile("seed-main-database.sql");
 
-    config.setExtraDb("extra");
-    config.setExtraDbInitSqlFile("init-extra-database.sql");
-    config.setExtraDbSeedSqlFile("seed-extra-database.sql");
+    config.extraDb("extra");
+    config.extraDbInitSqlFile("init-extra-database.sql");
+    config.extraDbSeedSqlFile("seed-extra-database.sql");
 
     PostgresContainer container = new PostgresContainer(config);
 

@@ -11,8 +11,8 @@ class ApiAccessTest {
   @Test
   void test() {
       PostgresContainer container = PostgresContainer.newBuilder("14")
-        .setContainerName("temp_postgres14")
-        .setPort(9823)
+        .containerName("temp_postgres14")
+        .port(9823)
         .build();
 
       container.start();

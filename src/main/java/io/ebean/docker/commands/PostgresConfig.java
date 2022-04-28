@@ -8,11 +8,11 @@ public class PostgresConfig extends PostgresContainer.Builder {
 
   public PostgresConfig(String version, Properties properties) {
     this(version);
-    setProperties(properties);
+    properties(properties);
   }
 
   public PostgresConfig(String version) {
     super(version);
-    setStopMode(StopMode.Remove);
+    stopMode(StopMode.Remove);
   }
 }

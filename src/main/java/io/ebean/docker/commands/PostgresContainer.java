@@ -26,7 +26,7 @@ public class PostgresContainer extends BasePostgresContainer implements Containe
     protected Builder(String version) {
       super("postgres", 6432, 5432, version);
       this.adminUsername = "postgres";
-      setTmpfs("/var/lib/postgresql/data:rw");
+      tmpfs("/var/lib/postgresql/data:rw");
     }
 
     @Override

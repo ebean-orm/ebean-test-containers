@@ -23,10 +23,10 @@ class SqlServerContainerTest {
   @Test
   void start() {
     SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
-      .setContainerName("temp_sqlserver")
-      .setCollation("SQL_Latin1_General_CP1_CS_AS")
-      .setPort(11433)
-      .setStopMode(StopMode.Remove)
+      .containerName("temp_sqlserver")
+      .collation("SQL_Latin1_General_CP1_CS_AS")
+      .port(11433)
+      .stopMode(StopMode.Remove)
       .build();
     //config.setFastStartMode(true);
 
@@ -40,9 +40,9 @@ class SqlServerContainerTest {
   @Test
   void start_when_defaultCollation() {
     SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
-      .setContainerName("temp_sqlserver")
-      .setPort(2433)
-      .setCollation("default")
+      .containerName("temp_sqlserver")
+      .port(2433)
+      .collation("default")
       .build();
 
     container.startWithCreate();
@@ -53,8 +53,8 @@ class SqlServerContainerTest {
   @Test
   void start_when_noCollation() {
     SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
-      .setContainerName("temp_sqlserver")
-      .setPort(2433)
+      .containerName("temp_sqlserver")
+      .port(2433)
       .build();
 
     container.startWithCreate();
@@ -65,9 +65,9 @@ class SqlServerContainerTest {
   @Test
   void start_when_explicitCollation() {
     SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
-      .setContainerName("temp_sqlserver")
-      .setPort(2433)
-      .setCollation("SQL_Latin1_General_CP1_CS_AS")
+      .containerName("temp_sqlserver")
+      .port(2433)
+      .collation("SQL_Latin1_General_CP1_CS_AS")
       .build();
 
     container.startWithCreate();

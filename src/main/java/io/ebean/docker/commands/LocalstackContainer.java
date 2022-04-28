@@ -57,8 +57,8 @@ public class LocalstackContainer extends BaseContainer {
      */
     private Builder(String version) {
       super("localstack", 4566, 4566, version);
-      setAdminPort(4571);
-      setAdminInternalPort(4571);
+      adminPort(4571);
+      adminInternalPort(4571);
       this.checkSkipShutdown = true;
       this.shutdownMode = StopMode.Remove;
       this.image = "localstack/localstack:" + version;
@@ -139,7 +139,7 @@ public class LocalstackContainer extends BaseContainer {
   public static LocalstackContainer create(String version, Properties properties) {
     return LocalstackContainer
       .newBuilder(version)
-      .setProperties(properties)
+      .properties(properties)
       .build();
   }
 

@@ -18,10 +18,10 @@ class MySqlContainerTest {
   @Test
   void start_when_explicitCollation() {
     MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
-      .setContainerName("temp_mysql")
-      .setPort(7306)
-      .setCharacterSet("utf8mb4")
-      .setCollation("utf8mb4_unicode_ci")
+      .containerName("temp_mysql")
+      .port(7306)
+      .characterSet("utf8mb4")
+      .collation("utf8mb4_unicode_ci")
       .build();
 
     container.startWithCreate();
@@ -32,8 +32,8 @@ class MySqlContainerTest {
   @Test
   void start_when_noCollation() {
     MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
-      .setContainerName("temp_mysql")
-      .setPort(7306)
+      .containerName("temp_mysql")
+      .port(7306)
       .build();
 
     container.startWithCreate();
@@ -44,9 +44,9 @@ class MySqlContainerTest {
   @Test
   void start_when_defaultCollation() {
     MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
-      .setContainerName("temp_mysql")
-      .setPort(7306)
-      .setCollation("default")
+      .containerName("temp_mysql")
+      .port(7306)
+      .collation("default")
       .build();
 
     container.startWithCreate();
@@ -56,9 +56,9 @@ class MySqlContainerTest {
   @Test
   void start() {
     MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
-      .setContainerName("temp_mysql")
-      .setPort(7306)
-      .setFastStartMode(true)
+      .containerName("temp_mysql")
+      .port(7306)
+      .fastStartMode(true)
       .build();
 
     container.startWithCreate();

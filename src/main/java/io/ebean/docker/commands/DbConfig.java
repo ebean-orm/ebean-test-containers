@@ -104,11 +104,11 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Load configuration from properties.
    */
   @Override
-  public SELF setProperties(Properties properties) {
+  public SELF properties(Properties properties) {
     if (properties == null) {
       return self();
     }
-    super.setProperties(properties);
+    super.properties(properties);
     characterSet = prop(properties, "characterSet", characterSet);
     collation = prop(properties, "collation", collation);
     inMemory = Boolean.parseBoolean(prop(properties, "inMemory", Boolean.toString(inMemory)));
@@ -137,7 +137,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the password for the DB admin user.
    */
   @Override
-  public SELF setAdminUser(String dbAdminUser) {
+  public SELF adminUser(String dbAdminUser) {
     this.adminUsername = dbAdminUser;
     return self();
   }
@@ -146,7 +146,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the password for the DB admin user.
    */
   @Override
-  public SELF setAdminPassword(String adminPassword) {
+  public SELF adminPassword(String adminPassword) {
     this.adminPassword = adminPassword;
     return self();
   }
@@ -155,7 +155,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the temp fs for in-memory use.
    */
   @Override
-  public SELF setTmpfs(String tmpfs) {
+  public SELF tmpfs(String tmpfs) {
     this.tmpfs = tmpfs;
     return self();
   }
@@ -164,7 +164,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set to true to use fast start mode.
    */
   @Override
-  public SELF setFastStartMode(boolean fastStartMode) {
+  public SELF fastStartMode(boolean fastStartMode) {
     this.fastStartMode = fastStartMode;
     return self();
   }
@@ -173,7 +173,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the DB name.
    */
   @Override
-  public SELF setDbName(String dbName) {
+  public SELF dbName(String dbName) {
     this.dbName = dbName;
     return self();
   }
@@ -182,7 +182,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the DB user.
    */
   @Override
-  public SELF setUser(String user) {
+  public SELF user(String user) {
     this.username = user;
     return self();
   }
@@ -191,7 +191,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the DB password.
    */
   @Override
-  public SELF setPassword(String password) {
+  public SELF password(String password) {
     this.password = password;
     return self();
   }
@@ -200,7 +200,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the DB schema.
    */
   @Override
-  public SELF setSchema(String schema) {
+  public SELF schema(String schema) {
     this.schema = schema;
     return self();
   }
@@ -209,7 +209,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the character set to use.
    */
   @Override
-  public SELF setCharacterSet(String characterSet) {
+  public SELF characterSet(String characterSet) {
     this.characterSet = characterSet;
     return self();
   }
@@ -218,7 +218,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the collation to use.
    */
   @Override
-  public SELF setCollation(String collation) {
+  public SELF collation(String collation) {
     this.collation = collation;
     return self();
   }
@@ -227,7 +227,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the DB extensions to install (Postgres hstore, pgcrypto etc)
    */
   @Override
-  public SELF setExtensions(String extensions) {
+  public SELF extensions(String extensions) {
     this.extensions = extensions;
     return self();
   }
@@ -236,7 +236,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the SQL file to execute after creating the database.
    */
   @Override
-  public SELF setInitSqlFile(String initSqlFile) {
+  public SELF initSqlFile(String initSqlFile) {
     this.initSqlFile = initSqlFile;
     return self();
   }
@@ -245,7 +245,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the SQL file to execute after creating the database and initSqlFile.
    */
   @Override
-  public SELF setSeedSqlFile(String seedSqlFile) {
+  public SELF seedSqlFile(String seedSqlFile) {
     this.seedSqlFile = seedSqlFile;
     return self();
   }
@@ -254,7 +254,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set the name of an extra database to create.
    */
   @Override
-  public SELF setExtraDb(String extraDb) {
+  public SELF extraDb(String extraDb) {
     this.extraDb = extraDb;
     return self();
   }
@@ -264,7 +264,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * owner of that extra database.
    */
   @Override
-  public SELF setExtraDbUser(String extraDbUser) {
+  public SELF extraDbUser(String extraDbUser) {
     this.extraDbUser = extraDbUser;
     return self();
   }
@@ -274,7 +274,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * the main users password.
    */
   @Override
-  public SELF setExtraDbPassword(String extraDbPassword) {
+  public SELF extraDbPassword(String extraDbPassword) {
     this.extraDbPassword = extraDbPassword;
     return self();
   }
@@ -283,7 +283,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set a file to execute after creating the extra database.
    */
   @Override
-  public SELF setExtraDbInitSqlFile(String extraDbInitSqlFile) {
+  public SELF extraDbInitSqlFile(String extraDbInitSqlFile) {
     this.extraDbInitSqlFile = extraDbInitSqlFile;
     return self();
   }
@@ -292,7 +292,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set a file to execute after creating the extra database.
    */
   @Override
-  public SELF setExtraDbSeedSqlFile(String extraDbSeedSqlFile) {
+  public SELF extraDbSeedSqlFile(String extraDbSeedSqlFile) {
     this.extraDbSeedSqlFile = extraDbSeedSqlFile;
     return self();
   }
@@ -301,7 +301,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Set to true to run using in memory storage for data via tmpfs.
    */
   @Override
-  public SELF setInMemory(boolean inMemory) {
+  public SELF inMemory(boolean inMemory) {
     this.inMemory = inMemory;
     return self();
   }

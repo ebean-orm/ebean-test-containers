@@ -23,9 +23,9 @@ class NuoDBContainerTest {
     //config.setAdminUser("dba");
     //config.setAdminPassword("dba");
     //config.setDbName("testdb");
-      .setSchema("my_app2")
-      .setUser("my_app2")
-      .setPassword("test")
+      .schema("my_app2")
+      .user("my_app2")
+      .password("test")
       .build();
 
     container.startWithDropCreate();

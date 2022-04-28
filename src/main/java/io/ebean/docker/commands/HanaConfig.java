@@ -28,7 +28,7 @@ public class HanaConfig extends DbConfig<HanaContainer, HanaConfig> {
 
   public HanaConfig(String version, Properties properties) {
     this(version);
-    setProperties(properties);
+    properties(properties);
     if (!Integer.toString(this.port).matches("\\d{5}")) {
       throw new IllegalArgumentException("Invalid port: " + this.port + ". The port must consist of exactly 5 digits.");
     }
@@ -70,11 +70,11 @@ public class HanaConfig extends DbConfig<HanaContainer, HanaConfig> {
     }
     this.instanceNumber = "90";
     this.agreeToSapLicense = checkLicenseAgreement();
-    setAdminUser("SYSTEM");
-    setAdminPassword("HXEHana1");
-    setPassword("HXEHana1");
-    setDbName("HXE");
-    setMaxReadyAttempts(3000);
+    adminUser("SYSTEM");
+    adminPassword("HXEHana1");
+    password("HXEHana1");
+    dbName("HXE");
+    maxReadyAttempts(3000);
   }
 
   /**

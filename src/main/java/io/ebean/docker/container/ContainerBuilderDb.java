@@ -8,96 +8,96 @@ public interface ContainerBuilderDb<C,SELF extends ContainerBuilderDb<C,SELF>> e
   /**
    * Set the database admin user.
    */
-  SELF setAdminUser(String dbAdminUser);
+  SELF adminUser(String dbAdminUser);
 
   /**
    * Set the password for the database admin user.
    */
-  SELF setAdminPassword(String adminPassword);
+  SELF adminPassword(String adminPassword);
 
   /**
    * Set the Temp file system to use.
    */
-  SELF setTmpfs(String tmpfs);
+  SELF tmpfs(String tmpfs);
 
   /**
    * Set the database name. Defaults to test_db.
    */
-  SELF setDbName(String dbName);
+  SELF dbName(String dbName);
 
   /**
    * Set the database user.
    */
-  SELF setUser(String user);
+  SELF user(String user);
 
   /**
    * Set the database password.
    */
-  SELF setPassword(String password);
+  SELF password(String password);
 
   /**
    * Set the database schema.
    */
-  SELF setSchema(String schema);
+  SELF schema(String schema);
 
   /**
    * Set the character set.
    */
-  SELF setCharacterSet(String characterSet);
+  SELF characterSet(String characterSet);
 
   /**
    * Set the Collation.
    */
-  SELF setCollation(String collation);
+  SELF collation(String collation);
 
   /**
    * Set the database extensions to use.
    */
-  SELF setExtensions(String extensions);
+  SELF extensions(String extensions);
 
   /**
    * Set the init sql file to execute.
    */
-  SELF setInitSqlFile(String initSqlFile);
+  SELF initSqlFile(String initSqlFile);
 
   /**
    * Set the seed sql file to execute.
    */
-  SELF setSeedSqlFile(String seedSqlFile);
+  SELF seedSqlFile(String seedSqlFile);
 
   /**
    * Set an extra database to create.
    */
-  SELF setExtraDb(String extraDb);
+  SELF extraDb(String extraDb);
 
   /**
    * Set extra database user.
    */
-  SELF setExtraDbUser(String extraDbUser);
+  SELF extraDbUser(String extraDbUser);
 
   /**
    * Set extra database users password.
    */
-  SELF setExtraDbPassword(String extraDbPassword);
+  SELF extraDbPassword(String extraDbPassword);
 
   /**
    * Set extra database init sql file to execute.
    */
-  SELF setExtraDbInitSqlFile(String extraDbInitSqlFile);
+  SELF extraDbInitSqlFile(String extraDbInitSqlFile);
 
   /**
    * Set extra database seed sql file to execute.
    */
-  SELF setExtraDbSeedSqlFile(String extraDbSeedSqlFile);
+  SELF extraDbSeedSqlFile(String extraDbSeedSqlFile);
 
   /**
    * Set to true to use in-memory database if supported.
    */
-  SELF setInMemory(boolean inMemory);
+  SELF inMemory(boolean inMemory);
 
   /**
    * Set fast start mode.
    */
-  SELF setFastStartMode(boolean fastStartMode);
+  SELF fastStartMode(boolean fastStartMode);
 
 }

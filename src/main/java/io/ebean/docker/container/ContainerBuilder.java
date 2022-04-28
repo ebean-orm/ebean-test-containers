@@ -15,61 +15,61 @@ public interface ContainerBuilder<C,SELF extends ContainerBuilder<C,SELF>>  {
   /**
    * Set configuration from properties.
    */
-  SELF setProperties(Properties properties);
+  SELF properties(Properties properties);
 
   /**
    * Set the container name to use.
    */
-  SELF setContainerName(String containerName);
+  SELF containerName(String containerName);
 
   /**
    * Set the exposed port to use.
    */
-  SELF setPort(int port);
+  SELF port(int port);
 
   /**
    * Set the internal port to map to.
    */
-  SELF setInternalPort(int internalPort);
+  SELF internalPort(int internalPort);
 
   /**
    * Set the exposed admin port to use.
    */
-  SELF setAdminPort(int adminPort);
+  SELF adminPort(int adminPort);
 
   /**
    * Set the internal port mapped to the admin port.
    */
-  SELF setAdminInternalPort(int adminInternalPort);
+  SELF adminInternalPort(int adminInternalPort);
 
   /**
    * Set the docker image to use.
    */
-  SELF setImage(String image);
+  SELF image(String image);
 
   /**
    * Set the maximum attempts to check ready status.
    */
-  SELF setMaxReadyAttempts(int maxReadyAttempts);
+  SELF maxReadyAttempts(int maxReadyAttempts);
 
   /**
    * Set the docker executable to use. Defaults to docker.
    */
-  SELF setDocker(String docker);
+  SELF docker(String docker);
 
   /**
    * Set the start mode.  One of create, dropCreate, or container [only].
    */
-  SELF setStartMode(StartMode startMode);
+  SELF startMode(StartMode startMode);
 
   /**
    * Set the stop mode used when stop() is called.
    */
-  SELF setStopMode(StopMode stopMode);
+  SELF stopMode(StopMode stopMode);
 
   /**
    * Set the shutdown hook mode to automatically stop/remove the container on JVM shutdown.
    */
-  SELF setShutdownMode(StopMode shutdownHookMode);
+  SELF shutdownMode(StopMode shutdownHookMode);
 
 }

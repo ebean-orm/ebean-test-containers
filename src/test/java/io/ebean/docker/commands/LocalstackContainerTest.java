@@ -23,8 +23,8 @@ class LocalstackContainerTest {
     LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
       .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs")
-      .setPort(4566)
-      .setImage("localstack/localstack:0.14")
+      .port(4566)
+      .image("localstack/localstack:0.14")
       .build();
 
     // container.stopRemove();

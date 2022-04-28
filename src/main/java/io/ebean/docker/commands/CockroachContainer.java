@@ -21,7 +21,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
       this.image = "cockroachdb/cockroach:" + version;
       this.adminInternalPort = 8080;
       this.adminPort = 8888;
-      this.setUser("root");
+      this.user("root");
     }
 
     @Override

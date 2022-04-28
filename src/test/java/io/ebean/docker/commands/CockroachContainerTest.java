@@ -15,7 +15,7 @@ class CockroachContainerTest {
 
     CockroachContainer container = CockroachContainer.newBuilder("v21.2.9")
       //.setContainerName("junk_roach")
-      .setDbName("unit")
+      .dbName("unit")
       .build();
     //config.setUser("test_roach");
     //config.setPassword("test");

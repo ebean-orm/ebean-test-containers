@@ -17,9 +17,9 @@ class Db2ContainerTest {
   @Test
   void start() {
     Db2Container container = Db2Container.newBuilder("11.5.4.0")
-      .setContainerName("temp_db2")
-      .setPort(50050)
-      .setFastStartMode(true)
+      .containerName("temp_db2")
+      .port(50050)
+      .fastStartMode(true)
       .build();
 
     container.startWithCreate();

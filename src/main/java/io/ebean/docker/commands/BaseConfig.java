@@ -119,19 +119,19 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
   }
 
   @Override
-  public SELF setStartMode(StartMode startMode) {
+  public SELF startMode(StartMode startMode) {
     this.startMode = startMode;
     return self();
   }
 
   @Override
-  public SELF setStopMode(StopMode stopMode) {
+  public SELF stopMode(StopMode stopMode) {
     this.stopMode = stopMode;
     return self();
   }
 
   @Override
-  public SELF setShutdownMode(StopMode shutdownMode) {
+  public SELF shutdownMode(StopMode shutdownMode) {
     this.shutdownMode = shutdownMode;
     return self();
   }
@@ -140,7 +140,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Load configuration from properties.
    */
   @Override
-  public SELF setProperties(Properties properties) {
+  public SELF properties(Properties properties) {
     if (properties == null) {
       return self();
     }
@@ -193,7 +193,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Set the container name.
    */
   @Override
-  public SELF setContainerName(String containerName) {
+  public SELF containerName(String containerName) {
     this.containerName = containerName;
     return self();
   }
@@ -202,7 +202,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Set the exposed port.
    */
   @Override
-  public SELF setPort(int port) {
+  public SELF port(int port) {
     this.port = port;
     return self();
   }
@@ -211,7 +211,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Set the internal (to the container) port.
    */
   @Override
-  public SELF setInternalPort(int internalPort) {
+  public SELF internalPort(int internalPort) {
     this.internalPort = internalPort;
     return self();
   }
@@ -220,7 +220,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Set the exposed admin port.
    */
   @Override
-  public SELF setAdminPort(int adminPort) {
+  public SELF adminPort(int adminPort) {
     this.adminPort = adminPort;
     return self();
   }
@@ -229,7 +229,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Set the internal admin (to the container) port.
    */
   @Override
-  public SELF setAdminInternalPort(int adminInternalPort) {
+  public SELF adminInternalPort(int adminInternalPort) {
     this.adminInternalPort = adminInternalPort;
     return self();
   }
@@ -238,7 +238,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Set the docker image to use.
    */
   @Override
-  public SELF setImage(String image) {
+  public SELF image(String image) {
     this.image = image;
     return self();
   }
@@ -247,7 +247,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Set the max attempts to wait for DB ready.
    */
   @Override
-  public SELF setMaxReadyAttempts(int maxReadyAttempts) {
+  public SELF maxReadyAttempts(int maxReadyAttempts) {
     this.maxReadyAttempts = maxReadyAttempts;
     return self();
   }
@@ -256,7 +256,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
    * Set the docker command to use (defaults to 'docker').
    */
   @Override
-  public SELF setDocker(String docker) {
+  public SELF docker(String docker) {
     this.docker = docker;
     return self();
   }

@@ -17,7 +17,7 @@ public class OracleContainerTest {
   @Test
   public void start() {
     OracleContainer container = OracleContainer.newBuilder("latest")
-      .setUser("test_ebean")
+      .user("test_ebean")
       .build();
 
     if (!container.startWithDropCreate()) {

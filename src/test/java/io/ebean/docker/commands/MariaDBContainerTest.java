@@ -15,9 +15,9 @@ class MariaDBContainerTest {
   @Test
   void start() {
     MariaDBContainer container = MariaDBContainer.newBuilder("latest")
-      .setContainerName("temp_mariadb")
-      .setPort(8306)
-      .setFastStartMode(true)
+      .containerName("temp_mariadb")
+      .port(8306)
+      .fastStartMode(true)
       .build();
 
     container.startWithCreate();
