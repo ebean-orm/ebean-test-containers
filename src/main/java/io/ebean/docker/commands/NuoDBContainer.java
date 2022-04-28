@@ -1,6 +1,7 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.commands.process.ProcessResult;
+import io.ebean.docker.container.CBuilder;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -9,11 +10,117 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import static io.ebean.docker.commands.process.ProcessHandler.process;
 
 public class NuoDBContainer extends JdbcBaseDbContainer {
+
+  public static class Builder extends DbConfig<NuoDBContainer.Builder> implements CBuilder<NuoDBContainer, NuoDBContainer.Builder> {
+
+    private String network = "nuodb-net";
+    private String sm1 = "sm";
+    private String te1 = "te";
+    private String labels = "node localhost";
+
+    private int port2 = 48004;
+    private int internalPort2 = 48004;
+    private int port3 = 48005;
+    private int internalPort3 = 48005;
+
+    private Builder(String version) { //4.0
+      super("nuodb", 8888, 8888, version);
+      this.containerName = platform;
+      this.image = "nuodb/nuodb-ce:" + version;
+      this.adminUsername = "dba";
+      this.adminPassword = "dba";
+      // for testing purposes generally going to use single 'testdb'
+      // and different apps have different schema
+      this.dbName = "testdb";
+    }
+
+    @Override
+    protected String buildSummary() {
+      return "host:" + host + " port:" + port + " db:" + dbName + " schema:" + schema + " user:" + username + "/" + password;
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:com.nuodb://" + getHost() + "/" + getDbName();
+    }
+
+    public Builder setPort2(int port2) {
+      this.port2 = port2;
+      return self();
+    }
+
+    public Builder setInternalPort2(int internalPort2) {
+      this.internalPort2 = internalPort2;
+      return self();
+    }
+
+    public Builder setPort3(int port3) {
+      this.port3 = port3;
+      return self();
+    }
+
+    public Builder setInternalPort3(int internalPort3) {
+      this.internalPort3 = internalPort3;
+      return self();
+    }
+
+    public Builder setNetwork(String network) {
+      this.network = network;
+      return self();
+    }
+
+    public Builder setSm1(String sm1) {
+      this.sm1 = sm1;
+      return self();
+    }
+
+    public Builder setTe1(String te1) {
+      this.te1 = te1;
+      return self();
+    }
+
+    public Builder setLabels(String labels) {
+      this.labels = labels;
+      return self();
+    }
+
+    String getSm1() {
+      return sm1;
+    }
+
+    String getTe1() {
+      return te1;
+    }
+
+    String getLabels() {
+      return labels;
+    }
+
+    int getPort2() {
+      return port2;
+    }
+    int getInternalPort2() {
+      return internalPort2;
+    }
+    int getPort3() {
+      return port3;
+    }
+    int getInternalPort3() {
+      return internalPort3;
+    }
+    String getNetwork() {
+      return network;
+    }
+
+    @Override
+    public NuoDBContainer build() {
+      return new NuoDBContainer(this);
+    }
+  }
 
   private static final String AD_RESET = "com.nuodb.nagent.AgentMain main Entering initializing for server";
   private static final String AD_RUNNING = "com.nuodb.nagent.AgentMain main NuoAdmin Server running";
@@ -24,23 +131,23 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private static final String TE_RUNNING = "Database entered";
 
   /**
-   * Create NuoDB container with configuration from properties.
+   * Create Builder for NuoDB container.
    */
-  public static NuoDBContainer create(String version, Properties properties) {
-    return new NuoDBContainer(new NuoDBConfig(version, properties));
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
   }
 
-  private final NuoDBConfig nuoConfig;
+  private final Builder nuoConfig;
   private final String network;
   private final String adName;
   private final String smName;
   private final String teName;
 
-  public NuoDBContainer(NuoDBConfig nuoConfig) {
-    super(nuoConfig);
+  private NuoDBContainer(Builder builder) {
+    super(builder);
+    this.nuoConfig = builder;
     this.checkConnectivityUsingAdmin = true;
     nuoConfig.initDefaultSchema();
-    this.nuoConfig = nuoConfig;
     this.network = nuoConfig.getNetwork();
     this.adName = config.containerName();
     this.smName = adName + "_" + nuoConfig.getSm1();

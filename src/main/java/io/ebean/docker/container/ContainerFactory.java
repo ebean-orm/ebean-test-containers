@@ -69,7 +69,7 @@ public class ContainerFactory {
     }
     String nuodbVersion = runWithVersion("nuodb");
     if (nuodbVersion != null) {
-      containers.add(NuoDBContainer.create(nuodbVersion, properties));
+      containers.add(NuoDBContainer.newBuilder(nuodbVersion).setProperties(properties).build());
     }
     String sqlServerVersion = runWithVersion("sqlserver");
     if (sqlServerVersion != null) {
