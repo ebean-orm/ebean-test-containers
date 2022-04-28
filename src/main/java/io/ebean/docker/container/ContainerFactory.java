@@ -101,7 +101,7 @@ public class ContainerFactory {
     }
     String db2Version = runWithVersion("db2");
     if (db2Version != null) {
-      containers.add(Db2Container.create(db2Version, properties));
+      containers.add(Db2Container.newBuilder(db2Version).setProperties(properties).build());
     }
   }
 

@@ -16,12 +16,11 @@ class Db2ContainerTest {
   @Disabled
   @Test
   void start() {
-    Db2Config config = new Db2Config("11.5.4.0"); // "latest");
-    config.setContainerName("temp_db2");
-    config.setPort(50050);
-    config.setFastStartMode(true);
-
-    Db2Container container = new Db2Container(config);
+    Db2Container container = Db2Container.newBuilder("11.5.4.0")
+      .setContainerName("temp_db2")
+      .setPort(50050)
+      .setFastStartMode(true)
+      .build();
 
     container.startWithCreate();
     container.startContainerOnly();

@@ -2,6 +2,7 @@ package io.ebean.docker.commands;
 
 import io.ebean.docker.commands.process.ProcessHandler;
 import io.ebean.docker.commands.process.ProcessResult;
+import io.ebean.docker.container.CBuilder;
 import io.ebean.docker.container.Container;
 
 import java.util.ArrayList;
@@ -13,12 +14,72 @@ import java.util.Properties;
  */
 public class Db2Container extends JdbcBaseDbContainer implements Container {
 
-  public static Db2Container create(String Db2Version, Properties properties) {
-    return new Db2Container(new Db2Config(Db2Version, properties));
+  /**
+   * Builder for Db2Container.
+   */
+  public static class Builder extends DbConfig<Db2Container.Builder> implements CBuilder<Db2Container, Db2Container.Builder> {
+
+    private String createOptions;
+    private String configOptions;
+
+    private Builder(String version) {
+      super("db2", 50000, 50000, version);
+      this.image = "ibmcom/db2:" + version;
+      this.setTmpfs("/database:rw");
+    }
+
+    @Override
+    protected void extraProperties(Properties properties) {
+      createOptions = prop(properties, "createOptions", createOptions);
+      configOptions = prop(properties, "configOptions", configOptions);
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:db2://" + getHost() + ":" + getPort() + "/" + getDbName();
+    }
+
+    /**
+     * Sets additional create options specified in
+     * https://www.ibm.com/docs/en/db2/11.5?topic=commands-create-database Example:
+     * 'USING CODESET UTF-8 TERRITORY DE COLLATE USING IDENTITY PAGESIZE 32768'
+     */
+    public void setCreateOptions(String createOptions) {
+      this.createOptions = createOptions;
+    }
+
+    /**
+     * Sets DB2 config options. See
+     * https://www.ibm.com/docs/en/db2/11.5?topic=commands-update-database-configuration
+     * for details Example 'USING STRING_UNITS CODEUNITS32
+     */
+    public void setConfigOptions(String configOptions) {
+      this.configOptions = configOptions;
+    }
+
+    String getCreateOptions() {
+      return createOptions;
+    }
+
+    String getConfigOptions() {
+      return configOptions;
+    }
+
+    @Override
+    public Db2Container build() {
+      return new Db2Container(this);
+    }
   }
 
-  public Db2Container(Db2Config config) {
-    super(config);
+  /**
+   * Return a Builder for Db2Container.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
+  private Db2Container(Builder builder) {
+    super(builder);
     this.waitForConnectivityAttempts = 2000;
   }
 
