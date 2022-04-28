@@ -16,7 +16,7 @@ public class RedisContainer extends BaseContainer {
   /**
    * The RedisContainer builder.
    */
-  public static class Builder extends DbConfig<RedisContainer, RedisContainer.Builder> {
+  public static class Builder extends BaseConfig<RedisContainer, RedisContainer.Builder> {
 
     private Builder(String version) {
       super("redis", 6379, 6379, version);

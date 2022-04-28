@@ -57,7 +57,7 @@ public class LocalDynamoDBContainer extends BaseContainer {
     return new Builder(version);
   }
 
-  public static class Builder extends DbConfig<LocalDynamoDBContainer, LocalDynamoDBContainer.Builder> {
+  public static class Builder extends BaseConfig<LocalDynamoDBContainer, LocalDynamoDBContainer.Builder> {
 
     private String awsRegion = "ap-southeast-2";
 
