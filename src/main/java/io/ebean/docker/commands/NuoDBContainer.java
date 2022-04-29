@@ -47,75 +47,75 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
       return "jdbc:com.nuodb://" + getHost() + "/" + getDbName();
     }
 
-    public Builder setPort2(int port2) {
+    public Builder port2(int port2) {
       this.port2 = port2;
       return self();
     }
 
-    public Builder setInternalPort2(int internalPort2) {
+    public Builder internalPort2(int internalPort2) {
       this.internalPort2 = internalPort2;
       return self();
     }
 
-    public Builder setPort3(int port3) {
+    public Builder port3(int port3) {
       this.port3 = port3;
       return self();
     }
 
-    public Builder setInternalPort3(int internalPort3) {
+    public Builder internalPort3(int internalPort3) {
       this.internalPort3 = internalPort3;
       return self();
     }
 
-    public Builder setNetwork(String network) {
+    public Builder network(String network) {
       this.network = network;
       return self();
     }
 
-    public Builder setSm1(String sm1) {
+    public Builder sm1(String sm1) {
       this.sm1 = sm1;
       return self();
     }
 
-    public Builder setTe1(String te1) {
+    public Builder te1(String te1) {
       this.te1 = te1;
       return self();
     }
 
-    public Builder setLabels(String labels) {
+    public Builder labels(String labels) {
       this.labels = labels;
       return self();
     }
 
-    String getSm1() {
+    private String getSm1() {
       return sm1;
     }
 
-    String getTe1() {
+    private String getTe1() {
       return te1;
     }
 
-    String getLabels() {
+    private String getLabels() {
       return labels;
     }
 
-    int getPort2() {
+    private int getPort2() {
       return port2;
     }
 
-    int getInternalPort2() {
+    private int getInternalPort2() {
       return internalPort2;
     }
 
-    int getPort3() {
+    private int getPort3() {
       return port3;
     }
 
-    int getInternalPort3() {
+    private int getInternalPort3() {
       return internalPort3;
     }
 
-    String getNetwork() {
+    private String getNetwork() {
       return network;
     }
 

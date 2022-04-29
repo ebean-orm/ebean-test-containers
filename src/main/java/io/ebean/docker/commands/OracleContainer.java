@@ -43,7 +43,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     /**
      * Set the Apex port.
      */
-    public Builder setApexPort(String apexPort) {
+    public Builder apexPort(String apexPort) {
       this.apexPort = apexPort;
       return self();
     }
@@ -51,7 +51,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     /**
      * Set the internal apex port.
      */
-    public Builder setInternalApexPort(String internalApexPort) {
+    public Builder internalApexPort(String internalApexPort) {
       this.internalApexPort = internalApexPort;
       return self();
     }
@@ -59,7 +59,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     /**
      * Set the max startup wait time in minutes.
      */
-    public Builder setStartupWaitMinutes(int startupWaitMinutes) {
+    public Builder startupWaitMinutes(int startupWaitMinutes) {
       this.startupWaitMinutes = startupWaitMinutes;
       return self();
     }
