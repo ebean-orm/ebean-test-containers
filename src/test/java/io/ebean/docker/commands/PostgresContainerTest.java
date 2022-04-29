@@ -3,6 +3,7 @@ package io.ebean.docker.commands;
 import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.ContainerFactory;
+import io.ebean.docker.container.StopMode;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -17,34 +18,32 @@ class PostgresContainerTest {
 
   @Test
   void startPortBased() {
-    PostgresConfig config = new PostgresConfig("14");
-    config.setContainerName("temp_postgres14");
-    config.setPort(9823);
+    PostgresContainer container = PostgresContainer.newBuilder("14")
+      .containerName("temp_postgres14")
+      .port(9823)
+      .build();
 
-    PostgresContainer dummy = new PostgresContainer(config);
-
-    dummy.stopRemove();
-    dummy.startContainerOnly();
+    container.stopRemove();
+    container.startContainerOnly();
 
     runBasedOnPort(9823);
 
-    dummy.stopRemove();
+    container.stopRemove();
   }
 
   private void runBasedOnPort(int port) {
     System.out.println("runBasedOnPort ... will connect and not start docker container");
-    PostgresConfig config = new PostgresConfig("14");
-    config.setContainerName("not_started");
-    config.setPort(port);
-    config.setExtensions("hstore,uuid-ossp");
-    config.setStopMode(StopMode.Remove);
+    PostgresContainer container = PostgresContainer.newBuilder("14")
+      .containerName("not_started")
+      .port(port)
+      .extensions("hstore,uuid-ossp")
+      .stopMode(StopMode.Remove)
+      .build();
 
-    PostgresContainer dummy = new PostgresContainer(config);
-
-    dummy.start();
+    container.start();
 
     try {
-      Connection connection = config.createConnection();
+      Connection connection = container.createConnection();
       exeSql(connection, "create table test_junk2 (acol integer, map hstore)");
       exeSql(connection, "insert into test_junk2 (acol) values (42)");
       exeSql(connection, "insert into test_junk2 (acol) values (43)");
@@ -55,21 +54,19 @@ class PostgresContainerTest {
 
   @Test
   void start() throws SQLException {
-    PostgresConfig config = new PostgresConfig("14");
-    config.setContainerName("temp_postgres14");
-    config.setPort(9823);
-    config.setExtensions(" hstore, , pgcrypto ");
-    config.setInMemory(true);
-    config.setUser("main_user");
-    config.setDbName("main_db");
-    config.setInitSqlFile("init-main-database.sql");
-    config.setSeedSqlFile("seed-main-database.sql");
-
-    config.setExtraDb("extra");
-    config.setExtraDbInitSqlFile("init-extra-database.sql");
-    config.setExtraDbSeedSqlFile("seed-extra-database.sql");
-
-    PostgresContainer container = new PostgresContainer(config);
+    PostgresContainer container = PostgresContainer.newBuilder("14")
+      .containerName("temp_postgres14")
+      .port(9823)
+      .extensions(" hstore, , pgcrypto ")
+      .inMemory(true)
+      .user("main_user")
+      .dbName("main_db")
+      .initSqlFile("init-main-database.sql")
+      .seedSqlFile("seed-main-database.sql")
+      .extraDb("extra")
+      .extraDbInitSqlFile("init-extra-database.sql")
+      .extraDbSeedSqlFile("seed-extra-database.sql")
+      .build();
 
     container.stopRemove();
     container.startWithCreate();
@@ -77,8 +74,8 @@ class PostgresContainerTest {
     container.startWithDropCreate();
 
     assertTrue(container.isRunning());
-    config.setShutdownMode(StopMode.Stop);
-    container.registerShutdownHook();
+    //config.setShutdownMode(StopMode.Stop);
+    //container.registerShutdownHook();
 
     try (Connection connection = container.createConnection()) {
       exeSql(connection, "drop table if exists test_doesnotexist");
@@ -86,7 +83,7 @@ class PostgresContainerTest {
 
     final String url = container.jdbcUrl();
     assertEquals(url, "jdbc:postgresql://localhost:9823/main_db");
-//    container.stopRemove();
+    container.stopRemove();
   }
 
   @Test
@@ -101,21 +98,14 @@ class PostgresContainerTest {
 
     properties.setProperty("postgres.dbName", "test_roberto");
     properties.setProperty("postgres.username", "test_robino");
+    properties.setProperty("postgres.startMode", "dropCreate");
 
     ContainerFactory factory = new ContainerFactory(properties);
     //factory.startContainers();
 
     Container container = factory.container("postgres");
     ContainerConfig config = container.config();
-    assertEquals(9823, ((DbConfig) config).getPort());
-
-    config.setStartMode(StartMode.DropCreate);
-    container.start();
-
-    config.setStartMode(StartMode.Container);
-    container.start();
-
-    config.setStartMode(StartMode.Create);
+    // assertEquals(9823, config.port());
     container.start();
 
     //String url = config.jdbcUrl();

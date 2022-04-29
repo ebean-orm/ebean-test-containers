@@ -1,23 +1,23 @@
 package io.ebean.docker.commands;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * SAP HANA configuration.
- *
+ * <p>
  * For more information about the HANA docker configuration see the tutorial
  * <a href=
  * "https://developers.sap.com/tutorials/hxe-ua-install-using-docker.html">Installing
  * SAP HANA, express edition with Docker</a>
  */
-public class HanaConfig extends DbConfig {
+public class HanaConfig extends DbConfig<HanaContainer, HanaConfig> {
 
   private static final Logger log = LoggerFactory.getLogger(HanaConfig.class);
 
@@ -28,14 +28,14 @@ public class HanaConfig extends DbConfig {
 
   public HanaConfig(String version, Properties properties) {
     this(version);
-    setProperties(properties);
+    properties(properties);
     if (!Integer.toString(this.port).matches("\\d{5}")) {
       throw new IllegalArgumentException("Invalid port: " + this.port + ". The port must consist of exactly 5 digits.");
     }
     this.mountsDirectory = prop(properties, "mountsDirectory", "/data/dockermounts");
     if (!Files.isDirectory(Paths.get(this.mountsDirectory))) {
       throw new IllegalArgumentException(
-          "The given mounts directory \"" + this.mountsDirectory + "\" doesn't exist or is not a directory");
+        "The given mounts directory \"" + this.mountsDirectory + "\" doesn't exist or is not a directory");
     }
     try {
       this.passwordsUrl = new URL(prop(properties, "passwordsUrl", "file:///hana/mounts/passwords.json"));
@@ -50,7 +50,7 @@ public class HanaConfig extends DbConfig {
     this.instanceNumber = prop(properties, "instanceNumber", "90");
     if (!this.instanceNumber.matches("\\d{2}")) {
       throw new IllegalArgumentException("Invalid instance number: " + this.instanceNumber
-          + ". The instance number must consist of exactly two digits.");
+        + ". The instance number must consist of exactly two digits.");
     }
     if (!"90".equals(this.instanceNumber)) {
       String portStr = Integer.toString(this.port);
@@ -70,18 +70,24 @@ public class HanaConfig extends DbConfig {
     }
     this.instanceNumber = "90";
     this.agreeToSapLicense = checkLicenseAgreement();
-    setAdminUser("SYSTEM");
-    setAdminPassword("HXEHana1");
-    setPassword("HXEHana1");
-    setDbName("HXE");
-    setMaxReadyAttempts(3000);
+    adminUser("SYSTEM");
+    adminPassword("HXEHana1");
+    password("HXEHana1");
+    dbName("HXE");
+    maxReadyAttempts(3000);
   }
 
   /**
    * Return the JDBC URL for connecting to the database
    */
-  public String jdbcUrl() {
+  @Override
+  protected String buildJdbcUrl() {
     return "jdbc:sap://" + getHost() + ":" + getPort() + "/?databaseName=" + getDbName();
+  }
+
+  @Override
+  public HanaContainer build() {
+    return new HanaContainer(this);
   }
 
   /**
@@ -123,13 +129,13 @@ public class HanaConfig extends DbConfig {
    *   "master_password" : "HXEHana1"
    * }
    * </pre>
-   *
+   * <p>
    * If the file is located in the container-external mounts directory (see
    * {@link #getMountsDirectory()}), the URL should be
    * {@code file:///hana/mounts/<file_name>.json}
    *
    * @return The URL of the file containing the default password(s) for the HANA
-   *         database users.
+   * database users.
    */
   public URL getPasswordsUrl() {
     return passwordsUrl;
@@ -148,7 +154,7 @@ public class HanaConfig extends DbConfig {
 
   /**
    * Return the container-external instance number of the HANA database.
-   *
+   * <p>
    * A different instance number is necessary when running more than one instance
    * of HANA on one host. The instance number can range from 00 to 99. The default
    * instance number is 90.
@@ -175,7 +181,7 @@ public class HanaConfig extends DbConfig {
    * license</a> for the HANA docker image.
    *
    * @return {@code true} if the user agrees to the license, {@code false}
-   *         otherwise.
+   * otherwise.
    */
   public boolean isAgreeToSapLicense() {
     return agreeToSapLicense;
@@ -199,7 +205,7 @@ public class HanaConfig extends DbConfig {
    *
    * @param properties The properties to check
    * @return {@code true} if the user has agreed to the license, {@code false}
-   *         otherwise
+   * otherwise
    */
   public boolean checkLicenseAgreement(Properties properties) {
     String propertyValue = null;
@@ -219,7 +225,7 @@ public class HanaConfig extends DbConfig {
    * license</a>
    *
    * @return {@code true} if the user has agreed to the license, {@code false}
-   *         otherwise
+   * otherwise
    */
   public static boolean checkLicenseAgreement() {
     String propertyValue = System.getProperty("hana.agreeToSapLicense");
@@ -234,4 +240,6 @@ public class HanaConfig extends DbConfig {
 
     return false;
   }
+
+
 }

@@ -10,21 +10,19 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class MySqlContainerTest {
+class MySqlContainerTest {
 
   static final String MYSQL_VER = "8.0";
 
   @Disabled
   @Test
-  public void start_when_explicitCollation() {
-
-    MySqlConfig config = new MySqlConfig(MYSQL_VER);
-    config.setContainerName("temp_mysql");
-    config.setPort(7306);
-    config.setCharacterSet("utf8mb4");
-    config.setCollation("utf8mb4_unicode_ci");
-
-    MySqlContainer container = new MySqlContainer(config);
+  void start_when_explicitCollation() {
+    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+      .containerName("temp_mysql")
+      .port(7306)
+      .characterSet("utf8mb4")
+      .collation("utf8mb4_unicode_ci")
+      .build();
 
     container.startWithCreate();
     container.stopRemove();
@@ -32,13 +30,11 @@ public class MySqlContainerTest {
 
   @Disabled
   @Test
-  public void start_when_noCollation() {
-
-    MySqlConfig config = new MySqlConfig(MYSQL_VER);
-    config.setContainerName("temp_mysql");
-    config.setPort(7306);
-
-    MySqlContainer container = new MySqlContainer(config);
+  void start_when_noCollation() {
+    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+      .containerName("temp_mysql")
+      .port(7306)
+      .build();
 
     container.startWithCreate();
     container.stopRemove();
@@ -46,28 +42,24 @@ public class MySqlContainerTest {
 
   @Disabled
   @Test
-  public void start_when_defaultCollation() {
-
-    MySqlConfig config = new MySqlConfig(MYSQL_VER);
-    config.setContainerName("temp_mysql");
-    config.setPort(7306);
-    config.setCollation("default");
-
-    MySqlContainer container = new MySqlContainer(config);
+  void start_when_defaultCollation() {
+    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+      .containerName("temp_mysql")
+      .port(7306)
+      .collation("default")
+      .build();
 
     container.startWithCreate();
     container.stopRemove();
   }
 
   @Test
-  public void start() {
-
-    MySqlConfig config = new MySqlConfig(MYSQL_VER);
-    config.setContainerName("temp_mysql");
-    config.setPort(7306);
-    config.setFastStartMode(true);
-
-    MySqlContainer container = new MySqlContainer(config);
+  void start() {
+    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+      .containerName("temp_mysql")
+      .port(7306)
+      .fastStartMode(true)
+      .build();
 
     container.startWithCreate();
     container.startContainerOnly();
@@ -77,8 +69,7 @@ public class MySqlContainerTest {
   }
 
   @Test
-  public void viaContainerFactory() {
-
+  void viaContainerFactory() {
     Properties properties = new Properties();
     properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("mysql.containerName", "temp_mysql");

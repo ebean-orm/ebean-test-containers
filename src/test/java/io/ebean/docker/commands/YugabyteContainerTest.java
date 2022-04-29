@@ -10,17 +10,17 @@ class YugabyteContainerTest {
 
   @Test
   void start_run_stop() {
-    YugabyteConfig config = new YugabyteConfig("2.11.2.0-b89");
-    config.setContainerName("temp_yugabyte");
-    config.setExtensions("pgcrypto");
-    config.setPort(9844);
+    YugabyteContainer yugaContainer = YugabyteContainer.newBuilder("2.11.2.0-b89")
+      .containerName("temp_yugabyte")
+      .extensions("pgcrypto")
+      .port(9844)
+      .build();
 
-    YugabyteContainer yugaContainer = new YugabyteContainer(config);
     yugaContainer.stopRemove();
     yugaContainer.startWithDropCreate();
 
     try {
-      Connection connection = config.createConnection();
+      Connection connection = yugaContainer.createConnection();
       exeSql(connection, "create table test_junk2 (acol integer, aname varchar(20))");
       exeSql(connection, "insert into test_junk2 (acol) values (42)");
       exeSql(connection, "insert into test_junk2 (acol) values (43)");

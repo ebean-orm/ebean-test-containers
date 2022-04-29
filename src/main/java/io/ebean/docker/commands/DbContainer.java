@@ -18,14 +18,13 @@ import java.util.function.Consumer;
 
 abstract class DbContainer extends BaseContainer implements Container {
 
-  final DbConfig dbConfig;
-
+  final InternalConfigDb dbConfig;
   boolean checkConnectivityUsingAdmin;
   int conditionPauseMillis = 100;
 
-  DbContainer(DbConfig config) {
+  DbContainer(DbConfig<?, ?> config) {
     super(config);
-    this.dbConfig = config;
+    this.dbConfig = config.internalConfig();
   }
 
   /**
@@ -46,7 +45,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   private String logShutdown() {
-    return dbConfig.shutdownMode == null ? "" : dbConfig.shutdownMode.name();
+    return dbConfig.shutdownMode() == null ? "" : dbConfig.shutdownMode().name();
   }
 
   /**
@@ -198,9 +197,9 @@ abstract class DbContainer extends BaseContainer implements Container {
    */
   boolean checkConnectivity(boolean useAdmin) {
     try {
-      log.trace("checkConnectivity on {} ... ", config.containerName);
+      log.trace("checkConnectivity on {} ... ", config.containerName());
       try (Connection connection = useAdmin ? config.createAdminConnection() : config.createConnectionNoSchema()) {
-        log.debug("connectivity confirmed for {}", config.containerName);
+        log.debug("connectivity confirmed for {}", config.containerName());
       }
       return true;
     } catch (Throwable e) {
@@ -271,7 +270,7 @@ abstract class DbContainer extends BaseContainer implements Container {
     String dest = config.containerName() + ":/tmp/" + sourceFile.getName();
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("cp");
     args.add(sourceFile.getAbsolutePath());
     args.add(dest);

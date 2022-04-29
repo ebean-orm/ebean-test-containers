@@ -2,11 +2,7 @@ package io.ebean.docker.container;
 
 import io.ebean.docker.commands.*;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -53,35 +49,35 @@ public class ContainerFactory {
   private void init() {
     String elasticVersion = version("elastic");
     if (elasticVersion != null) {
-      containers.add(ElasticContainer.create(elasticVersion, properties));
+      containers.add(ElasticContainer.newBuilder(elasticVersion).properties(properties).build());
     }
     String redisVersion = version("redis");
     if (redisVersion != null) {
-      containers.add(RedisContainer.create(redisVersion, properties));
+      containers.add(RedisContainer.newBuilder(redisVersion).properties(properties).build());
     }
     String pgVersion = runWithVersion("postgres");
     if (pgVersion != null) {
-      containers.add(PostgresContainer.create(pgVersion, properties));
+      containers.add(PostgresContainer.newBuilder(pgVersion).properties(properties).build());
     }
     String mysqlVersion = runWithVersion("mysql");
     if (mysqlVersion != null) {
-      containers.add(MySqlContainer.create(mysqlVersion, properties));
+      containers.add(MySqlContainer.newBuilder(mysqlVersion).properties(properties).build());
     }
     String mariadbVersion = runWithVersion("mariadb");
     if (mariadbVersion != null) {
-      containers.add(MariaDBContainer.create(mariadbVersion, properties));
+      containers.add(MariaDBContainer.newBuilder(mariadbVersion).properties(properties).build());
     }
     String nuodbVersion = runWithVersion("nuodb");
     if (nuodbVersion != null) {
-      containers.add(NuoDBContainer.create(nuodbVersion, properties));
+      containers.add(NuoDBContainer.newBuilder(nuodbVersion).properties(properties).build());
     }
     String sqlServerVersion = runWithVersion("sqlserver");
     if (sqlServerVersion != null) {
-      containers.add(SqlServerContainer.create(sqlServerVersion, properties));
+      containers.add(SqlServerContainer.newBuilder(sqlServerVersion).properties(properties).build());
     }
     String oracleVersion = runWithVersion("oracle");
     if (oracleVersion != null) {
-      containers.add(OracleContainer.create(oracleVersion, properties));
+      containers.add(OracleContainer.newBuilder(oracleVersion).properties(properties).build());
     }
     String hanaVersion = runWithVersion("hana");
     if (hanaVersion != null) {
@@ -89,19 +85,19 @@ public class ContainerFactory {
     }
     String clickhouseVersion = runWithVersion("clickhouse");
     if (clickhouseVersion != null) {
-      containers.add(ClickHouseContainer.create(clickhouseVersion, properties));
+      containers.add(ClickHouseContainer.newBuilder(clickhouseVersion).properties(properties).build());
     }
     String cockroachVersion = runWithVersion("cockroach");
     if (cockroachVersion != null) {
-      containers.add(CockroachContainer.create(cockroachVersion, properties));
+      containers.add(CockroachContainer.newBuilder(cockroachVersion).properties(properties).build());
     }
     String yugaVersion = runWithVersion("yugabyte");
     if (yugaVersion != null) {
-      containers.add(YugabyteContainer.create(yugaVersion, properties));
+      containers.add(YugabyteContainer.newBuilder(yugaVersion).properties(properties).build());
     }
     String db2Version = runWithVersion("db2");
     if (db2Version != null) {
-      containers.add(Db2Container.create(db2Version, properties));
+      containers.add(Db2Container.newBuilder(db2Version).properties(properties).build());
     }
   }
 

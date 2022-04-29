@@ -1,34 +1,45 @@
 package io.ebean.docker.commands;
 
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 
 public class RedisContainer extends BaseContainer {
 
   /**
-   * Create the RedisContainer with configuration via properties.
+   * Create a builder for RedisContainer.
    */
-  public static RedisContainer create(String redisVersion, Properties properties) {
-    return new RedisContainer(new RedisConfig(redisVersion, properties));
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
   }
 
-  public RedisContainer(RedisConfig config) {
-    super(config);
+  /**
+   * The RedisContainer builder.
+   */
+  public static class Builder extends BaseConfig<RedisContainer, RedisContainer.Builder> {
+
+    private Builder(String version) {
+      super("redis", 6379, 6379, version);
+    }
+
+    @Override
+    public RedisContainer build() {
+      return new RedisContainer(this);
+    }
+  }
+
+  private RedisContainer(Builder builder) {
+    super(builder);
   }
 
   @Override
   boolean checkConnectivity() {
-
     String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
     if (osName.indexOf("win") > -1) {
       return doWindowsCheck();
     }
-
     try {
-      ProcessBuilder pb = new ProcessBuilder("nc", config.getHost(), Integer.toString(config.getPort()), "-q","0");
+      ProcessBuilder pb = new ProcessBuilder("nc", config.getHost(), Integer.toString(config.getPort()), "-q", "0");
       pb.redirectErrorStream(true);
 
       Process process = pb.start();
@@ -57,9 +68,8 @@ public class RedisContainer extends BaseContainer {
   }
 
   protected ProcessBuilder runProcess() {
-
     List<String> args = dockerRun();
-    args.add(config.image);
+    args.add(config.image());
     return createProcessBuilder(args);
   }
 

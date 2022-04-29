@@ -13,12 +13,77 @@ import java.util.Properties;
  */
 public class Db2Container extends JdbcBaseDbContainer implements Container {
 
-  public static Db2Container create(String Db2Version, Properties properties) {
-    return new Db2Container(new Db2Config(Db2Version, properties));
+  /**
+   * Builder for Db2Container.
+   */
+  public static class Builder extends DbConfig<Db2Container, Db2Container.Builder> {
+
+    private String createOptions;
+    private String configOptions;
+
+    private Builder(String version) {
+      super("db2", 50000, 50000, version);
+      this.image = "ibmcom/db2:" + version;
+      this.tmpfs("/database:rw");
+    }
+
+    @Override
+    protected void extraProperties(Properties properties) {
+      createOptions = prop(properties, "createOptions", createOptions);
+      configOptions = prop(properties, "configOptions", configOptions);
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:db2://" + getHost() + ":" + getPort() + "/" + getDbName();
+    }
+
+    /**
+     * Sets additional create options specified in
+     * https://www.ibm.com/docs/en/db2/11.5?topic=commands-create-database Example:
+     * 'USING CODESET UTF-8 TERRITORY DE COLLATE USING IDENTITY PAGESIZE 32768'
+     */
+    public Builder createOptions(String createOptions) {
+      this.createOptions = createOptions;
+      return self();
+    }
+
+    /**
+     * Sets DB2 config options. See
+     * https://www.ibm.com/docs/en/db2/11.5?topic=commands-update-database-configuration
+     * for details Example 'USING STRING_UNITS CODEUNITS32
+     */
+    public Builder configOptions(String configOptions) {
+      this.configOptions = configOptions;
+      return self();
+    }
+
+    String getCreateOptions() {
+      return createOptions;
+    }
+
+    String getConfigOptions() {
+      return configOptions;
+    }
+
+    @Override
+    public Db2Container build() {
+      return new Db2Container(this);
+    }
   }
 
-  public Db2Container(Db2Config config) {
-    super(config);
+  /**
+   * Return a Builder for Db2Container.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
+  }
+
+  private final Builder db2Config;
+
+  private Db2Container(Builder builder) {
+    super(builder);
+    this.db2Config = builder;
     this.waitForConnectivityAttempts = 2000;
   }
 
@@ -37,14 +102,14 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
 
     // #2 create database (with optional create options)
     String cmd = "db2 create database " + dbConfig.getDbName();
-    if (defined(((Db2Config) dbConfig).getCreateOptions())) {
-      cmd = cmd + " " + ((Db2Config) dbConfig).getCreateOptions();
+    if (defined(db2Config.getCreateOptions())) {
+      cmd = cmd + " " + db2Config.getCreateOptions();
     }
     dockerSu(cmd);
 
     // #3 set optional config options
-    if (defined(((Db2Config) dbConfig).getConfigOptions())) {
-      cmd = "db2 update database config for " + dbConfig.getDbName() + " " + ((Db2Config) dbConfig).getConfigOptions();
+    if (defined(db2Config.getConfigOptions())) {
+      cmd = "db2 update database config for " + dbConfig.getDbName() + " " + db2Config.getConfigOptions();
       dockerSu(dbConfig.getAdminUsername(), cmd);
     }
 
@@ -108,7 +173,7 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
    */
   protected List<String> dockerSu(String user, String cmd) {
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(config.containerName());

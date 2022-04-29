@@ -5,25 +5,48 @@ import io.ebean.docker.container.Container;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
- * Commands for controlling a cockroachDB docker container.
+ * Commands for controlling a CockroachDB docker container.
  */
 public class CockroachContainer extends BaseDbContainer implements Container {
 
   /**
-   * Create Postgres container with configuration from properties.
+   * Builder for CockroachContainer.
    */
-  public static CockroachContainer create(String version, Properties properties) {
-    return new CockroachContainer(new CockroachConfig(version, properties));
+  public static class Builder extends DbConfig<CockroachContainer, CockroachContainer.Builder> {
+
+    private Builder(String version) {
+      super("cockroach", 26257, 26257, version);
+      this.image = "cockroachdb/cockroach:" + version;
+      this.adminInternalPort = 8080;
+      this.adminPort = 8888;
+      this.user("root");
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/" + getDbName() + "?sslmode=disable";
+    }
+
+    @Override
+    public CockroachContainer build() {
+      return new CockroachContainer(this);
+    }
+  }
+
+  /**
+   * Create a Builder for CockroachContainer.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
   }
 
   /**
    * Create with configuration.
    */
-  public CockroachContainer(CockroachConfig config) {
-    super(config);
+  private CockroachContainer(Builder builder) {
+    super(builder);
   }
 
   @Override
@@ -93,7 +116,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
 
   private ProcessBuilder sqlProcess(String sql) {
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(config.containerName());
@@ -117,7 +140,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
 //    cockroachdb/cockroach:v19.1.4 start --insecure
 //
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");

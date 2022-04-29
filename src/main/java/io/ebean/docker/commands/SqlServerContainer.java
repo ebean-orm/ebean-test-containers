@@ -5,19 +5,51 @@ import io.ebean.docker.container.Container;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Commands for controlling a SqlServer docker container.
  */
 public class SqlServerContainer extends JdbcBaseDbContainer implements Container {
 
-  public static SqlServerContainer create(String version, Properties properties) {
-    return new SqlServerContainer(new SqlServerConfig(version, properties));
+  /**
+   * Create a builder for the PostgresContainer.
+   */
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
   }
 
-  public SqlServerContainer(SqlServerConfig config) {
-    super(config);
+  /**
+   * Builder for SqlServerContainer.
+   */
+  public static class Builder extends DbConfig<SqlServerContainer, SqlServerContainer.Builder> {
+
+    private Builder(String version) {
+      super("sqlserver", 1433, 1433, version);
+      this.image = "mcr.microsoft.com/mssql/server:" + version;
+      // default password that satisfies sql server
+      this.adminUsername = "sa";
+      this.adminPassword = "SqlS3rv#r";
+      this.password = "SqlS3rv#r";
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:sqlserver://" + getHost() + ":" + getPort() + ";databaseName=" + getDbName() + ";integratedSecurity=false;trustServerCertificate=true";
+    }
+
+    @Override
+    protected String buildJdbcAdminUrl() {
+      return "jdbc:sqlserver://" + getHost() + ":" + getPort() + ";integratedSecurity=false;trustServerCertificate=true";
+    }
+
+    @Override
+    public SqlServerContainer build() {
+      return new SqlServerContainer(this);
+    }
+  }
+
+  private SqlServerContainer(Builder builder) {
+    super(builder);
   }
 
   @Override
@@ -54,7 +86,7 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
 
   private void createLogin(Connection connection) {
     if (!loginExists(connection, dbConfig.getUsername())) {
-       createLogin(connection, dbConfig.getUsername(), dbConfig.getPassword());
+      createLogin(connection, dbConfig.getUsername(), dbConfig.getPassword());
     }
   }
 
@@ -142,9 +174,9 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
     args.add("-e");
     args.add("SA_PASSWORD=" + dbConfig.getAdminPassword());
 
-    if (config.isDefaultCollation()) {
+    if (dbConfig.isDefaultCollation()) {
       // do nothing, use server default
-    } else if (config.isExplicitCollation()) {
+    } else if (dbConfig.isExplicitCollation()) {
       args.add("-e");
       args.add("MSSQL_COLLATION=" + dbConfig.getCollation());
     } else {

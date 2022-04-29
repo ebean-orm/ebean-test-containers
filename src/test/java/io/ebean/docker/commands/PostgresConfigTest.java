@@ -1,5 +1,7 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.StartMode;
+import io.ebean.docker.container.StopMode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -13,7 +15,7 @@ class PostgresConfigTest {
     Properties properties = new Properties();
     properties.setProperty("stopMode", "remove");
 
-    PostgresConfig config = new PostgresConfig("11", properties);
+    InternalConfigDb config = PostgresContainer.newBuilder("11").properties(properties).internalConfig();
     assertEquals(config.getStopMode(), StopMode.Remove);
   }
 
@@ -21,8 +23,8 @@ class PostgresConfigTest {
   void stopMode_defaultStop() {
     Properties properties = new Properties();
 
-    PostgresConfig config = new PostgresConfig("11", properties);
-    assertEquals(config.getStopMode(), StopMode.Stop);
+    InternalConfigDb config = PostgresContainer.newBuilder("11").properties(properties).internalConfig();
+    assertEquals(config.getStopMode(), StopMode.Remove);
   }
 
   @Test
@@ -31,7 +33,7 @@ class PostgresConfigTest {
     properties.setProperty("stopMode", "remove");
     properties.setProperty("postgres.stopMode", "none");
 
-    PostgresConfig config = new PostgresConfig("11", properties);
+    InternalConfigDb config = PostgresContainer.newBuilder("11").properties(properties).internalConfig();
     assertEquals(config.getStopMode(), StopMode.None);
   }
 
@@ -40,7 +42,7 @@ class PostgresConfigTest {
   void properties_default() {
     Properties properties = new Properties();
 
-    PostgresConfig config = new PostgresConfig("11", properties);
+    InternalConfigDb config = PostgresContainer.newBuilder("11").properties(properties).internalConfig();
     assertEquals(config.containerName(), "ut_postgres");
     assertEquals(config.getPort(), 6432);
     assertEquals(config.getHost(), "localhost");
@@ -51,7 +53,7 @@ class PostgresConfigTest {
     assertEquals(config.getAdminUsername(), "postgres");
     assertEquals(config.getAdminPassword(), "admin");
     assertEquals(config.getStartMode(), StartMode.Create);
-    assertEquals(config.getStopMode(), StopMode.Stop);
+    assertEquals(config.getStopMode(), StopMode.Remove);
     assertEquals(config.shutdownMode(), StopMode.None);
     assertTrue(config.isFastStartMode());
     assertFalse(config.isInMemory());
@@ -75,7 +77,7 @@ class PostgresConfigTest {
     properties.setProperty("postgres.extraDb.initSqlFile", "extra_init.sql");
     properties.setProperty("postgres.extraDb.seedSqlFile", "extra_seed.sql");
 
-    PostgresConfig config = new PostgresConfig("11", properties);
+    InternalConfigDb config = PostgresContainer.newBuilder("11").properties(properties).internalConfig();
     assertEquals(config.containerName(), "junk_postgres");
     assertEquals(config.getPort(), 9823);
     assertEquals(config.getHost(), "172.17.0.1");

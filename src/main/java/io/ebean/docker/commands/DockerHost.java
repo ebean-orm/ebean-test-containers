@@ -8,9 +8,22 @@ import java.util.Locale;
  */
 public class DockerHost {
 
+  private static final String HOST = new DockerHost().dockerHost;
+
   private final boolean runningInDocker = initInDocker();
 
   private final String dockerHost = initDockerHost();
+
+  DockerHost() {
+    // not public
+  }
+
+  /**
+   * Return the docker host taking into account docker in docker.
+   */
+  public static String host() {
+    return HOST;
+  }
 
   /**
    * Return true if running Docker-In-Docker.

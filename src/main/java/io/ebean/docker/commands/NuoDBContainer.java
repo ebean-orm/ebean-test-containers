@@ -9,11 +9,121 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import static io.ebean.docker.commands.process.ProcessHandler.process;
 
 public class NuoDBContainer extends JdbcBaseDbContainer {
+
+  public static class Builder extends DbConfig<NuoDBContainer, NuoDBContainer.Builder> {
+
+    private String network = "nuodb-net";
+    private String sm1 = "sm";
+    private String te1 = "te";
+    private String labels = "node localhost";
+
+    private int port2 = 48004;
+    private int internalPort2 = 48004;
+    private int port3 = 48005;
+    private int internalPort3 = 48005;
+
+    private Builder(String version) { //4.0
+      super("nuodb", 8888, 8888, version);
+      this.containerName = platform;
+      this.image = "nuodb/nuodb-ce:" + version;
+      this.adminUsername = "dba";
+      this.adminPassword = "dba";
+      // for testing purposes generally going to use single 'testdb'
+      // and different apps have different schema
+      this.dbName = "testdb";
+    }
+
+    @Override
+    protected String buildSummary() {
+      return "host:" + host + " port:" + port + " db:" + dbName + " schema:" + schema + " user:" + username + "/" + password;
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:com.nuodb://" + getHost() + "/" + getDbName();
+    }
+
+    public Builder port2(int port2) {
+      this.port2 = port2;
+      return self();
+    }
+
+    public Builder internalPort2(int internalPort2) {
+      this.internalPort2 = internalPort2;
+      return self();
+    }
+
+    public Builder port3(int port3) {
+      this.port3 = port3;
+      return self();
+    }
+
+    public Builder internalPort3(int internalPort3) {
+      this.internalPort3 = internalPort3;
+      return self();
+    }
+
+    public Builder network(String network) {
+      this.network = network;
+      return self();
+    }
+
+    public Builder sm1(String sm1) {
+      this.sm1 = sm1;
+      return self();
+    }
+
+    public Builder te1(String te1) {
+      this.te1 = te1;
+      return self();
+    }
+
+    public Builder labels(String labels) {
+      this.labels = labels;
+      return self();
+    }
+
+    private String getSm1() {
+      return sm1;
+    }
+
+    private String getTe1() {
+      return te1;
+    }
+
+    private String getLabels() {
+      return labels;
+    }
+
+    private int getPort2() {
+      return port2;
+    }
+
+    private int getInternalPort2() {
+      return internalPort2;
+    }
+
+    private int getPort3() {
+      return port3;
+    }
+
+    private int getInternalPort3() {
+      return internalPort3;
+    }
+
+    private String getNetwork() {
+      return network;
+    }
+
+    @Override
+    public NuoDBContainer build() {
+      return new NuoDBContainer(this);
+    }
+  }
 
   private static final String AD_RESET = "com.nuodb.nagent.AgentMain main Entering initializing for server";
   private static final String AD_RUNNING = "com.nuodb.nagent.AgentMain main NuoAdmin Server running";
@@ -24,25 +134,25 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private static final String TE_RUNNING = "Database entered";
 
   /**
-   * Create NuoDB container with configuration from properties.
+   * Create Builder for NuoDB container.
    */
-  public static NuoDBContainer create(String version, Properties properties) {
-    return new NuoDBContainer(new NuoDBConfig(version, properties));
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
   }
 
-  private final NuoDBConfig nuoConfig;
+  private final Builder nuoConfig;
   private final String network;
   private final String adName;
   private final String smName;
   private final String teName;
 
-  public NuoDBContainer(NuoDBConfig config) {
-    super(config);
+  private NuoDBContainer(Builder builder) {
+    super(builder);
+    this.nuoConfig = builder;
     this.checkConnectivityUsingAdmin = true;
-    config.initDefaultSchema();
-    this.nuoConfig = config;
-    this.network = config.getNetwork();
-    this.adName = nuoConfig.containerName();
+    nuoConfig.initDefaultSchema();
+    this.network = nuoConfig.getNetwork();
+    this.adName = config.containerName();
     this.smName = adName + "_" + nuoConfig.getSm1();
     this.teName = adName + "_" + nuoConfig.getTe1();
   }
@@ -70,7 +180,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
 
     //  nuocmd shutdown database --db-name testdb
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(adName);
@@ -199,7 +309,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private boolean checkDbStateOk() {
     //$ nuocmd show database  --db-format 'dbState:{state}'  --db-name testdb
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(adName);
@@ -258,7 +368,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder procNetworkCreate() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("network");
     args.add("create");
     args.add(network);
@@ -268,7 +378,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder procNetworkRemove() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("network");
     args.add("rm");
     args.add(network);
@@ -278,7 +388,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder procNetworkList() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("network");
     args.add("ls");
     args.add("-f");
@@ -294,7 +404,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder runAdminProcess() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");
@@ -327,7 +437,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     final Path archiveDir = archivePath();
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");
@@ -401,7 +511,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private ProcessBuilder runTransactionManager() {
 
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("run");
     args.add("-d");
     args.add("--name");

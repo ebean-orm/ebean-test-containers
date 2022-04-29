@@ -1,5 +1,6 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.StartMode;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

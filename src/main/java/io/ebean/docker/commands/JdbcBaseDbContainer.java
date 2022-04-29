@@ -1,11 +1,10 @@
 package io.ebean.docker.commands;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
-public abstract class JdbcBaseDbContainer extends DbContainer {
+abstract class JdbcBaseDbContainer extends DbContainer {
 
-  JdbcBaseDbContainer(DbConfig config) {
+  JdbcBaseDbContainer(DbConfig<?, ?> config) {
     super(config);
     this.checkConnectivityUsingAdmin = true;
   }
@@ -34,7 +33,6 @@ public abstract class JdbcBaseDbContainer extends DbContainer {
 
   private boolean startContainerWithWait() {
     if (checkAlreadyRunning()) {
-      dbConfig.clearStopMode();
       return true;
     }
     startIfNeeded();

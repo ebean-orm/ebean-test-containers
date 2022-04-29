@@ -1,5 +1,7 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.StartMode;
+import io.ebean.docker.container.StopMode;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -11,13 +13,12 @@ class RedisContainerTest {
 
   @Test
   void checkConnectivity() {
-    RedisConfig config = new RedisConfig("latest", new Properties());
-    config.setPort(7379);
-    config.setContainerName("temp_redis");
+    RedisContainer container = RedisContainer.newBuilder("latest")
+      .port(7379)
+      .containerName("temp_redis")
+      .build();
 
-    RedisContainer container = new RedisContainer(config);
     assertTrue(container.start());
-
     container.stopRemove();
   }
 
@@ -31,8 +32,9 @@ class RedisContainerTest {
     properties.setProperty("redis.startMode", "baz");
     properties.setProperty("redis.stopMode", "bar");
 
-    RedisConfig config = new RedisConfig("latest", properties);
-
+    InternalConfig config = RedisContainer.newBuilder("latest")
+      .properties(properties)
+      .internalConfig();
     assertProperties(config);
   }
 
@@ -46,12 +48,14 @@ class RedisContainerTest {
     properties.setProperty("ebean.test.redis.startMode", "baz");
     properties.setProperty("ebean.test.redis.stopMode", "bar");
 
-    RedisConfig config = new RedisConfig("latest", properties);
+    InternalConfig config = RedisContainer.newBuilder("latest")
+      .properties(properties)
+      .internalConfig();
 
     assertProperties(config);
   }
 
-  private void assertProperties(RedisConfig config) {
+  private void assertProperties(InternalConfig config) {
     assertEquals(config.getPort(), 7380);
     assertEquals(config.getInternalPort(), 5379);
     assertEquals(config.getImage(), "foo");

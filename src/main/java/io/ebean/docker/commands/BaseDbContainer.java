@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Common DB Container.
  */
-public abstract class BaseDbContainer extends DbContainer implements Container {
+abstract class BaseDbContainer extends DbContainer implements Container {
 
   protected static final Logger log = LoggerFactory.getLogger(Commands.class);
 

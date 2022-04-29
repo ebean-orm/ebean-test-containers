@@ -5,13 +5,12 @@ import io.ebean.docker.container.Container;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * Commands for controlling a postgres docker container.
  * <p>
- * References: https://github.com/docker-library/postgres/issues/146
+ * References: <a href="https://github.com/docker-library/postgres/issues/146">docker-library/postgres/issues/146</a>
  */
 abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Container {
 
@@ -154,7 +153,7 @@ abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Cont
 
   private List<String> execPsql() {
     List<String> args = new ArrayList<>();
-    args.add(config.docker);
+    args.add(config.docker());
     args.add("exec");
     args.add("-i");
     args.add(config.containerName());
@@ -170,7 +169,7 @@ abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Cont
       args.add("--tmpfs");
       args.add(dbConfig.getTmpfs());
     }
-    if (!dbConfig.adminPassword.isEmpty()) {
+    if (!dbConfig.getAdminPassword().isEmpty()) {
       args.add("-e");
       args.add("POSTGRES_PASSWORD=" + dbConfig.getAdminPassword());
     }

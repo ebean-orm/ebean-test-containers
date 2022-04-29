@@ -5,7 +5,6 @@ import io.ebean.docker.container.Container;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Commands for controlling an Oracle docker container.
@@ -13,22 +12,85 @@ import java.util.Properties;
 public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
   /**
-   * Create Postgres container with configuration from properties.
+   * Create a builder.
    */
-  public static OracleContainer create(String version, Properties properties) {
-    return new OracleContainer(new OracleConfig(version, properties));
+  public static Builder newBuilder(String version) {
+    return new Builder(version);
   }
 
-  private final OracleConfig oracleConfig;
+  public static class Builder extends DbConfig<OracleContainer, OracleContainer.Builder> {
 
+    private String apexPort = "8181";
+    private String internalApexPort = "8080";
+    /**
+     * Wait time allowed when starting oracle from scratch.
+     */
+    private int startupWaitMinutes = 8;
+
+    private Builder(String version) {
+      super("oracle", 1521, 1521, version);
+      this.image = "vitorfec/oracle-xe-18c:" + version;
+      adminUser("system");
+      adminPassword("oracle");
+      dbName("XE");
+    }
+
+    @Override
+    protected String buildJdbcUrl() {
+      return "jdbc:oracle:thin:@" + getHost() + ":" + getPort() + ":" + getDbName();
+    }
+
+    /**
+     * Set the Apex port.
+     */
+    public Builder apexPort(String apexPort) {
+      this.apexPort = apexPort;
+      return self();
+    }
+
+    /**
+     * Set the internal apex port.
+     */
+    public Builder internalApexPort(String internalApexPort) {
+      this.internalApexPort = internalApexPort;
+      return self();
+    }
+
+    /**
+     * Set the max startup wait time in minutes.
+     */
+    public Builder startupWaitMinutes(int startupWaitMinutes) {
+      this.startupWaitMinutes = startupWaitMinutes;
+      return self();
+    }
+
+    private String getApexPort() {
+      return apexPort;
+    }
+
+    private String getInternalApexPort() {
+      return internalApexPort;
+    }
+
+    private int getStartupWaitMinutes() {
+      return startupWaitMinutes;
+    }
+
+    @Override
+    public OracleContainer build() {
+      return new OracleContainer(this);
+    }
+  }
+
+  private final Builder oracleConfig;
   private boolean oracleScript;
 
   /**
    * Create with configuration.
    */
-  public OracleContainer(OracleConfig config) {
-    super(config);
-    this.oracleConfig = config;
+  public OracleContainer(Builder builder) {
+    super(builder);
+    this.oracleConfig = builder;
     this.checkConnectivityUsingAdmin = true;
     this.waitForConnectivityAttempts = 2000;
   }
@@ -78,7 +140,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
   }
 
   private boolean userExists(Connection connection) {
-    String sql = "select 1 from dba_users where lower(username) = '"+dbConfig.getUsername().toLowerCase()+"'";
+    String sql = "select 1 from dba_users where lower(username) = '" + dbConfig.getUsername().toLowerCase() + "'";
     return sqlHasRow(connection, sql);
   }
 
@@ -88,7 +150,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     args.add("-p");
     args.add(oracleConfig.getApexPort() + ":" + oracleConfig.getInternalApexPort());
     args.add("-e");
-    args.add("ORACLE_PWD=" + oracleConfig.getAdminPassword());
+    args.add("ORACLE_PWD=" + dbConfig.getAdminPassword());
     args.add(config.getImage());
     return createProcessBuilder(args);
   }

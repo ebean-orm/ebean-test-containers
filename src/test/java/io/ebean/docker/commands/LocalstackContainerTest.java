@@ -21,9 +21,10 @@ class LocalstackContainerTest {
   @Test
   void start_viaBuilder() {
     LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
+      .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs")
-      // .port(4566)
-      // .image("localstack/localstack:0.14")
+      .port(4566)
+      .image("localstack/localstack:0.14")
       .build();
 
     // container.stopRemove();
@@ -66,13 +67,21 @@ class LocalstackContainerTest {
 
     String sqsName = "SQS_NAME";
     String snsTopicName = "SNS_TOPIC";
+    String sqsUrl = "http://localhost:4566/000000000000/SQS_NAME";
+    String snsTopicArn = "arn:aws:sns:ap-southeast-2:000000000000:SNS_TOPIC";
+    String sqsArn = "arn:aws:sqs:ap-southeast-2:000000000000:SQS_NAME";
+    try {
+      sqsUrl = sqs.createQueue(new CreateQueueRequest(sqsName)).getQueueUrl();
+      snsTopicArn = sns.createTopic(snsTopicName).getTopicArn();
+      sqsArn = sqs.getQueueAttributes(sqsUrl, singletonList("QueueArn")).getAttributes().get("QueueArn");
+      Policy allowSnsToPostToSqsPolicy = new Policy("allow sns " + snsTopicArn + " to send to queue", singletonList(new Statement(Statement.Effect.Allow)));
+      sqs.setQueueAttributes(new SetQueueAttributesRequest().withQueueUrl(sqsUrl).addAttributesEntry("Policy", allowSnsToPostToSqsPolicy.toJson()));
 
-    String sqsUrl = sqs.createQueue(new CreateQueueRequest(sqsName)).getQueueUrl();
-    String snsTopicArn = sns.createTopic(snsTopicName).getTopicArn();
-    String sqsArn = sqs.getQueueAttributes(sqsUrl, singletonList("QueueArn")).getAttributes().get("QueueArn");
+    } catch (Exception e) {
+      System.out.println("queue exists");
+      e.printStackTrace();
+    }
 
-    Policy allowSnsToPostToSqsPolicy = new Policy("allow sns " + snsTopicArn + " to send to queue", singletonList(new Statement(Statement.Effect.Allow)));
-    sqs.setQueueAttributes(new SetQueueAttributesRequest().withQueueUrl(sqsUrl).addAttributesEntry("Policy", allowSnsToPostToSqsPolicy.toJson()));
     String sqsSubscriptionArn = sns.subscribe(snsTopicArn, "sqs", sqsArn).getSubscriptionArn();
     sns.publish(snsTopicArn, "Hello 0");
     sns.publish(snsTopicArn, "Hello 1");
@@ -89,15 +98,16 @@ class LocalstackContainerTest {
 
   @Test
   void start() {
-    LocalstackConfig config = new LocalstackConfig("0.14", null);
 
-    LocalstackContainer container = new LocalstackContainer(config);
+    LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
+      //.setShutdownMode(StopMode.None)
+      .build();
     container.start();
 
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
     createTable(amazonDynamoDB);
 
-    //container.stopRemove();
+    //container.stop();
   }
 
   private void createTable(AmazonDynamoDB dynamoDB) {

@@ -10,27 +10,27 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Random;
 
-public class NuoDBContainerTest {
+class NuoDBContainerTest {
 
   private static final Logger log = LoggerFactory.getLogger(NuoDBContainerTest.class);
 
   @Disabled
   @Test
-  public void start_executeSql_stop() {
+  void start_executeSql_stop() {
 
-    NuoDBConfig config = new NuoDBConfig();
+    NuoDBContainer container = NuoDBContainer.newBuilder("4.0")
     //config.setContainerName("nuodb");
     //config.setAdminUser("dba");
     //config.setAdminPassword("dba");
     //config.setDbName("testdb");
-    config.setSchema("my_app2");
-    config.setUser("my_app2");
-    config.setPassword("test");
+      .schema("my_app2")
+      .user("my_app2")
+      .password("test")
+      .build();
 
-    NuoDBContainer container = new NuoDBContainer(config);
     container.startWithDropCreate();
 
-    try (Connection connection = config.createConnection()) {
+    try (Connection connection = container.createConnection()) {
       final Random random = new Random();
 
       exeSql(connection, "drop table if exists test_junk");
