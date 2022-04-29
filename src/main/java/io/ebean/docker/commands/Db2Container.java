@@ -43,8 +43,9 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
      * https://www.ibm.com/docs/en/db2/11.5?topic=commands-create-database Example:
      * 'USING CODESET UTF-8 TERRITORY DE COLLATE USING IDENTITY PAGESIZE 32768'
      */
-    public void setCreateOptions(String createOptions) {
+    public Builder createOptions(String createOptions) {
       this.createOptions = createOptions;
+      return self();
     }
 
     /**
@@ -52,8 +53,9 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
      * https://www.ibm.com/docs/en/db2/11.5?topic=commands-update-database-configuration
      * for details Example 'USING STRING_UNITS CODEUNITS32
      */
-    public void setConfigOptions(String configOptions) {
+    public Builder configOptions(String configOptions) {
       this.configOptions = configOptions;
+      return self();
     }
 
     String getCreateOptions() {

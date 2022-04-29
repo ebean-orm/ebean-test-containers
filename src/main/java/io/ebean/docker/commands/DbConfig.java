@@ -161,7 +161,8 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   }
 
   /**
-   * Set to true to use fast start mode.
+   * Defaults to true - If true ONLY check the existence of the DB and if present
+   * skip the other usual checks (does user exist, create extensions if not exists etc).
    */
   @Override
   public SELF fastStartMode(boolean fastStartMode) {
@@ -187,7 +188,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   }
 
   /**
-   * Set the DB user.
+   * Set the DB user. Defaults to test_user.
    */
   @Override
   public SELF user(String user) {
@@ -196,7 +197,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   }
 
   /**
-   * Set the DB password.
+   * Set the DB password. Defaults to test.
    */
   @Override
   public SELF password(String password) {
@@ -232,7 +233,11 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   }
 
   /**
-   * Set the DB extensions to install (Postgres hstore, pgcrypto etc)
+   * Set the DB extensions to install in comma delimited form.
+   * <p>
+   * Postgres hstore, pgcrypto etc.
+   * <p>
+   * Example:  {@code .extensions("hstore,pgcrypto,uuid-ossp") }
    */
   @Override
   public SELF extensions(String extensions) {
@@ -260,6 +265,8 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
 
   /**
    * Set the name of an extra database to create.
+   * <p>
+   * Use this when the application being tested uses 2 databases.
    */
   @Override
   public SELF extraDb(String extraDb) {
@@ -270,6 +277,8 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   /**
    * Set the name of an extra user to create. If an extra database is also created this would be the
    * owner of that extra database.
+   * <p>
+   * Use this when the application being tested uses 2 databases.
    */
   @Override
   public SELF extraDbUser(String extraDbUser) {
@@ -280,6 +289,8 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   /**
    * Set the password for an extra user. If nothing is set this would default to be the same as
    * the main users password.
+   * <p>
+   * Use this when the application being tested uses 2 databases.
    */
   @Override
   public SELF extraDbPassword(String extraDbPassword) {

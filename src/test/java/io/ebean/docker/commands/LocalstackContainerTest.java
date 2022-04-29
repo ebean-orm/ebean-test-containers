@@ -67,13 +67,21 @@ class LocalstackContainerTest {
 
     String sqsName = "SQS_NAME";
     String snsTopicName = "SNS_TOPIC";
+    String sqsUrl = "http://localhost:4566/000000000000/SQS_NAME";
+    String snsTopicArn = "arn:aws:sns:ap-southeast-2:000000000000:SNS_TOPIC";
+    String sqsArn = "arn:aws:sqs:ap-southeast-2:000000000000:SQS_NAME";
+    try {
+      sqsUrl = sqs.createQueue(new CreateQueueRequest(sqsName)).getQueueUrl();
+      snsTopicArn = sns.createTopic(snsTopicName).getTopicArn();
+      sqsArn = sqs.getQueueAttributes(sqsUrl, singletonList("QueueArn")).getAttributes().get("QueueArn");
+      Policy allowSnsToPostToSqsPolicy = new Policy("allow sns " + snsTopicArn + " to send to queue", singletonList(new Statement(Statement.Effect.Allow)));
+      sqs.setQueueAttributes(new SetQueueAttributesRequest().withQueueUrl(sqsUrl).addAttributesEntry("Policy", allowSnsToPostToSqsPolicy.toJson()));
 
-    String sqsUrl = sqs.createQueue(new CreateQueueRequest(sqsName)).getQueueUrl();
-    String snsTopicArn = sns.createTopic(snsTopicName).getTopicArn();
-    String sqsArn = sqs.getQueueAttributes(sqsUrl, singletonList("QueueArn")).getAttributes().get("QueueArn");
+    } catch (Exception e) {
+      System.out.println("queue exists");
+      e.printStackTrace();
+    }
 
-    Policy allowSnsToPostToSqsPolicy = new Policy("allow sns " + snsTopicArn + " to send to queue", singletonList(new Statement(Statement.Effect.Allow)));
-    sqs.setQueueAttributes(new SetQueueAttributesRequest().withQueueUrl(sqsUrl).addAttributesEntry("Policy", allowSnsToPostToSqsPolicy.toJson()));
     String sqsSubscriptionArn = sns.subscribe(snsTopicArn, "sqs", sqsArn).getSubscriptionArn();
     sns.publish(snsTopicArn, "Hello 0");
     sns.publish(snsTopicArn, "Hello 1");
@@ -99,7 +107,7 @@ class LocalstackContainerTest {
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
     createTable(amazonDynamoDB);
 
-    container.stop();
+    //container.stop();
   }
 
   private void createTable(AmazonDynamoDB dynamoDB) {
