@@ -81,7 +81,7 @@ public class ContainerFactory {
     }
     String hanaVersion = runWithVersion("hana");
     if (hanaVersion != null) {
-      containers.add(HanaContainer.create(hanaVersion, properties));
+      containers.add(HanaContainer.newBuilder(hanaVersion).properties(properties).build());
     }
     String clickhouseVersion = runWithVersion("clickhouse");
     if (clickhouseVersion != null) {

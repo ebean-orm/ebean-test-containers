@@ -88,17 +88,17 @@ public class HanaContainerTest {
     assumeThat(System.getProperty("os.name").toLowerCase()).contains("linux");
     //System.setProperty("hana.agreeToSapLicense", "true");
 
-    HanaConfig config = new HanaConfig("2.00.033.00.20180925.2");
+    HanaContainer.Builder config = HanaContainer.newBuilder("2.00.033.00.20180925.2");
     config.port(39117);
-    config.setInstanceNumber("91");
+    config.instanceNumber("91");
     try {
-      config.setPasswordsUrl(new URL("file:///hana/mounts/" + this.passwordsFile.getFileName()));
+      config.passwordsUrl(new URL("file:///hana/mounts/" + this.passwordsFile.getFileName()));
     } catch (MalformedURLException e) {
       fail(e.getMessage());
     }
-    config.setMountsDirectory(this.tempDir.toString());
-    config.setAgreeToSapLicense(HanaConfig.checkLicenseAgreement());
-    HanaContainer container = new HanaContainer(config);
+    config.mountsDirectory(this.tempDir.toString());
+    config.agreeToSapLicense(HanaContainer.checkLicenseAgreement());
+    HanaContainer container = config.build();
 
     assertTrue(container.startWithCreate());
     assertTrue(container.startContainerOnly());
@@ -127,7 +127,7 @@ public class HanaContainerTest {
     properties.setProperty("hana.instanceNumber", "92");
     properties.setProperty("hana.passwordsUrl", "file:///hana/mounts/" + this.passwordsFile.getFileName());
     properties.setProperty("hana.mountsDirectory", this.tempDir.toString());
-    properties.setProperty("hana.agreeToSapLicense", Boolean.toString(HanaConfig.checkLicenseAgreement()));
+    properties.setProperty("hana.agreeToSapLicense", Boolean.toString(HanaContainer.checkLicenseAgreement()));
     // properties.setProperty("hana.dbPassword", "test");
 
     ContainerFactory factory = new ContainerFactory(properties);
@@ -158,7 +158,7 @@ public class HanaContainerTest {
     } catch (SQLException e) {
       fail(e.getMessage());
     } finally {
-      cleanupContainer((HanaConfig) config);
+      cleanupContainer((HanaContainer.Builder) config);
       ((HanaContainer) container).stopRemove();
     }
   }
@@ -166,17 +166,17 @@ public class HanaContainerTest {
   @Test
   public void noLicense() {
 
-    HanaConfig config = new HanaConfig("2.00.033.00.20180925.2");
+    HanaContainer.Builder config = HanaContainer.newBuilder("2.00.033.00.20180925.2");
     config.port(39117);
-    config.setInstanceNumber("91");
+    config.instanceNumber("91");
     try {
-      config.setPasswordsUrl(new URL("file:///hana/mounts/" + this.passwordsFile.getFileName()));
+      config.passwordsUrl(new URL("file:///hana/mounts/" + this.passwordsFile.getFileName()));
     } catch (MalformedURLException e) {
       fail(e.getMessage());
     }
-    config.setMountsDirectory(this.tempDir.toString());
-    config.setAgreeToSapLicense(false);
-    assertThrows(IllegalStateException.class, () -> new HanaContainer(config));
+    config.mountsDirectory(this.tempDir.toString());
+    config.agreeToSapLicense(false);
+    assertThrows(IllegalStateException.class, () -> config.build());
   }
 
   @Test
@@ -203,9 +203,8 @@ public class HanaContainerTest {
     }
   }
 
-  private void cleanupContainer(HanaConfig config) {
+  private void cleanupContainer(HanaContainer.Builder config) {
     InternalConfigDb state = config.internalConfig();
-    ProcessHandler.command(state.docker(), "exec", "-i", state.containerName(), "bash", "-c",
-      "rm -rf /hana/mounts/*");
+    ProcessHandler.command(state.docker(), "exec", "-i", state.containerName(), "bash", "-c", "rm -rf /hana/mounts/*");
   }
 }
