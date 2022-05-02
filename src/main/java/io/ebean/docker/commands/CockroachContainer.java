@@ -29,6 +29,14 @@ public class CockroachContainer extends BaseDbContainer implements Container {
       return "jdbc:postgresql://" + getHost() + ":" + getPort() + "/" + getDbName() + "?sslmode=disable";
     }
 
+    /**
+     * Set the database user. Defaults to root.
+     */
+    @Override
+    public Builder user(String user) {
+      return super.user(user);
+    }
+
     @Override
     public CockroachContainer build() {
       return new CockroachContainer(this);

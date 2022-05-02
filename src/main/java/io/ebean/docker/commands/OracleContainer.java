@@ -33,11 +33,28 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
       adminUser("system");
       adminPassword("oracle");
       dbName("XE");
+      user("test_user");
     }
 
     @Override
     protected String buildJdbcUrl() {
       return "jdbc:oracle:thin:@" + getHost() + ":" + getPort() + ":" + getDbName();
+    }
+
+    /**
+     * Set the Oracle instance sid. Defaults to XE.
+     */
+    @Override
+    public Builder dbName(String dbName) {
+      return super.dbName(dbName);
+    }
+
+    /**
+     * Set the Oracle user. Defaults to test_user.
+     */
+    @Override
+    public Builder user(String user) {
+      return super.user(user);
     }
 
     /**

@@ -28,6 +28,14 @@ public class ClickHouseContainer extends JdbcBaseDbContainer {
       return "jdbc:clickhouse://" + getHost() + ":" + getPort() + "/default";
     }
 
+    /**
+     * Set the database user. Defaults to default.
+     */
+    @Override
+    public Builder user(String user) {
+      return super.user(user);
+    }
+
     @Override
     public ClickHouseContainer build() {
       return new ClickHouseContainer(this);

@@ -13,9 +13,7 @@ import java.util.Properties;
  * SAP HANA configuration.
  * <p>
  * For more information about the HANA docker configuration see the tutorial
- * <a href=
- * "https://developers.sap.com/tutorials/hxe-ua-install-using-docker.html">Installing
- * SAP HANA, express edition with Docker</a>
+ * <a href="https://developers.sap.com/tutorials/hxe-ua-install-using-docker.html">Installing SAP HANA, express edition with Docker</a>
  */
 public class HanaConfig extends DbConfig<HanaContainer, HanaConfig> {
 
@@ -74,6 +72,7 @@ public class HanaConfig extends DbConfig<HanaContainer, HanaConfig> {
     adminPassword("HXEHana1");
     password("HXEHana1");
     dbName("HXE");
+    user("test_user");
     maxReadyAttempts(3000);
   }
 
