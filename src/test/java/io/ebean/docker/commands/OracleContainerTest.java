@@ -11,13 +11,13 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
-public class OracleContainerTest {
+class OracleContainerTest {
 
   @Disabled
   @Test
-  public void start() {
+  void start() {
     OracleContainer container = OracleContainer.newBuilder("latest")
-      .user("test_ebean")
+      //.user("test_ebean")
       .build();
 
     if (!container.startWithDropCreate()) {
@@ -43,8 +43,7 @@ public class OracleContainerTest {
 
   @Disabled
   @Test
-  public void viaContainerFactory() {
-
+  void viaContainerFactory() {
     Properties properties = new Properties();
     properties.setProperty("oracle.version", "latest");
     //properties.setProperty("oracle.containerName", "junk_oracle");
