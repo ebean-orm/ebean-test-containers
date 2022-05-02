@@ -12,8 +12,8 @@ public class ClickHouseContainer extends JdbcBaseDbContainer {
     private Builder(String version) {
       super("clickhouse", 8123, 8123, version);
       this.image = "yandex/clickhouse-server:" + version;
-      this.user("default");
-      this.password("");
+      this.username = "default";
+      this.password = "";
       this.adminUsername = "default";
       this.adminPassword = "";
     }

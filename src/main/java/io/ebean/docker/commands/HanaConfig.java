@@ -68,12 +68,12 @@ public class HanaConfig extends DbConfig<HanaContainer, HanaConfig> {
     }
     this.instanceNumber = "90";
     this.agreeToSapLicense = checkLicenseAgreement();
-    adminUser("SYSTEM");
-    adminPassword("HXEHana1");
-    password("HXEHana1");
-    dbName("HXE");
-    user("test_user");
-    maxReadyAttempts(3000);
+    this.adminUsername = "SYSTEM";
+    this.adminPassword = "HXEHana1";
+    this.password = "HXEHana1";
+    this.dbName = "HXE";
+    this.username = "test_user";
+    this.maxReadyAttempts = 3000;
   }
 
   /**
