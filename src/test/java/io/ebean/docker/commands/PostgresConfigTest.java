@@ -48,7 +48,7 @@ class PostgresConfigTest {
     assertEquals(config.getHost(), "localhost");
     assertEquals(config.getImage(), "postgres:11");
     assertEquals(config.getDbName(), "test_db");
-    assertEquals(config.getUsername(), "test_user");
+    assertEquals(config.getUsername(), "test_db");
     assertEquals(config.getPassword(), "test");
     assertEquals(config.getAdminUsername(), "postgres");
     assertEquals(config.getAdminPassword(), "admin");

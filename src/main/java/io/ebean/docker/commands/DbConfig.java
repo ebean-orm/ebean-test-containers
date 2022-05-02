@@ -42,9 +42,9 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   String dbName = "test_db";
 
   /**
-   * Database user to use.
+   * Database user to use. Defaults to be the same as dbName.
    */
-  String username = "test_user";
+  String username;
 
   /**
    * Database password for the user.
@@ -188,7 +188,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   }
 
   /**
-   * Set the DB user. Defaults to test_user.
+   * Set the DB user. Defaults to being the same as the dbName.
    */
   @Override
   public SELF user(String user) {
@@ -430,7 +430,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
 
     @Override
     public String getUsername() {
-      return username;
+      return username == null ? dbName : username;
     }
 
     @Override
