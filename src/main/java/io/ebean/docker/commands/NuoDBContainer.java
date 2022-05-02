@@ -39,7 +39,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
 
     @Override
     protected String buildSummary() {
-      return "host:" + host + " port:" + port + " db:" + dbName + " schema:" + schema + " user:" + username + "/" + password;
+      return "host:" + host + " port:" + port + " db:" + dbName + " schema:" + schema + " user:" + deriveUsername() + "/" + password;
     }
 
     @Override

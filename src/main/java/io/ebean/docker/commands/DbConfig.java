@@ -331,7 +331,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    */
   protected void initDefaultSchema() {
     if (schema == null) {
-      schema = username;
+      schema = deriveUsername();
     }
   }
 
@@ -339,7 +339,11 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
    * Return summary of the port db name and other details.
    */
   protected String buildSummary() {
-    return "host:" + host + " port:" + port + " db:" + dbName + " user:" + username + "/" + password;
+    return "host:" + host + " port:" + port + " db:" + dbName + " user:" + deriveUsername() + "/" + password;
+  }
+
+  protected String deriveUsername() {
+    return username == null ? dbName : username;
   }
 
   @Override
@@ -354,7 +358,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
      */
     @Override
     public String startDescription() {
-      return "starting " + platform + " container:" + containerName + " port:" + port + " db:" + dbName + " user:" + username + " extensions:" + extensions + " startMode:" + startMode;
+      return "starting " + platform + " container:" + containerName + " port:" + port + " db:" + dbName + " user:" + deriveUsername() + " extensions:" + extensions + " startMode:" + startMode;
     }
 
     /**
@@ -371,10 +375,10 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
     @Override
     public Connection createConnection() throws SQLException {
       Properties props = new java.util.Properties();
-      props.put("user", username);
-      props.put("password", password);
+      props.put("user", getUsername());
+      props.put("password", getPassword());
       if (schema != null) {
-        props.put("schema", schema);
+        props.put("schema", getSchema());
       }
       return DriverManager.getConnection(jdbcUrl(), props);
     }
@@ -382,8 +386,8 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
     @Override
     public Connection createConnectionNoSchema() throws SQLException {
       Properties props = new java.util.Properties();
-      props.put("user", username);
-      props.put("password", password);
+      props.put("user", getUsername());
+      props.put("password", getPassword());
       return DriverManager.getConnection(jdbcUrl(), props);
     }
 
@@ -393,8 +397,8 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
     @Override
     public Connection createAdminConnection(String url) throws SQLException {
       Properties props = new java.util.Properties();
-      props.put("user", adminUsername);
-      props.put("password", adminPassword);
+      props.put("user", getAdminUsername());
+      props.put("password", getAdminPassword());
       return DriverManager.getConnection(url, props);
     }
 
@@ -430,7 +434,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
 
     @Override
     public String getUsername() {
-      return username == null ? dbName : username;
+      return deriveUsername();
     }
 
     @Override
