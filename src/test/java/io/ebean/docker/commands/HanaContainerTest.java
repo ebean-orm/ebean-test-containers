@@ -88,7 +88,7 @@ public class HanaContainerTest {
     assumeThat(System.getProperty("os.name").toLowerCase()).contains("linux");
     //System.setProperty("hana.agreeToSapLicense", "true");
 
-    HanaContainer.Builder config = HanaContainer.newBuilder("2.00.033.00.20180925.2");
+    HanaContainer.Builder config = HanaContainer.builder("2.00.033.00.20180925.2");
     config.port(39117);
     config.instanceNumber("91");
     try {
@@ -166,7 +166,7 @@ public class HanaContainerTest {
   @Test
   public void noLicense() {
 
-    HanaContainer.Builder config = HanaContainer.newBuilder("2.00.033.00.20180925.2");
+    HanaContainer.Builder config = HanaContainer.builder("2.00.033.00.20180925.2");
     config.port(39117);
     config.instanceNumber("91");
     try {

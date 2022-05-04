@@ -14,6 +14,21 @@ import static io.ebean.docker.commands.process.ProcessHandler.process;
 
 public class NuoDBContainer extends JdbcBaseDbContainer {
 
+  /**
+   * Create a builder for NuoDB container.
+   */
+  public static Builder builder(String version) {
+    return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
+  }
+
   public static class Builder extends DbConfig<NuoDBContainer, NuoDBContainer.Builder> {
 
     private String network = "nuodb-net";
@@ -132,13 +147,6 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private static final String SM_UNABLE_TO_CONNECT = "Unable to connect ";
   private static final String TE_RESET = "Starting Transaction Engine";
   private static final String TE_RUNNING = "Database entered";
-
-  /**
-   * Create Builder for NuoDB container.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
-  }
 
   private final Builder nuoConfig;
   private final String network;

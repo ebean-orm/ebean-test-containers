@@ -13,7 +13,7 @@ class CockroachContainerTest {
   @Test
   void start() throws SQLException {
 
-    CockroachContainer container = CockroachContainer.newBuilder("v21.2.9")
+    CockroachContainer container = CockroachContainer.builder("v21.2.9")
       //.setContainerName("junk_roach")
       .dbName("unit")
       .build();

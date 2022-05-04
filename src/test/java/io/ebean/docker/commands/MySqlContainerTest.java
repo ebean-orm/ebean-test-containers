@@ -17,7 +17,7 @@ class MySqlContainerTest {
   @Disabled
   @Test
   void start_when_explicitCollation() {
-    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+    MySqlContainer container = MySqlContainer.builder(MYSQL_VER)
       .containerName("temp_mysql")
       .port(7306)
       .characterSet("utf8mb4")
@@ -31,7 +31,7 @@ class MySqlContainerTest {
   @Disabled
   @Test
   void start_when_noCollation() {
-    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+    MySqlContainer container = MySqlContainer.builder(MYSQL_VER)
       .containerName("temp_mysql")
       .port(7306)
       .build();
@@ -43,7 +43,7 @@ class MySqlContainerTest {
   @Disabled
   @Test
   void start_when_defaultCollation() {
-    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+    MySqlContainer container = MySqlContainer.builder(MYSQL_VER)
       .containerName("temp_mysql")
       .port(7306)
       .collation("default")
@@ -55,7 +55,7 @@ class MySqlContainerTest {
 
   @Test
   void start() {
-    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+    MySqlContainer container = MySqlContainer.builder(MYSQL_VER)
       .containerName("temp_mysql")
       .port(7306)
       .fastStartMode(true)

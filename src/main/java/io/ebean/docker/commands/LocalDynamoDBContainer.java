@@ -15,7 +15,7 @@ import java.util.Properties;
  *
  * <pre>{@code
  *
- *     LocalDynamoDBContainer container = LocalDynamoDBContainer.newBuilder("1.13.2")
+ *     LocalDynamoDBContainer container = LocalDynamoDBContainer.builder"1.13.2")
  *       //.port(8001)
  *       //.containerName("ut_dynamodb")
  *       //.image("amazon/dynamodb-local:1.13.2")
@@ -51,9 +51,9 @@ import java.util.Properties;
 public class LocalDynamoDBContainer extends BaseContainer {
 
   /**
-   * Return the Builder given the localstack image version.
+   * Create a builder for LocalDynamoDBContainer given the localstack image version.
    */
-  public static Builder newBuilder(String version) {
+  public static Builder builder(String version) {
     return new Builder(version);
   }
 

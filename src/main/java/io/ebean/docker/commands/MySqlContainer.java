@@ -2,6 +2,21 @@ package io.ebean.docker.commands;
 
 public class MySqlContainer extends MySqlBaseContainer {
 
+  /**
+   * Create a builder for MySqlContainer.
+   */
+  public static Builder builder(String version) {
+    return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
+  }
+
   public static class Builder extends DbConfig<MySqlContainer, MySqlContainer.Builder> {
 
     private Builder(String version) {
@@ -32,13 +47,6 @@ public class MySqlContainer extends MySqlBaseContainer {
     public MySqlContainer build() {
       return new MySqlContainer(this);
     }
-  }
-
-  /**
-   * Create a Builder for MySqlContainer.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   private MySqlContainer(Builder builder) {

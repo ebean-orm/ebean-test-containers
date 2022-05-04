@@ -9,8 +9,16 @@ public class RedisContainer extends BaseContainer {
   /**
    * Create a builder for RedisContainer.
    */
-  public static Builder newBuilder(String version) {
+  public static Builder builder(String version) {
     return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
   }
 
   /**

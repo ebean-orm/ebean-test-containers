@@ -7,6 +7,13 @@ import java.util.List;
 
 public class ClickHouseContainer extends JdbcBaseDbContainer {
 
+  /**
+   * Return a new builder for ClickHouseContainer.
+   */
+  public static Builder builder(String version) {
+    return new Builder(version);
+  }
+
   public static class Builder extends DbConfig<ClickHouseContainer, ClickHouseContainer.Builder> {
 
     private Builder(String version) {
@@ -40,10 +47,6 @@ public class ClickHouseContainer extends JdbcBaseDbContainer {
     public ClickHouseContainer build() {
       return new ClickHouseContainer(this);
     }
-  }
-
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   ClickHouseContainer(Builder builder) {

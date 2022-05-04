@@ -12,6 +12,13 @@ import java.util.List;
 public class CockroachContainer extends BaseDbContainer implements Container {
 
   /**
+   * Create a builder for CockroachContainer.
+   */
+  public static Builder builder(String version) {
+    return new Builder(version);
+  }
+
+  /**
    * Builder for CockroachContainer.
    */
   public static class Builder extends DbConfig<CockroachContainer, CockroachContainer.Builder> {
@@ -41,13 +48,6 @@ public class CockroachContainer extends BaseDbContainer implements Container {
     public CockroachContainer build() {
       return new CockroachContainer(this);
     }
-  }
-
-  /**
-   * Create a Builder for CockroachContainer.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   /**

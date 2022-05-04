@@ -13,7 +13,7 @@ class RedisContainerTest {
 
   @Test
   void checkConnectivity() {
-    RedisContainer container = RedisContainer.newBuilder("latest")
+    RedisContainer container = RedisContainer.builder("latest")
       .port(7379)
       .containerName("temp_redis")
       .build();
@@ -32,7 +32,7 @@ class RedisContainerTest {
     properties.setProperty("redis.startMode", "baz");
     properties.setProperty("redis.stopMode", "bar");
 
-    InternalConfig config = RedisContainer.newBuilder("latest")
+    InternalConfig config = RedisContainer.builder("latest")
       .properties(properties)
       .internalConfig();
     assertProperties(config);
@@ -48,7 +48,7 @@ class RedisContainerTest {
     properties.setProperty("ebean.test.redis.startMode", "baz");
     properties.setProperty("ebean.test.redis.stopMode", "bar");
 
-    InternalConfig config = RedisContainer.newBuilder("latest")
+    InternalConfig config = RedisContainer.builder("latest")
       .properties(properties)
       .internalConfig();
 

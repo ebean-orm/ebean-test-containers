@@ -22,7 +22,7 @@ class SqlServerContainerTest {
 
   @Test
   void start() {
-    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+    SqlServerContainer container = SqlServerContainer.builder(SQLSERVER_VER)
       .containerName("temp_sqlserver")
       .collation("SQL_Latin1_General_CP1_CS_AS")
       .port(11433)
@@ -39,7 +39,7 @@ class SqlServerContainerTest {
   @Disabled
   @Test
   void start_when_defaultCollation() {
-    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+    SqlServerContainer container = SqlServerContainer.builder(SQLSERVER_VER)
       .containerName("temp_sqlserver")
       .port(2433)
       .collation("default")
@@ -52,7 +52,7 @@ class SqlServerContainerTest {
   @Disabled
   @Test
   void start_when_noCollation() {
-    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+    SqlServerContainer container = SqlServerContainer.builder(SQLSERVER_VER)
       .containerName("temp_sqlserver")
       .port(2433)
       .build();
@@ -64,7 +64,7 @@ class SqlServerContainerTest {
   @Disabled
   @Test
   void start_when_explicitCollation() {
-    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+    SqlServerContainer container = SqlServerContainer.builder(SQLSERVER_VER)
       .containerName("temp_sqlserver")
       .port(2433)
       .collation("SQL_Latin1_General_CP1_CS_AS")

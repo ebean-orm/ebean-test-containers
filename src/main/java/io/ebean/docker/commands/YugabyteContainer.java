@@ -9,10 +9,18 @@ import java.util.List;
 public class YugabyteContainer extends BasePostgresContainer {
 
   /**
-   * Create a builder.
+   * Create a builder for YugabyteContainer.
    */
-  public static Builder newBuilder(String version) {
+  public static Builder builder(String version) {
     return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
   }
 
   public static class Builder extends DbConfig<YugabyteContainer, YugabyteContainer.Builder> {

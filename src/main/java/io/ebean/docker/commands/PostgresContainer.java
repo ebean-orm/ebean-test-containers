@@ -9,10 +9,18 @@ import io.ebean.docker.container.StopMode;
 public class PostgresContainer extends BasePostgresContainer implements Container {
 
   /**
-   * Create a builder for the PostgresContainer.
+   * Create a builder for PostgresContainer.
    */
-  public static Builder newBuilder(String version) {
+  public static Builder builder(String version) {
     return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
   }
 
   private PostgresContainer(Builder config) {

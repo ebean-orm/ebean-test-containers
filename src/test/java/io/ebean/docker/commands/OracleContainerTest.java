@@ -16,7 +16,7 @@ class OracleContainerTest {
   @Disabled
   @Test
   void start() {
-    OracleContainer container = OracleContainer.newBuilder("latest")
+    OracleContainer container = OracleContainer.builder("latest")
       //.user("test_ebean")
       .build();
 

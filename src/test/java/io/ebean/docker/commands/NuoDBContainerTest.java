@@ -18,7 +18,7 @@ class NuoDBContainerTest {
   @Test
   void start_executeSql_stop() {
 
-    NuoDBContainer container = NuoDBContainer.newBuilder("4.0")
+    NuoDBContainer container = NuoDBContainer.builder("4.0")
     //config.setContainerName("nuodb");
     //config.setAdminUser("dba");
     //config.setAdminPassword("dba");

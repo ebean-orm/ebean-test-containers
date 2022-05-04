@@ -14,6 +14,21 @@ import java.util.Properties;
 public class Db2Container extends JdbcBaseDbContainer implements Container {
 
   /**
+   * Return a builder for Db2Container.
+   */
+  public static Builder builder(String version) {
+    return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
+  }
+
+  /**
    * Builder for Db2Container.
    */
   public static class Builder extends DbConfig<Db2Container, Db2Container.Builder> {
@@ -62,13 +77,6 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
     public Db2Container build() {
       return new Db2Container(this);
     }
-  }
-
-  /**
-   * Return a Builder for Db2Container.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   private final String createOptions;

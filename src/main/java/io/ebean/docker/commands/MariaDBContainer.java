@@ -5,6 +5,21 @@ package io.ebean.docker.commands;
  */
 public class MariaDBContainer extends MySqlBaseContainer {
 
+  /**
+   * Create a builder for MariaDBContainer.
+   */
+  public static Builder builder(String version) {
+    return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
+  }
+
   public static class Builder extends DbConfig<MariaDBContainer, MariaDBContainer.Builder> {
 
     private Builder(String version) {
@@ -36,13 +51,6 @@ public class MariaDBContainer extends MySqlBaseContainer {
     public MariaDBContainer build() {
       return new MariaDBContainer(this);
     }
-  }
-
-  /**
-   * Create a Builder for MySqlContainer.
-   */
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
   }
 
   private MariaDBContainer(Builder builder) {

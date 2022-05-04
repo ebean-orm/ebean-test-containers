@@ -22,7 +22,7 @@ import java.util.Properties;
  *
  * <pre>{@code
  *
- *     LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
+ *     LocalstackContainer container = LocalstackContainer.builder("0.14")
  *       // .port(4566)
  *       // .image("localstack/localstack:0.14")
  *       .build();
@@ -37,8 +37,16 @@ import java.util.Properties;
 public class LocalstackContainer extends BaseContainer {
 
   /**
-   * Return the Builder given the localstack image version.
+   * Create a builder for LocalstackContainer given the localstack image version.
    */
+  public static Builder builder(String version) {
+    return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
   public static Builder newBuilder(String version) {
     return new Builder(version);
   }
@@ -125,16 +133,6 @@ public class LocalstackContainer extends BaseContainer {
     this.serviceNames = TrimSplit.split(services);
     this.healthUrl = String.format("http://%s:%s/health", config.getHost(), config.getPort());
     this.endpointUrl = String.format("http://%s:%s/", config.getHost(), config.getPort());
-  }
-
-  /**
-   * Create the ElasticContainer with configuration via properties.
-   */
-  public static LocalstackContainer create(String version, Properties properties) {
-    return LocalstackContainer
-      .newBuilder(version)
-      .properties(properties)
-      .build();
   }
 
   /**

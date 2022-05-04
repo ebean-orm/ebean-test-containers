@@ -18,7 +18,7 @@ class PostgresContainerTest {
 
   @Test
   void startPortBased() {
-    PostgresContainer container = PostgresContainer.newBuilder("14")
+    PostgresContainer container = PostgresContainer.builder("14")
       .containerName("temp_postgres14")
       .port(9823)
       .build();
@@ -33,7 +33,7 @@ class PostgresContainerTest {
 
   private void runBasedOnPort(int port) {
     System.out.println("runBasedOnPort ... will connect and not start docker container");
-    PostgresContainer container = PostgresContainer.newBuilder("14")
+    PostgresContainer container = PostgresContainer.builder("14")
       .containerName("not_started")
       .port(port)
       .extensions("hstore,uuid-ossp")
@@ -54,7 +54,7 @@ class PostgresContainerTest {
 
   @Test
   void start() throws SQLException {
-    PostgresContainer container = PostgresContainer.newBuilder("14")
+    PostgresContainer container = PostgresContainer.builder("14")
       .containerName("temp_postgres14")
       .port(9823)
       .extensions(" hstore, , pgcrypto ")

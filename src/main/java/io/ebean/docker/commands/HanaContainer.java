@@ -23,10 +23,18 @@ import io.ebean.docker.container.Container;
 public class HanaContainer extends DbContainer implements Container {
 
   /**
-   * Return a builder for HanaContainer.
+   * Create a builder for HanaContainer.
    */
-  public static Builder newBuilder(String version) {
+  public static Builder builder(String version) {
     return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
   }
 
   /**

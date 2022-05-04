@@ -16,7 +16,7 @@ class Db2ContainerTest {
   @Disabled
   @Test
   void start() {
-    Db2Container container = Db2Container.newBuilder("11.5.4.0")
+    Db2Container container = Db2Container.builder("11.5.4.0")
       .containerName("temp_db2")
       .port(50050)
       .fastStartMode(true)

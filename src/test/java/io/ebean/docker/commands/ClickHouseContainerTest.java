@@ -7,7 +7,7 @@ class ClickHouseContainerTest {
 
   @Test
   void runProcess() {
-    ClickHouseContainer container = ClickHouseContainer.newBuilder("latest")
+    ClickHouseContainer container = ClickHouseContainer.builder("latest")
       .startMode(StartMode.DropCreate)
       .build();
 

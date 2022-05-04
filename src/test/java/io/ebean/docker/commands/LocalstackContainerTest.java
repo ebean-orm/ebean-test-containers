@@ -20,7 +20,7 @@ class LocalstackContainerTest {
 
   @Test
   void start_viaBuilder() {
-    LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
+    LocalstackContainer container = LocalstackContainer.builder("0.14")
       .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs")
       .port(4566)
@@ -99,7 +99,7 @@ class LocalstackContainerTest {
   @Test
   void start() {
 
-    LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
+    LocalstackContainer container = LocalstackContainer.builder("0.14")
       //.setShutdownMode(StopMode.None)
       .build();
     container.start();

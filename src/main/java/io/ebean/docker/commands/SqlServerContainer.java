@@ -12,10 +12,18 @@ import java.util.List;
 public class SqlServerContainer extends JdbcBaseDbContainer implements Container {
 
   /**
-   * Create a builder for the PostgresContainer.
+   * Create a builder for SqlServerContainer.
    */
-  public static Builder newBuilder(String version) {
+  public static Builder builder(String version) {
     return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
   }
 
   /**

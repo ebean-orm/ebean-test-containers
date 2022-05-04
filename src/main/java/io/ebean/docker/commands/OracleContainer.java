@@ -12,10 +12,18 @@ import java.util.List;
 public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
   /**
-   * Create a builder.
+   * Create a builder for OracleContainer.
    */
-  public static Builder newBuilder(String version) {
+  public static Builder builder(String version) {
     return new Builder(version);
+  }
+
+  /**
+   * Deprecated - migrate to builder().
+   */
+  @Deprecated
+  public static Builder newBuilder(String version) {
+    return builder(version);
   }
 
   public static class Builder extends DbConfig<OracleContainer, OracleContainer.Builder> {

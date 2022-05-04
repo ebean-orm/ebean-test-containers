@@ -6,7 +6,7 @@ class ElasticContainerTest {
 
   @Test
   void runProcess() {
-    ElasticContainer elastic = ElasticContainer.newBuilder("5.6.0").build();
+    ElasticContainer elastic = ElasticContainer.builder("5.6.0").build();
 
     elastic.start();
     elastic.stop();
