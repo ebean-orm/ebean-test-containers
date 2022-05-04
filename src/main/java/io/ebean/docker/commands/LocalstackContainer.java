@@ -73,7 +73,9 @@ public class LocalstackContainer extends BaseContainer {
     }
 
     /**
-     * Set the services desired (comma delimited). Defaults to dynamodb.
+     * Set the services desired (comma delimited). Defaults to "dynamodb".
+     * <p>
+     * Examples: "dynamodb", "dynamodb,sns,sqs,kinesis"
      */
     public Builder services(String services) {
       this.services = services;
@@ -82,7 +84,7 @@ public class LocalstackContainer extends BaseContainer {
 
 
     /**
-     * Set the AWS region to use.
+     * Set the AWS region to use. For example, "ap-southeast-2".
      */
     public Builder awsRegion(String awsRegion) {
       this.awsRegion = awsRegion;
