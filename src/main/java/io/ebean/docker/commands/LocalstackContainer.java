@@ -97,18 +97,6 @@ public class LocalstackContainer extends BaseContainer {
       return self();
     }
 
-    private String services() {
-      return services;
-    }
-
-    private String awsRegion() {
-      return awsRegion;
-    }
-
-    private String startWeb() {
-      return startWeb;
-    }
-
     /**
      * Build and return the LocalstackContainer to then start().
      */
@@ -117,18 +105,22 @@ public class LocalstackContainer extends BaseContainer {
     }
   }
 
-  private final LocalstackContainer.Builder localConfig;
   private final List<String> serviceNames;
   private final String healthUrl;
   private final String endpointUrl;
+  private final String services;
+  private final String awsRegion;
+  private final String startWeb;
 
   /**
    * Create the container using the given config.
    */
   public LocalstackContainer(LocalstackContainer.Builder builder) {
     super(builder);
-    this.localConfig = builder;
-    this.serviceNames = TrimSplit.split(localConfig.services());
+    this.services = builder.services;
+    this.awsRegion = builder.awsRegion;
+    this.startWeb = builder.startWeb;
+    this.serviceNames = TrimSplit.split(services);
     this.healthUrl = String.format("http://%s:%s/health", config.getHost(), config.getPort());
     this.endpointUrl = String.format("http://%s:%s/", config.getHost(), config.getPort());
   }
@@ -151,7 +143,7 @@ public class LocalstackContainer extends BaseContainer {
   public AmazonDynamoDB dynamoDB() {
     return AmazonDynamoDBClientBuilder.standard()
       .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, localConfig.awsRegion()))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
       .build();
   }
 
@@ -163,7 +155,7 @@ public class LocalstackContainer extends BaseContainer {
   public AmazonKinesis kinesis() {
     return AmazonKinesisClientBuilder.standard()
       .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, localConfig.awsRegion()))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
       .build();
   }
 
@@ -173,7 +165,7 @@ public class LocalstackContainer extends BaseContainer {
   public AmazonSNS sns() {
     return AmazonSNSClientBuilder.standard()
       .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, localConfig.awsRegion()))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
       .build();
   }
 
@@ -183,7 +175,7 @@ public class LocalstackContainer extends BaseContainer {
   public AmazonSQS sqs() {
     return AmazonSQSClientBuilder.standard()
       .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, localConfig.awsRegion()))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
       .build();
   }
 
@@ -196,7 +188,7 @@ public class LocalstackContainer extends BaseContainer {
   }
 
   public String awsRegion() {
-    return localConfig.awsRegion();
+    return awsRegion;
   }
 
   @Override
@@ -237,17 +229,17 @@ public class LocalstackContainer extends BaseContainer {
     args.add("-p");
     args.add(config.getAdminPort() + ":" + config.getAdminInternalPort());
 
-    if (notEmpty(localConfig.services())) {
+    if (notEmpty(services)) {
       args.add("-e");
-      args.add("LOCALSTACK_SERVICES=" + localConfig.services());
+      args.add("LOCALSTACK_SERVICES=" + services);
     }
-    if (notEmpty(localConfig.awsRegion())) {
+    if (notEmpty(awsRegion)) {
       args.add("-e");
-      args.add("DEFAULT_REGION=" + localConfig.awsRegion());
+      args.add("DEFAULT_REGION=" + awsRegion);
     }
-    if (notEmpty(localConfig.startWeb())) {
+    if (notEmpty(startWeb)) {
       args.add("-e");
-      args.add("START_WEB=" + localConfig.startWeb());
+      args.add("START_WEB=" + startWeb);
     }
     args.add(config.image());
     return createProcessBuilder(args);
