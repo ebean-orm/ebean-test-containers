@@ -143,7 +143,7 @@ public class HanaContainer extends DbContainer implements Container {
      *
      * @return The path to the external directory
      */
-    String getMountsDirectory() {
+    private String getMountsDirectory() {
       return mountsDirectory;
     }
 
@@ -177,7 +177,7 @@ public class HanaContainer extends DbContainer implements Container {
      * @return The URL of the file containing the default password(s) for the HANA
      * database users.
      */
-    URL getPasswordsUrl() {
+    private URL getPasswordsUrl() {
       return passwordsUrl;
     }
 
@@ -202,7 +202,7 @@ public class HanaContainer extends DbContainer implements Container {
      *
      * @return The container-external instance number of the HANA database.
      */
-    String getInstanceNumber() {
+    private String getInstanceNumber() {
       return instanceNumber;
     }
 
@@ -225,7 +225,7 @@ public class HanaContainer extends DbContainer implements Container {
      * @return {@code true} if the user agrees to the license, {@code false}
      * otherwise.
      */
-    boolean isAgreeToSapLicense() {
+    private boolean isAgreeToSapLicense() {
       return agreeToSapLicense;
     }
 
@@ -251,7 +251,7 @@ public class HanaContainer extends DbContainer implements Container {
      * @return {@code true} if the user has agreed to the license, {@code false}
      * otherwise
      */
-    boolean checkLicenseAgreementFor(Properties properties) {
+    private boolean checkLicenseAgreementFor(Properties properties) {
       String propertyValue = null;
       if (properties != null) {
         propertyValue = prop(properties, "agreeToSapLicense", null);

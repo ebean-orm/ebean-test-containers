@@ -84,10 +84,6 @@ public class LocalDynamoDBContainer extends BaseContainer {
       return this;
     }
 
-    private String awsRegion() {
-      return awsRegion;
-    }
-
     /**
      * Build and return the LocalDynamoContainer to then start().
      */
@@ -96,12 +92,12 @@ public class LocalDynamoDBContainer extends BaseContainer {
     }
   }
 
-  private final Builder localConfig;
+  private final String awsRegion;
   private final String endpointUrl;
 
   public LocalDynamoDBContainer(Builder builder) {
     super(builder);
-    this.localConfig = builder;
+    this.awsRegion = builder.awsRegion;
     this.endpointUrl = String.format("http://%s:%s", config.getHost(), config.getPort());
   }
 
@@ -113,7 +109,7 @@ public class LocalDynamoDBContainer extends BaseContainer {
   public AmazonDynamoDB dynamoDB() {
     return AmazonDynamoDBClientBuilder.standard()
       .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("localstack", "localstack")))
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, localConfig.awsRegion()))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
       .build();
   }
 
@@ -125,9 +121,9 @@ public class LocalDynamoDBContainer extends BaseContainer {
 
   protected ProcessBuilder runProcess() {
     List<String> args = dockerRun();
-    if (notEmpty(localConfig.awsRegion())) {
+    if (notEmpty(awsRegion)) {
       args.add("-e");
-      args.add("DEFAULT_REGION=" + localConfig.awsRegion());
+      args.add("DEFAULT_REGION=" + awsRegion);
     }
     args.add("-e");
     args.add("AWS_ACCESS_KEY_ID=localstack");

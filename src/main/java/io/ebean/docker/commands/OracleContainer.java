@@ -81,25 +81,15 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
       return self();
     }
 
-    private String getApexPort() {
-      return apexPort;
-    }
-
-    private String getInternalApexPort() {
-      return internalApexPort;
-    }
-
-    private int getStartupWaitMinutes() {
-      return startupWaitMinutes;
-    }
-
     @Override
     public OracleContainer build() {
       return new OracleContainer(this);
     }
   }
 
-  private final Builder oracleConfig;
+  private final String apexPort;
+  private final String internalApexPort;
+  private final int startupWaitMinutes;
   private boolean oracleScript;
 
   /**
@@ -107,7 +97,9 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
    */
   public OracleContainer(Builder builder) {
     super(builder);
-    this.oracleConfig = builder;
+    this.apexPort = builder.apexPort;
+    this.internalApexPort = builder.internalApexPort;
+    this.startupWaitMinutes = builder.startupWaitMinutes;
     this.checkConnectivityUsingAdmin = true;
     this.waitForConnectivityAttempts = 2000;
   }
@@ -165,7 +157,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
   protected ProcessBuilder runProcess() {
     List<String> args = dockerRun();
     args.add("-p");
-    args.add(oracleConfig.getApexPort() + ":" + oracleConfig.getInternalApexPort());
+    args.add(apexPort + ":" + internalApexPort);
     args.add("-e");
     args.add("ORACLE_PWD=" + dbConfig.getAdminPassword());
     args.add(config.getImage());
