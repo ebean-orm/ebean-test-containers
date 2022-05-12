@@ -15,7 +15,7 @@ abstract class DbConfig<C,SELF extends DbConfig<C,SELF>> extends BaseConfig<C,SE
   /**
    * Set for in-memory tmpfs use.
    */
-  private String tmpfs;
+  String tmpfs;
 
   /**
    * Database admin password.

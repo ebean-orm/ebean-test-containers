@@ -43,6 +43,8 @@ class PostgresConfigTest {
     Properties properties = new Properties();
 
     InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
+    assertNull(config.containerName());
+    config.setDefaultContainerName();
     assertEquals(config.containerName(), "ut_postgres");
     assertEquals(config.getPort(), 6432);
     assertEquals(config.getHost(), "localhost");

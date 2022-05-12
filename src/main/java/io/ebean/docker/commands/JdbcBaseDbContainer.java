@@ -44,6 +44,9 @@ abstract class JdbcBaseDbContainer extends DbContainer {
   }
 
   protected boolean checkAlreadyRunning() {
+    if (dbConfig.randomPort()) {
+      return false;
+    }
     try (Connection connection = dbConfig.createAdminConnection()) {
       return true;
     } catch (Throwable e) {

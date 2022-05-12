@@ -1,6 +1,7 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.commands.process.ProcessHandler;
+import io.ebean.docker.commands.process.ProcessResult;
 import io.ebean.docker.container.Container;
 import io.ebean.docker.container.ContainerConfig;
 import io.ebean.docker.container.StopMode;
@@ -24,6 +25,10 @@ abstract class BaseContainer implements Container {
   protected InternalConfig config;
   protected final Commands commands;
   protected int waitForConnectivityAttempts = 200;
+  protected boolean usingContainerId;
+  protected boolean usingRandomPort;
+  protected boolean removeOnExit;
+  protected boolean stopped;
 
   BaseContainer(BaseConfig<?, ?> buildConfig) {
     this.buildConfig = buildConfig;
@@ -43,9 +48,23 @@ abstract class BaseContainer implements Container {
 
   @Override
   public boolean start() {
+    setDefaultContainerName();
     return shutdownHook(logStarted(startWithConnectivity()));
   }
 
+  @Override
+  public int port() {
+    return config.getPort();
+  }
+
+  /**
+   * Set a default container name if not using random port.
+   */
+  protected void setDefaultContainerName() {
+    config.setDefaultContainerName();
+  }
+
+  @Override
   public boolean isRunning() {
     return commands.isRunning(config.containerName());
   }
@@ -78,7 +97,7 @@ abstract class BaseContainer implements Container {
   }
 
   private boolean skipShutdown() {
-    return config.checkSkipShutdown() && SkipShutdown.isSkip();
+    return !removeOnExit && config.checkSkipShutdown() && SkipShutdown.isSkip();
   }
 
   protected boolean shutdownHook(boolean started) {
@@ -102,17 +121,16 @@ abstract class BaseContainer implements Container {
    * Return true if the container is already running.
    */
   boolean startIfNeeded() {
-    if (commands.isRunning(config.containerName())) {
+    boolean hasContainerName = hasContainerName();
+    if (hasContainerName && commands.isRunning(config.containerName())) {
       checkPort(true);
       logRunning();
       return true;
     }
-
-    if (commands.isRegistered(config.containerName())) {
+    if (hasContainerName && commands.isRegistered(config.containerName())) {
       checkPort(false);
       logStart();
       startContainer();
-
     } else {
       logRun();
       runContainer();
@@ -139,7 +157,30 @@ abstract class BaseContainer implements Container {
   }
 
   void runContainer() {
-    ProcessHandler.process(runProcess());
+    ProcessResult result = ProcessHandler.process(runProcess());
+    if (!hasContainerName()) {
+      usingContainerId = true;
+      parseContainerId(result.getOutLines());
+    }
+    if (usingRandomPort) {
+      obtainPort();
+    }
+  }
+
+  private void parseContainerId(List<String> outLines) {
+    if (outLines == null || outLines.isEmpty()) {
+      throw new IllegalStateException("Expected docker run output to contain containerId but got [" + outLines + "]");
+    }
+    config.setContainerId(outLines.get(0).trim());
+  }
+
+  private void obtainPort() {
+    int assignedPort = commands.port(config.containerName());
+    if (assignedPort == 0) {
+      throw new IllegalStateException("Unable to determine assigned port for containerId [" + config.containerName() + "]");
+    }
+    log.debug("Container {} using port {}", config.containerName(), assignedPort);
+    config.setAssignedPort(assignedPort);
   }
 
   /**
@@ -207,7 +248,13 @@ abstract class BaseContainer implements Container {
    */
   public void stopRemove() {
     if (!config.isStopModeNone()) {
-      commands.stopRemove(config.containerName());
+      if (!stopped || !usingContainerId) {
+        commands.stopIfRunning(config.containerName(), usingContainerId);
+        stopped = true;
+      }
+      if (!removeOnExit) {
+        commands.removeIfRegistered(config.containerName(), usingContainerId);
+      }
     }
   }
 
@@ -217,7 +264,8 @@ abstract class BaseContainer implements Container {
   @Override
   public void stopOnly() {
     if (!config.isStopModeNone()) {
-      commands.stopIfRunning(config.containerName());
+      commands.stopIfRunning(config.containerName(), usingContainerId);
+      stopped = true;
     }
   }
 
@@ -231,15 +279,34 @@ abstract class BaseContainer implements Container {
   }
 
   protected List<String> dockerRun() {
+    usingRandomPort = config.randomPort();
     List<String> args = new ArrayList<>();
     args.add(config.docker());
     args.add("run");
     args.add("-d");
-    args.add("--name");
-    args.add(config.containerName());
-    args.add("-p");
-    args.add(config.getPort() + ":" + config.getInternalPort());
+    if (hasContainerName()) {
+      args.add("--name");
+      args.add(config.containerName());
+    } else if (usingRandomPort) {
+      removeOnExit = true;
+      args.add("--rm");
+    }
+    if (usingRandomPort) {
+      args.add("-p");
+      args.add(String.valueOf(config.getInternalPort()));
+    } else {
+      args.add("-p");
+      args.add(config.getPort() + ":" + config.getInternalPort());
+    }
     return args;
+  }
+
+  boolean notEmpty(String value) {
+    return value != null && !value.isEmpty();
+  }
+
+  boolean hasContainerName() {
+    return notEmpty(config.containerName());
   }
 
   /**

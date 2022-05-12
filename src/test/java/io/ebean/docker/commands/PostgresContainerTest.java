@@ -11,10 +11,39 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgresContainerTest {
+
+  @Test
+  void randomPort() {
+    PostgresContainer container = PostgresContainer.builder("14")
+      .port(0)
+      .extensions("hstore")
+      .build();
+
+    container.start();
+    assertThat(container.port()).isGreaterThan(0);
+
+    ContainerConfig containerConfig = container.config();
+    assertThat(containerConfig.port()).isEqualTo(container.port());
+
+    String jdbcUrl = container.config().jdbcUrl();
+    assertThat(jdbcUrl).contains(":" + containerConfig.port());
+    runSomeSql(container);
+  }
+
+  @Test
+  void defaultPort() {
+    PostgresContainer container = PostgresContainer.builder("14")
+      .extensions("hstore")
+      .build();
+
+    container.start();
+    runSomeSql(container);
+  }
 
   @Test
   void startPortBased() {
@@ -42,9 +71,13 @@ class PostgresContainerTest {
 
     container.start();
 
+    runSomeSql(container);
+  }
+
+  private void runSomeSql(PostgresContainer container) {
     try {
       Connection connection = container.createConnection();
-      exeSql(connection, "create table test_junk2 (acol integer, map hstore)");
+      exeSql(connection, "create table if not exists test_junk2 (acol integer, map hstore)");
       exeSql(connection, "insert into test_junk2 (acol) values (42)");
       exeSql(connection, "insert into test_junk2 (acol) values (43)");
     } catch (SQLException e) {

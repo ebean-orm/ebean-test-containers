@@ -133,8 +133,4 @@ public class LocalDynamoDBContainer extends BaseContainer {
     return createProcessBuilder(args);
   }
 
-  private boolean notEmpty(String value) {
-    return value != null && !value.isEmpty();
-  }
-
 }

@@ -6,6 +6,26 @@ import io.ebean.docker.container.StopMode;
 
 interface InternalConfig extends ContainerConfig {
 
+  /**
+   * Set the default container name to use when not explicitly specified.
+   */
+  void setDefaultContainerName();
+
+  /**
+   * Set container id determined after run (when containerName not set).
+   */
+  void setContainerId(String containerId);
+
+  /**
+   * Set the assigned port.
+   */
+  void setAssignedPort(int assignedPort);
+
+  /**
+   * Return true if port == 0 meaning a random port will be assigned.
+   */
+  boolean randomPort();
+
   String getHost();
 
   int getPort();

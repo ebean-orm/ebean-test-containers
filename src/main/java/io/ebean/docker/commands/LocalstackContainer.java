@@ -58,15 +58,13 @@ public class LocalstackContainer extends BaseContainer {
 
     private String services = "dynamodb";
     private String awsRegion = "ap-southeast-2";
-    private String startWeb = "0";
+    private String startWeb;// = "0";
 
     /**
      * Create with a version of localstack/localstack (example, 0.14)
      */
     private Builder(String version) {
       super("localstack", 4566, 4566, version);
-      adminPort(4571);
-      adminInternalPort(4571);
       this.checkSkipShutdown = true;
       this.shutdownMode = StopMode.Remove;
       this.image = "localstack/localstack:" + version;
@@ -89,7 +87,6 @@ public class LocalstackContainer extends BaseContainer {
       this.services = services;
       return self();
     }
-
 
     /**
      * Set the AWS region to use. For example, "ap-southeast-2".
@@ -116,8 +113,6 @@ public class LocalstackContainer extends BaseContainer {
   }
 
   private final List<String> serviceNames;
-  private final String healthUrl;
-  private final String endpointUrl;
   private final String services;
   private final String awsRegion;
   private final String startWeb;
@@ -131,8 +126,10 @@ public class LocalstackContainer extends BaseContainer {
     this.awsRegion = builder.awsRegion;
     this.startWeb = builder.startWeb;
     this.serviceNames = TrimSplit.split(services);
-    this.healthUrl = String.format("http://%s:%s/health", config.getHost(), config.getPort());
-    this.endpointUrl = String.format("http://%s:%s/", config.getHost(), config.getPort());
+  }
+
+  private String healthUrl() {
+    return String.format("http://%s:%s/health", config.getHost(), config.getPort());
   }
 
   /**
@@ -143,7 +140,7 @@ public class LocalstackContainer extends BaseContainer {
   public AmazonDynamoDB dynamoDB() {
     return AmazonDynamoDBClientBuilder.standard()
       .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
       .build();
   }
 
@@ -155,7 +152,7 @@ public class LocalstackContainer extends BaseContainer {
   public AmazonKinesis kinesis() {
     return AmazonKinesisClientBuilder.standard()
       .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
       .build();
   }
 
@@ -165,7 +162,7 @@ public class LocalstackContainer extends BaseContainer {
   public AmazonSNS sns() {
     return AmazonSNSClientBuilder.standard()
       .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
       .build();
   }
 
@@ -175,7 +172,7 @@ public class LocalstackContainer extends BaseContainer {
   public AmazonSQS sqs() {
     return AmazonSQSClientBuilder.standard()
       .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
       .build();
   }
 
@@ -184,7 +181,7 @@ public class LocalstackContainer extends BaseContainer {
   }
 
   public String endpointUrl() {
-    return endpointUrl;
+    return String.format("http://%s:%s/", config.getHost(), config.getPort());
   }
 
   public String awsRegion() {
@@ -194,7 +191,7 @@ public class LocalstackContainer extends BaseContainer {
   @Override
   boolean checkConnectivity() {
     try {
-      String content = readUrlContent(healthUrl);
+      String content = readUrlContent(healthUrl());
       if (log.isTraceEnabled()) {
         log.trace("checkConnectivity content: {}", content);
       }
@@ -226,9 +223,10 @@ public class LocalstackContainer extends BaseContainer {
 
   protected ProcessBuilder runProcess() {
     List<String> args = dockerRun();
-    args.add("-p");
-    args.add(config.getAdminPort() + ":" + config.getAdminInternalPort());
-
+    if (config.getAdminPort() > 0) {
+      args.add("-p");
+      args.add(config.getAdminPort() + ":" + config.getAdminInternalPort());
+    }
     if (notEmpty(services)) {
       args.add("-e");
       args.add("LOCALSTACK_SERVICES=" + services);
@@ -243,10 +241,6 @@ public class LocalstackContainer extends BaseContainer {
     }
     args.add(config.image());
     return createProcessBuilder(args);
-  }
-
-  private boolean notEmpty(String value) {
-    return value != null && !value.isEmpty();
   }
 
 }

@@ -35,8 +35,8 @@ public class Commands {
   /**
    * Stop the container checking to see if it is running first.
    */
-  public void stopIfRunning(String containerName) {
-    if (isRunning(containerName)) {
+  public void stopIfRunning(String containerName, boolean skipRunningCheck) {
+    if (skipRunningCheck || isRunning(containerName)) {
       stop(containerName);
     }
   }
@@ -44,12 +44,8 @@ public class Commands {
   /**
    * Stop and remove the container.
    */
-  public void stopRemove(String containerName) {
-    if (isRunning(containerName)) {
-      stop(containerName);
-    }
-
-    if (isRegistered(containerName)) {
+  public void removeIfRegistered(String containerName, boolean skipRunningCheck) {
+    if (skipRunningCheck || isRegistered(containerName)) {
       remove(containerName);
     }
   }
@@ -121,6 +117,32 @@ public class Commands {
   }
 
   /**
+   * Return the first mapped port for the given container.
+   */
+  public int port(String containerName) {
+    List<String> lines = ports(containerName);
+    for (String line : lines) {
+      int port = parsePort(line);
+      if (port > 0) {
+        return port;
+      }
+    }
+    return 0;
+  }
+
+  static int parsePort(String line) {
+    int pos0 = line.indexOf("->");
+    if (pos0 > -1) {
+      String substring = line.substring(pos0 + 1);
+      int lastColon = substring.lastIndexOf(':');
+      if (lastColon > -1) {
+        return Integer.parseInt(substring.substring(lastColon + 1));
+      }
+    }
+    return 0;
+  }
+
+  /**
    * Return true if the logs of the container contain the match text.
    */
   public boolean logsContain(String containerName, String match) {
@@ -165,6 +187,14 @@ public class Commands {
   }
 
   /**
+   * Return the ports output as lines.
+   */
+  public List<String> ports(String containerName) {
+    ProcessResult result = ProcessHandler.command(docker, "port", containerName);
+    return result.getOutLines();
+  }
+
+  /**
    * Check if the port matches the existing port bindings and if not return the existing port bindings.
    */
   public String registeredPortMatch(String containerName, int matchPort) {
@@ -197,7 +227,6 @@ public class Commands {
    * @return True if the logs searched contain the logMessage
    */
   public boolean logsContain(String containerName, String logMessage, int tail) {
-
     List<String> lines = logs(containerName, tail);
     for (String line : lines) {
       if (line.contains(logMessage)) {
@@ -214,7 +243,6 @@ public class Commands {
    * </p>
    */
   public List<String> logs(String containerName, int tail) {
-
     ProcessResult result;
     if (tail > 0) {
       result = ProcessHandler.command(docker, "logs", "--tail", Integer.toString(tail), containerName);

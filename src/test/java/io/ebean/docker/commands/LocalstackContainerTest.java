@@ -23,7 +23,8 @@ class LocalstackContainerTest {
     LocalstackContainer container = LocalstackContainer.builder("0.14")
       .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs")
-      .port(4566)
+      .port(4567)
+      .containerName("ut_localstack_dkss")
       .image("localstack/localstack:0.14")
       .build();
 
@@ -94,6 +95,23 @@ class LocalstackContainerTest {
 
     sns.deleteTopic(snsTopicArn);
     sqs.deleteQueue(sqsUrl);
+  }
+
+  @Test
+  void randomPort() {
+    LocalstackContainer container = LocalstackContainer.builder("0.14")
+      .port(0)
+      .build();
+
+    container.start();
+
+    int assignedPort = container.port();
+    assertThat(assignedPort).isGreaterThan(0);
+
+    AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
+    createTable(amazonDynamoDB);
+
+    //container.stop();
   }
 
   @Test

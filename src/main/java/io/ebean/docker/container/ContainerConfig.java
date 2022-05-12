@@ -24,6 +24,14 @@ public interface ContainerConfig {
   String version();
 
   /**
+   * Return the port this container is using.
+   * <p>
+   * This is typically useful if the container was started with a random port
+   * and, we need to know what that port was.
+   */
+  int port();
+
+  /**
    * Return a DB connection url or null if not a database container.
    */
   String jdbcUrl();

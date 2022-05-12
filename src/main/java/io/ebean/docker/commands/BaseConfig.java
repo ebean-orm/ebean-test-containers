@@ -96,7 +96,6 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
     this.platform = platform;
     this.port = port;
     this.internalPort = internalPort;
-    this.containerName = "ut_" + platform;
     this.image = platform + ":" + version;
     this.version = version;
   }
@@ -281,6 +280,23 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
 
   protected class Inner implements InternalConfig {
 
+    @Override
+    public void setDefaultContainerName() {
+      if (containerName == null && port != 0) {
+        containerName = "ut_" + platform;
+      }
+    }
+
+    @Override
+    public void setContainerId(String containerId) {
+      containerName = containerId;
+    }
+
+    @Override
+    public void setAssignedPort(int assignedPort) {
+      port = assignedPort;
+    }
+
     /**
      * Return a Connection to the database (make sure you close it).
      */
@@ -302,6 +318,11 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
     @Override
     public Connection createAdminConnection(String url) throws SQLException {
       throw new IllegalStateException("Not valid for this type");
+    }
+
+    @Override
+    public int port() {
+      return getPort();
     }
 
     @Override
@@ -350,6 +371,11 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
     @Override
     public int getPort() {
       return port;
+    }
+
+    @Override
+    public boolean randomPort() {
+      return port == 0;
     }
 
     @Override
