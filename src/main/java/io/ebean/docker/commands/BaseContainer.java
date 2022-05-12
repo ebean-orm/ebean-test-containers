@@ -25,10 +25,10 @@ abstract class BaseContainer implements Container {
   protected InternalConfig config;
   protected final Commands commands;
   protected int waitForConnectivityAttempts = 200;
+  protected StopMode shutdownMode;
   protected boolean usingContainerId;
   protected boolean usingRandomPort;
   protected boolean removeOnExit;
-  protected boolean stopped;
 
   BaseContainer(BaseConfig<?, ?> buildConfig) {
     this.buildConfig = buildConfig;
@@ -62,6 +62,21 @@ abstract class BaseContainer implements Container {
    */
   protected void setDefaultContainerName() {
     config.setDefaultContainerName();
+    shutdownMode = determineShutdownMode();
+  }
+
+  private StopMode determineShutdownMode() {
+    StopMode mode = config.shutdownMode();
+    if (mode == StopMode.Auto) {
+      if (config.randomPort()) {
+        return StopMode.Stop;
+      } else if (SkipShutdown.isSkip()) {
+        return StopMode.None;
+      } else {
+        return StopMode.Remove;
+      }
+    }
+    return mode;
   }
 
   @Override
@@ -82,7 +97,7 @@ abstract class BaseContainer implements Container {
       if (StopMode.Remove == mode) {
         stopRemove();
       } else {
-        stopOnly();
+        stopIfRunning();
       }
     }
   }
@@ -91,13 +106,9 @@ abstract class BaseContainer implements Container {
    * Register a JVM Shutdown hook to stop the container with the given mode.
    */
   public void registerShutdownHook() {
-    if (!skipShutdown()) {
-      Runtime.getRuntime().addShutdownHook(new Hook(config.shutdownMode()));
+    if (shutdownMode == StopMode.Stop || shutdownMode == StopMode.Remove) {
+      Runtime.getRuntime().addShutdownHook(new Hook(shutdownMode));
     }
-  }
-
-  private boolean skipShutdown() {
-    return !removeOnExit && config.checkSkipShutdown() && SkipShutdown.isSkip();
   }
 
   protected boolean shutdownHook(boolean started) {
@@ -129,11 +140,11 @@ abstract class BaseContainer implements Container {
     }
     if (hasContainerName && commands.isRegistered(config.containerName())) {
       checkPort(false);
-      logStart();
       startContainer();
+      logStart();
     } else {
-      logRun();
       runContainer();
+      logRun();
     }
     return false;
   }
@@ -233,39 +244,21 @@ abstract class BaseContainer implements Container {
    */
   @Override
   public void stop() {
-    switch (config.getStopMode()) {
-      case Remove:
-        stopRemove();
-        break;
-      case Stop:
-        stopOnly();
-        break;
-    }
+    stopIfRunning();
+  }
+
+  void stopIfRunning() {
+    commands.stopIfRunning(config.containerName(), usingContainerId);
   }
 
   /**
-   * Stop and remove the container effectively deleting the database.
-   */
-  public void stopRemove() {
-    if (!config.isStopModeNone()) {
-      if (!stopped || !usingContainerId) {
-        commands.stopIfRunning(config.containerName(), usingContainerId);
-        stopped = true;
-      }
-      if (!removeOnExit) {
-        commands.removeIfRegistered(config.containerName(), usingContainerId);
-      }
-    }
-  }
-
-  /**
-   * Stop the container only (no remove).
+   * Stop and remove the container effectively deleting the container.
    */
   @Override
-  public void stopOnly() {
-    if (!config.isStopModeNone()) {
-      commands.stopIfRunning(config.containerName(), usingContainerId);
-      stopped = true;
+  public void stopRemove() {
+    stopIfRunning();
+    if (!removeOnExit) {
+      commands.removeIfRegistered(config.containerName(), usingContainerId);
     }
   }
 
@@ -320,7 +313,15 @@ abstract class BaseContainer implements Container {
    * Log that we are about to run an existing container.
    */
   void logRun() {
-    log.info("Run container {} with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
+    log.info("Run container {} with host:{} port:{} shutdownMode:{}", logContainerName(), config.getHost(), config.getPort(), logContainerShutdown());
+  }
+
+  String logContainerShutdown() {
+    return shutdownMode + (usingContainerId ? " id:" + config.containerName() : "");
+  }
+
+  String logContainerName() {
+    return usingContainerId ? config.image() : config.containerName();
   }
 
   /**

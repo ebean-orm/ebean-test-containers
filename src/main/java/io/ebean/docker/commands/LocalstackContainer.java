@@ -65,8 +65,6 @@ public class LocalstackContainer extends BaseContainer {
      */
     private Builder(String version) {
       super("localstack", 4566, 4566, version);
-      this.checkSkipShutdown = true;
-      this.shutdownMode = StopMode.Remove;
       this.image = "localstack/localstack:" + version;
     }
 

@@ -35,7 +35,6 @@ public class PostgresContainer extends BasePostgresContainer implements Containe
     private Builder(String version) {
       super("postgres", 6432, 5432, version);
       this.adminUsername = "postgres";
-      this.stopMode = StopMode.Remove;
       this.tmpfs = "/var/lib/postgresql/data:rw";
     }
 

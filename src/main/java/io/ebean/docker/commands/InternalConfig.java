@@ -40,21 +40,11 @@ interface InternalConfig extends ContainerConfig {
 
   StartMode getStartMode();
 
-  StopMode getStopMode();
-
   int getMaxReadyAttempts();
 
   String getDocker();
 
   StopMode shutdownMode();
-
-  boolean isStopModeNone();
-
-  /**
-   * Return true if shutdown hook registration should be skipped by
-   * the presence of ~/.ebean/ignore-docker-shutdown file.
-   */
-  boolean checkSkipShutdown();
 
   String docker();
 

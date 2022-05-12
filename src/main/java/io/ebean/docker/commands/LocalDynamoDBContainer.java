@@ -67,8 +67,6 @@ public class LocalDynamoDBContainer extends BaseContainer {
     private Builder(String version) {
       super("dynamodb", 8001, 8000, version);
       this.image = "amazon/dynamodb-local:" + version; // ":1.13.2"
-      this.checkSkipShutdown = true;
-      this.shutdownMode = StopMode.Remove;
     }
 
     @Override

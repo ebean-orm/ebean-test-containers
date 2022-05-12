@@ -13,10 +13,10 @@ class PostgresConfigTest {
   @Test
   void stopMode_global() {
     Properties properties = new Properties();
-    properties.setProperty("stopMode", "remove");
+    properties.setProperty("shutdownMode", "remove");
 
     InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
-    assertEquals(config.getStopMode(), StopMode.Remove);
+    assertEquals(config.shutdownMode(), StopMode.Remove);
   }
 
   @Test
@@ -24,17 +24,17 @@ class PostgresConfigTest {
     Properties properties = new Properties();
 
     InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
-    assertEquals(config.getStopMode(), StopMode.Remove);
+    assertEquals(config.shutdownMode(), StopMode.Auto);
   }
 
   @Test
   void stopMode_explicitlySet() {
     Properties properties = new Properties();
-    properties.setProperty("stopMode", "remove");
-    properties.setProperty("postgres.stopMode", "none");
+    properties.setProperty("shutdownMode", "remove");
+    properties.setProperty("postgres.shutdownMode", "none");
 
     InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
-    assertEquals(config.getStopMode(), StopMode.None);
+    assertEquals(config.shutdownMode(), StopMode.None);
   }
 
 
@@ -55,8 +55,7 @@ class PostgresConfigTest {
     assertEquals(config.getAdminUsername(), "postgres");
     assertEquals(config.getAdminPassword(), "admin");
     assertEquals(config.getStartMode(), StartMode.Create);
-    assertEquals(config.getStopMode(), StopMode.Remove);
-    assertEquals(config.shutdownMode(), StopMode.None);
+    assertEquals(config.shutdownMode(), StopMode.Auto);
     assertTrue(config.isFastStartMode());
     assertFalse(config.isInMemory());
   }

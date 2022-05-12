@@ -16,14 +16,14 @@ public interface Container {
   boolean start();
 
   /**
-   * Stop the container using stopMode which defaults to stop and remove.
+   * Stop the container.
    */
   void stop();
 
   /**
-   * Stop the container only (no remove).
+   * Stop and remove the container .
    */
-  void stopOnly();
+  void stopRemove();
 
   /**
    * Return true if the container is running.

@@ -56,26 +56,14 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
   protected String image;
 
   /**
-   * When true check using SkipShutdown (presence of file <code>~/.ebean/ignore-docker-shutdown</code>) if
-   * shutdown hook should be used to stop/remove the container.
-   */
-  protected boolean checkSkipShutdown;
-
-  /**
    * The mode used when starting (create, dropCreate, container [only]).
    */
   protected StartMode startMode = StartMode.Create;
 
   /**
-   * The mode used when stopping (stop, remove).
+   * By default, via JVM shutdown hook stop and remove the container unless there is a ~/.ebean/ignore-docker-shutdown marker file.
    */
-  protected StopMode stopMode = StopMode.Stop;
-
-  /**
-   * Set when we want to automatically stop or remove the container via JVM shutdown hook.
-   */
-  protected StopMode shutdownMode = StopMode.None;
-
+  protected StopMode shutdownMode = StopMode.Auto;
 
   /**
    * Maximum number of attempts to find the 'database ready to accept connections' log message in the container.
@@ -124,12 +112,6 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
   }
 
   @Override
-  public SELF stopMode(StopMode stopMode) {
-    this.stopMode = stopMode;
-    return self();
-  }
-
-  @Override
   public SELF shutdownMode(StopMode shutdownMode) {
     this.shutdownMode = shutdownMode;
     return self();
@@ -153,10 +135,8 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
     adminInternalPort = prop(properties, "adminInternalPort", adminInternalPort);
     String start = properties.getProperty("startMode", startMode.name());
     startMode = StartMode.of(prop(properties, "startMode", start));
-    String stop = properties.getProperty("stopMode", stopMode.name());
-    stopMode = StopMode.of(prop(properties, "stopMode", stop));
-    String shutdown = properties.getProperty("shutdown", shutdownMode.name());
-    shutdownMode = StopMode.of(prop(properties, "shutdown", shutdown));
+    String shutdown = properties.getProperty("shutdownMode", shutdownMode.name());
+    shutdownMode = StopMode.of(prop(properties, "shutdownMode", shutdown));
 
     String maxVal = prop(properties, "maxReadyAttempts", null);
     if (maxVal != null) {
@@ -345,7 +325,7 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
 
     @Override
     public String stopDescription() {
-      return "stopping " + platform + " container:" + containerName + " stopMode:" + stopMode;
+      return "stopping " + platform + " container:" + containerName;
     }
 
     @Override
@@ -404,11 +384,6 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
     }
 
     @Override
-    public StopMode getStopMode() {
-      return stopMode;
-    }
-
-    @Override
     public int getMaxReadyAttempts() {
       return maxReadyAttempts;
     }
@@ -421,17 +396,6 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
     @Override
     public StopMode shutdownMode() {
       return shutdownMode;
-    }
-
-
-    @Override
-    public boolean isStopModeNone() {
-      return StopMode.None == stopMode;
-    }
-
-    @Override
-    public boolean checkSkipShutdown() {
-      return checkSkipShutdown;
     }
 
     @Override

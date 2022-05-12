@@ -66,7 +66,6 @@ class PostgresContainerTest {
       .containerName("not_started")
       .port(port)
       .extensions("hstore,uuid-ossp")
-      .stopMode(StopMode.Remove)
       .build();
 
     container.start();

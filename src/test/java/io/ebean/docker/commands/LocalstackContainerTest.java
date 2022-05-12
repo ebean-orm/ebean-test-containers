@@ -111,7 +111,8 @@ class LocalstackContainerTest {
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
     createTable(amazonDynamoDB);
 
-    //container.stop();
+    container.stop();
+    container.stop();
   }
 
   @Test

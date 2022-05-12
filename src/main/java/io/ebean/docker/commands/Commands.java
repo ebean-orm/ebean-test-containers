@@ -71,7 +71,15 @@ public class Commands {
    */
   public void stop(String containerName) {
     log.debug("stop {}", containerName);
-    ProcessHandler.command(docker, "stop", containerName);
+    try {
+      ProcessHandler.command(docker, "stop", containerName);
+    } catch (CommandException e) {
+      if (e.getMessage().contains("No such container")) {
+        log.trace("container not running {}", containerName);
+      } else {
+        log.info("Error stopping container - " + e.getMessage());
+      }
+    }
   }
 
   public void removeContainers(String... containerNames) {

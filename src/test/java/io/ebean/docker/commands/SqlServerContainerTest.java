@@ -26,9 +26,7 @@ class SqlServerContainerTest {
       .containerName("temp_sqlserver")
       .collation("SQL_Latin1_General_CP1_CS_AS")
       .port(11433)
-      .stopMode(StopMode.Remove)
       .build();
-    //config.setFastStartMode(true);
 
     //container.startWithCreate();
     //container.startContainerOnly();

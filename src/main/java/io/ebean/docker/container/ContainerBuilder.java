@@ -63,11 +63,6 @@ public interface ContainerBuilder<C,SELF extends ContainerBuilder<C,SELF>>  {
   SELF startMode(StartMode startMode);
 
   /**
-   * Set the stop mode used when stop() is called.
-   */
-  SELF stopMode(StopMode stopMode);
-
-  /**
    * Set the shutdown hook mode to automatically stop/remove the container on JVM shutdown.
    */
   SELF shutdownMode(StopMode shutdownHookMode);

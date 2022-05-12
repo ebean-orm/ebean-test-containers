@@ -30,7 +30,7 @@ class RedisContainerTest {
     properties.setProperty("redis.containerName", "redis_junk8");
     properties.setProperty("redis.internalPort", "5379");
     properties.setProperty("redis.startMode", "baz");
-    properties.setProperty("redis.stopMode", "bar");
+    properties.setProperty("redis.shutdownMode", "bar");
 
     InternalConfig config = RedisContainer.builder("latest")
       .properties(properties)
@@ -46,12 +46,13 @@ class RedisContainerTest {
     properties.setProperty("ebean.test.redis.containerName", "redis_junk8");
     properties.setProperty("ebean.test.redis.internalPort", "5379");
     properties.setProperty("ebean.test.redis.startMode", "baz");
-    properties.setProperty("ebean.test.redis.stopMode", "bar");
+    properties.setProperty("ebean.test.redis.shutdownMode", "bar");
 
     InternalConfig config = RedisContainer.builder("latest")
       .properties(properties)
       .internalConfig();
 
+    config.setDefaultContainerName();
     assertProperties(config);
   }
 
@@ -60,6 +61,7 @@ class RedisContainerTest {
     assertEquals(config.getInternalPort(), 5379);
     assertEquals(config.getImage(), "foo");
     assertEquals(config.getStartMode(), StartMode.Create);
-    assertEquals(config.getStopMode(), StopMode.Stop);
+    assertEquals(config.shutdownMode(), StopMode.Stop);
+    assertEquals(config.containerName(), "redis_junk8");
   }
 }

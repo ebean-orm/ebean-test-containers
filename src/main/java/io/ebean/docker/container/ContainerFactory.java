@@ -170,7 +170,7 @@ public class ContainerFactory {
       if (logging != null) {
         logging.accept(container.config().stopDescription());
       }
-      container.stopOnly();
+      container.stop();
     }
   }
 

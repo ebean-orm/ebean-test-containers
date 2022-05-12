@@ -180,7 +180,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   @Override
-  public void stopOnly() {
+  public void stopIfRunning() {
     stopDatabase();
   }
 
