@@ -16,6 +16,7 @@ import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 abstract class BaseContainer implements Container {
 
@@ -84,19 +85,24 @@ abstract class BaseContainer implements Container {
     return commands.isRunning(config.containerName());
   }
 
+  private static final AtomicInteger hookCounter = new AtomicInteger();
+
   private class Hook extends Thread {
 
     private final StopMode mode;
 
     Hook(StopMode mode) {
+      super("shutdown" + hookCounter.getAndIncrement());
       this.mode = mode;
     }
 
     @Override
     public void run() {
       if (StopMode.Remove == mode) {
+        log.info("Stop remove container {}", config.containerName());
         stopRemove();
       } else {
+        log.info("Stop container {}", config.containerName());
         stopIfRunning();
       }
     }
