@@ -29,7 +29,6 @@ public class YugabyteContainer extends BasePostgresContainer {
       super("yugabyte", 6433, 5433, version);
       this.image = "yugabytedb/yugabyte:" + version;
       this.adminUsername = "postgres";
-      //setTmpfs("/var/lib/postgresql/data:rw");
     }
 
     @Override

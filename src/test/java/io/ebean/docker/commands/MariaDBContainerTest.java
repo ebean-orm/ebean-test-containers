@@ -10,7 +10,27 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 class MariaDBContainerTest {
+
+  @Test
+  void randomPort() {
+    MariaDBContainer container = MariaDBContainer.builder("latest")
+      .port(0)
+      .build();
+
+    container.start();
+
+    String jdbcUrl = container.jdbcUrl();
+    assertThat(jdbcUrl).contains(":" + container.port());
+    try (Connection connection = container.createConnection()) {
+      exeSql(connection, "drop table if exists maria_random");
+      exeSql(connection, "create table maria_random (acol integer)");
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+  }
 
   @Test
   void start() {

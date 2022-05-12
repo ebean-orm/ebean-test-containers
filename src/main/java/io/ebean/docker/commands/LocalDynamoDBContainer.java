@@ -91,12 +91,17 @@ public class LocalDynamoDBContainer extends BaseContainer {
   }
 
   private final String awsRegion;
-  private final String endpointUrl;
 
   public LocalDynamoDBContainer(Builder builder) {
     super(builder);
     this.awsRegion = builder.awsRegion;
-    this.endpointUrl = String.format("http://%s:%s", config.getHost(), config.getPort());
+  }
+
+  /**
+   * Return the endpoint URL that can be used to connect to this container.
+   */
+  public String endpointUrl() {
+    return String.format("http://%s:%s", config.getHost(), config.getPort());
   }
 
   /**
@@ -107,7 +112,7 @@ public class LocalDynamoDBContainer extends BaseContainer {
   public AmazonDynamoDB dynamoDB() {
     return AmazonDynamoDBClientBuilder.standard()
       .withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials("localstack", "localstack")))
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl, awsRegion))
+      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
       .build();
   }
 

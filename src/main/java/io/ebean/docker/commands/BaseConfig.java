@@ -178,7 +178,24 @@ abstract class BaseConfig<C,SELF extends BaseConfig<C,SELF>> implements Containe
   }
 
   /**
-   * Set the exposed port.
+   * Set the exposed port with 0 meaning use a random port.
+   * <p>
+   * When the port is set to `0` then docker will assign a random port.
+   * This port is available after the container has started.
+   *
+   * <pre>{@code
+   *
+   *  LocalstackContainer container = LocalstackContainer.builder("0.14")
+   *    .port(0)
+   *    .build();
+   *
+   *  container.start();
+   *
+   *  int assignedPort = container.port();
+   *
+   *  AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
+   *
+   * }</pre>
    */
   @Override
   public SELF port(int port) {

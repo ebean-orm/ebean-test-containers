@@ -39,17 +39,21 @@ public class ElasticContainer extends BaseContainer {
     }
   }
 
-  private final String healthUrl;
-
   private ElasticContainer(Builder builder) {
     super(builder);
-    this.healthUrl = String.format("http://%s:%s/", config.getHost(), config.getPort());
+  }
+
+  /**
+   * Return the endpoint URL for the container.
+   */
+  public String endpointUrl() {
+    return String.format("http://%s:%s/", config.getHost(), config.getPort());
   }
 
   @Override
   boolean checkConnectivity() {
     try {
-      return readUrlContent(healthUrl).contains("docker-cluster");
+      return readUrlContent(endpointUrl()).contains("docker-cluster");
     } catch (IOException e) {
       return false;
     }

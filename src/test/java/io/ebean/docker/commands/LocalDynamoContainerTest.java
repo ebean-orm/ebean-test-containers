@@ -10,6 +10,19 @@ import java.util.List;
 class LocalDynamoContainerTest {
 
   @Test
+  void randomPort() {
+
+    LocalDynamoDBContainer container = LocalDynamoDBContainer.builder("1.13.2")
+      .port(0)
+      .build();
+
+    container.start();
+
+    AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
+    createTable(amazonDynamoDB);
+  }
+
+  @Test
   void start_via_LocalDynamoDB() {
     LocalDynamoDBContainer container = LocalDynamoDBContainer.builder("1.13.2")
       //.port(8001)

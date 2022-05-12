@@ -23,7 +23,7 @@ public class MySqlContainer extends MySqlBaseContainer {
       super("mysql", 4306, 3306, version);
       this.adminUsername = "root";
       this.adminPassword = "admin";
-      this.tmpfs("/var/lib/mysql:rw");
+      this.tmpfs = "/var/lib/mysql:rw";
     }
 
     /**

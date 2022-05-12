@@ -6,10 +6,21 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RedisContainerTest {
+
+  @Test
+  void randomPort() {
+    RedisContainer container = RedisContainer.builder("latest")
+      .port(0)
+      .build();
+
+    assertTrue(container.start());
+    assertThat(container.port()).isGreaterThan(0);
+  }
 
   @Test
   void checkConnectivity() {
