@@ -1,4 +1,4 @@
-open module io.ebean.docker {
+open module io.ebean.test.containers {
 
   requires transitive org.slf4j;
   requires transitive java.sql;
