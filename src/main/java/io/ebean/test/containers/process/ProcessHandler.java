@@ -1,8 +1,6 @@
 package io.ebean.test.containers.process;
 
 import io.ebean.test.containers.CommandException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,17 +13,12 @@ import java.util.List;
  */
 public class ProcessHandler {
 
-  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
-
   private final ProcessBuilder builder;
-
   private Process process;
-
   /**
    * Both stdErr and stdOut merged.
    */
   private List<String> out = new ArrayList<>();
-
   private String match;
   private String clearMatch;
 
@@ -85,14 +78,8 @@ public class ProcessHandler {
       while ((s = stdInput.readLine()) != null) {
         processLine(s, out);
       }
-
       int result = process.waitFor();
-      ProcessResult pr = new ProcessResult(result, out);
-      if (!pr.success() && log.isTraceEnabled()) {
-        log.trace(pr.debug());
-      }
-      return pr;
-
+      return new ProcessResult(result, out);
     } catch (Exception e) {
       throw new RuntimeException(e);
     }

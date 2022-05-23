@@ -1,8 +1,6 @@
 package io.ebean.test.containers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import java.lang.System.Logger.Level;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -20,7 +18,7 @@ import java.util.Properties;
  */
 public class HanaContainer extends DbContainer implements Container {
 
-  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
+  private static final System.Logger log = Commands.log;
 
   /**
    * Create a builder for HanaContainer.
@@ -78,7 +76,7 @@ public class HanaContainer extends DbContainer implements Container {
       try {
         this.passwordsUrl = new URL("file:///hana/mounts/passwords.json");
       } catch (MalformedURLException e1) {
-        log.debug("Invalid passwords URL. Can't happen.");
+        log.log(Level.DEBUG, "Invalid passwords URL. Can't happen.");
       }
       this.instanceNumber = "90";
       this.agreeToSapLicense = checkLicenseAgreement();
@@ -104,11 +102,11 @@ public class HanaContainer extends DbContainer implements Container {
       try {
         this.passwordsUrl = new URL(prop(properties, "passwordsUrl", "file:///hana/mounts/passwords.json"));
       } catch (MalformedURLException e) {
-        log.warn("Invalid passwords URL. Using default.", e);
+        log.log(Level.WARNING, "Invalid passwords URL. Using default.", e);
         try {
           this.passwordsUrl = new URL("file:///hana/mounts/passwords.json");
         } catch (MalformedURLException e1) {
-          log.debug("Invalid passwords URL. Can't happen.");
+          log.log(Level.DEBUG, "Invalid passwords URL. Can't happen.");
         }
       }
       this.instanceNumber = prop(properties, "instanceNumber", "90");
@@ -312,14 +310,14 @@ public class HanaContainer extends DbContainer implements Container {
   public boolean startWithCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
+      log.log(Level.WARNING, "Failed waitForDatabaseReady for container {0}", config.containerName());
       return false;
     }
     if (!createUserIfNotExists()) {
       return false;
     }
     if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
+      log.log(Level.WARNING, "Failed waiting for connectivity");
       return false;
     }
     return true;
@@ -332,7 +330,7 @@ public class HanaContainer extends DbContainer implements Container {
   public boolean startWithDropCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
+      log.log(Level.WARNING, "Failed waitForDatabaseReady for container {0}", config.containerName());
       return false;
     }
 
@@ -342,7 +340,7 @@ public class HanaContainer extends DbContainer implements Container {
       return false;
     }
     if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
+      log.log(Level.WARNING, "Failed waiting for connectivity");
       return false;
     }
     return true;
@@ -384,7 +382,7 @@ public class HanaContainer extends DbContainer implements Container {
   }
 
   private boolean dropUserIfExists() {
-    log.info("Drop database user {} if exists", dbConfig.getUsername());
+    log.log(Level.INFO, "Drop database user {0} if exists", dbConfig.getUsername());
     sqlProcess(connection -> {
       if (userExists(connection)) {
         sqlRun(connection, "drop user " + dbConfig.getUsername() + " cascade");
@@ -394,7 +392,7 @@ public class HanaContainer extends DbContainer implements Container {
   }
 
   private boolean createUserIfNotExists() {
-    log.info("Create database user {} if not exists", dbConfig.getUsername());
+    log.log(Level.INFO, "Create database user {0} if not exists", dbConfig.getUsername());
     sqlProcess(connection -> {
       if (!userExists(connection)) {
         sqlRun(connection, "create user " + dbConfig.getUsername() + " password " + dbConfig.getPassword()
@@ -417,7 +415,7 @@ public class HanaContainer extends DbContainer implements Container {
       }
 
     } catch (SQLException e) {
-      log.error("Failed to execute sql to check if user exists", e);
+      log.log(Level.ERROR, "Failed to execute sql to check if user exists", e);
       return false;
     }
   }

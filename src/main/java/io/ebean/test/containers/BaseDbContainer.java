@@ -1,14 +1,13 @@
 package io.ebean.test.containers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.lang.System.Logger.Level;
 
 /**
  * Common DB Container.
  */
 abstract class BaseDbContainer extends DbContainer implements Container {
 
-  protected static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
+  protected static final System.Logger log = Commands.log;
 
   BaseDbContainer(DbConfig config) {
     super(config);
@@ -56,12 +55,12 @@ abstract class BaseDbContainer extends DbContainer implements Container {
       return true;
     }
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
+      log.log(Level.WARNING, "Failed waitForDatabaseReady for container {0}", config.containerName());
       return false;
     }
     createDbPreConnectivity();
     if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
+      log.log(Level.WARNING, "Failed waiting for connectivity");
       return false;
     }
     createDbPostConnectivity();
@@ -75,13 +74,13 @@ abstract class BaseDbContainer extends DbContainer implements Container {
   public boolean startWithDropCreate() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
+      log.log(Level.WARNING, "Failed waitForDatabaseReady for container {0}", config.containerName());
       return false;
     }
 
     dropCreateDbPreConnectivity();
     if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
+      log.log(Level.WARNING, "Failed waiting for connectivity");
       return false;
     }
     dropCreateDbPostConnectivity();

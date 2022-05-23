@@ -1,18 +1,14 @@
 package io.ebean.test.containers;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.System.Logger.Level;
 import java.util.Properties;
 
 /**
  * Automatically start containers based on docker run properties file.
  */
 public class AutoStart {
-
-  private static Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   /**
    * Search for docker-run.properties and start containers.
@@ -35,7 +31,7 @@ public class AutoStart {
         properties.load(is);
       }
     } catch (IOException e) {
-      log.warn("failed to load docker-run.properties file", e);
+      Commands.log.log(Level.WARNING, "failed to load docker-run.properties file", e);
     }
     return properties;
   }

@@ -2,9 +2,8 @@ package io.ebean.test.containers;
 
 import io.ebean.test.containers.process.ProcessHandler;
 import io.ebean.test.containers.process.ProcessResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,7 +13,7 @@ import java.util.List;
  */
 public class Commands {
 
-  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
+  static final System.Logger log = System.getLogger("io.ebean.test.containers");
 
   private final String docker;
 
@@ -54,7 +53,7 @@ public class Commands {
    * Remove the container.
    */
   public void remove(String containerName) {
-    log.debug("remove {}", containerName);
+    log.log(Level.DEBUG, "remove {0}", containerName);
     ProcessHandler.command(docker, "rm", containerName);
   }
 
@@ -62,7 +61,7 @@ public class Commands {
    * Start the container.
    */
   public void start(String containerName) {
-    log.debug("start {}", containerName);
+    log.log(Level.DEBUG, "start {0}", containerName);
     ProcessHandler.command(docker, "start", containerName);
   }
 
@@ -70,33 +69,33 @@ public class Commands {
    * Stop the container.
    */
   public void stop(String containerName) {
-    log.debug("stop {}", containerName);
+    log.log(Level.DEBUG, "stop {0}", containerName);
     try {
       ProcessHandler.command(docker, "stop", containerName);
     } catch (CommandException e) {
       if (e.getMessage().contains("No such container")) {
-        log.trace("container not running {}", containerName);
+        log.log(Level.TRACE,"container not running {0}", containerName);
       } else {
-        log.info("Error stopping container - " + e.getMessage());
+        log.log(Level.INFO, "Error stopping container - " + e.getMessage());
       }
     }
   }
 
   public void removeContainers(String... containerNames) {
-    log.debug("remove {}", Arrays.toString(containerNames));
+    log.log(Level.DEBUG, "remove {0}", Arrays.toString(containerNames));
     try {
       dockerCmd("rm", containerNames);
     } catch (CommandException e) {
-      log.debug("removing containers that don't exist " + e.getMessage());
+      log.log(Level.DEBUG, "removing containers that don't exist " + e.getMessage());
     }
   }
 
   public void stopContainers(String... containerNames) {
-    log.debug("stop {}", Arrays.toString(containerNames));
+    log.log(Level.DEBUG, "stop {0}", Arrays.toString(containerNames));
     try {
       dockerCmd("stop", containerNames);
     } catch (CommandException e) {
-      log.debug("stopping containers that don't exist " + e.getMessage());
+      log.log(Level.DEBUG, "stopping containers that don't exist " + e.getMessage());
     }
   }
 

@@ -3,6 +3,7 @@ package io.ebean.test.containers;
 import io.ebean.test.containers.process.ProcessHandler;
 import io.ebean.test.containers.process.ProcessResult;
 
+import java.lang.System.Logger.Level;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -97,7 +98,7 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
     try {
       dockerSu("root", "useradd -g db2iadm1 " + dbConfig.getUsername());
     } catch (CommandException e) {
-      e.getResult().getOutLines().forEach(log::warn);
+      log.log(Level.WARNING, "Failed to useradd" + e);
     }
     dockerSu("root", "echo \"" + dbConfig.getUsername() + ":" + dbConfig.getPassword() + "\" | chpasswd");
 
@@ -129,7 +130,7 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
       dockerSu("db2 drop database " + dbConfig.getDbName());
     } catch (CommandException e) {
       // may fail, if database does not exist
-      e.getResult().getOutLines().forEach(log::warn);
+      log.log(Level.WARNING, "Failed to drop database {0}", e);
     }
     createDatabase();
   }
@@ -185,7 +186,6 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
     args.add(cmd);
     ProcessBuilder pb = createProcessBuilder(args);
     ProcessResult pr = ProcessHandler.process(pb);
-    pr.getOutLines().forEach(log::debug);
     return pr.getOutLines();
   }
 

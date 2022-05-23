@@ -8,7 +8,6 @@ import java.util.List;
 public class ProcessResult {
 
   private final int result;
-
   private final List<String> out;
 
   /**
@@ -17,6 +16,14 @@ public class ProcessResult {
   public ProcessResult(int result, List<String> out) {
     this.result = result;
     this.out = out;
+  }
+
+  /**
+   * Return debug output.
+   */
+  @Override
+  public String toString() {
+    return "code:" + result + " out:" + out();
   }
 
   /**

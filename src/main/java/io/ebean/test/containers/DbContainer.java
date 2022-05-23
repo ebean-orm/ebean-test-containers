@@ -3,6 +3,7 @@ package io.ebean.test.containers;
 import io.ebean.test.containers.process.ProcessHandler;
 
 import java.io.File;
+import java.lang.System.Logger.Level;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.sql.*;
@@ -26,17 +27,17 @@ abstract class DbContainer extends BaseContainer implements Container {
    * Log that the container is already running.
    */
   void logRunning() {
-    log.info("Container {} running with {} shutdownMode:{}", logContainerName(), dbConfig.summary(), logContainerShutdown());
+    log.log(Level.INFO, "Container {0} running with {1} shutdownMode:{2}", logContainerName(), dbConfig.summary(), logContainerShutdown());
   }
 
   @Override
   void logRun() {
-    log.info("Run container {} with {} shutdownMode:{}", logContainerName(), dbConfig.summary(), logContainerShutdown());
+    log.log(Level.INFO, "Run container {0} with {1} shutdownMode:{2}", logContainerName(), dbConfig.summary(), logContainerShutdown());
   }
 
   @Override
   void logStart() {
-    log.info("Start container {} with {} shutdownMode:{}", logContainerName(), dbConfig.summary(), logContainerShutdown());
+    log.log(Level.INFO, "Start container {0} with {1} shutdownMode:{2}", logContainerName(), dbConfig.summary(), logContainerShutdown());
   }
 
   /**
@@ -95,12 +96,12 @@ abstract class DbContainer extends BaseContainer implements Container {
   public boolean startContainerOnly() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.warn("Failed waitForDatabaseReady for container {}", config.containerName());
+      log.log(Level.WARNING, "Failed waitForDatabaseReady for container {0}", config.containerName());
       return false;
     }
 
     if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity for {}", config.containerName());
+      log.log(Level.WARNING, "Failed waiting for connectivity for {0}", config.containerName());
       return false;
     }
     return true;
@@ -118,7 +119,7 @@ abstract class DbContainer extends BaseContainer implements Container {
     try {
       return isFastStartDatabaseExists();
     } catch (CommandException e) {
-      log.debug("failed fast start check - using normal startup");
+      log.log(Level.DEBUG, "failed fast start check - using normal startup");
       return false;
     }
   }
@@ -189,13 +190,13 @@ abstract class DbContainer extends BaseContainer implements Container {
    */
   boolean checkConnectivity(boolean useAdmin) {
     try {
-      log.trace("checkConnectivity on {} ... ", config.containerName());
+      log.log(Level.TRACE, "checkConnectivity on {0} ... ", config.containerName());
       try (Connection connection = useAdmin ? config.createAdminConnection() : config.createConnectionNoSchema()) {
-        log.debug("connectivity confirmed for {}", config.containerName());
+        log.log(Level.DEBUG, "connectivity confirmed for {0}", config.containerName());
       }
       return true;
     } catch (Throwable e) {
-      log.trace("connection failed: " + e.getMessage());
+      log.log(Level.TRACE, "connection failed: " + e.getMessage());
       return false;
     }
   }
@@ -227,7 +228,7 @@ abstract class DbContainer extends BaseContainer implements Container {
       file = checkFileResource(sqlFile);
     }
     if (file == null) {
-      log.error("Could not find SQL file. No file exists at location or resource path for: " + sqlFile);
+      log.log(Level.ERROR, "Could not find SQL file. No file exists at location or resource path for: " + sqlFile);
     }
     return file;
   }
@@ -245,7 +246,7 @@ abstract class DbContainer extends BaseContainer implements Container {
         }
       }
     } catch (Exception e) {
-      log.error("Failed to obtain File from resource for init SQL file: " + sqlFile, e);
+      log.log(Level.ERROR, "Failed to obtain File from resource for init SQL file: " + sqlFile, e);
     }
     // not found
     return null;
@@ -283,7 +284,7 @@ abstract class DbContainer extends BaseContainer implements Container {
     List<String> outLines = ProcessHandler.process(pb).getOutLines();
     if (!stdoutContains(outLines, expectedLine)) {
       if (errorMessage != null) {
-        log.error(errorMessage + " stdOut:" + outLines + " Expected message:" + expectedLine);
+        log.log(Level.ERROR, errorMessage + " stdOut:" + outLines + " Expected message:" + expectedLine);
       }
       return false;
     }
@@ -296,7 +297,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   boolean executeWithout(String errorMatch, ProcessBuilder pb, String errorMessage) {
     List<String> outLines = ProcessHandler.process(pb).getOutLines();
     if (stdoutContains(outLines, errorMatch)) {
-      log.error(errorMessage + " stdOut:" + outLines);
+      log.log(Level.ERROR, errorMessage + " stdOut:" + outLines);
       return false;
     }
     return true;
@@ -320,7 +321,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   boolean execute(ProcessBuilder pb, String errorMessage) {
     List<String> outLines = ProcessHandler.process(pb).getOutLines();
     if (!outLines.isEmpty()) {
-      log.error(errorMessage + " stdOut:" + outLines);
+      log.log(Level.ERROR, errorMessage + " stdOut:" + outLines);
       return false;
     }
     return true;
@@ -335,7 +336,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   void sqlRun(Connection connection, String sql) {
-    log.debug("sqlRun: {}", sql);
+    log.log(Level.DEBUG, "sqlRun: {0}", sql);
     try (Statement statement = connection.createStatement()) {
       statement.execute(sql);
     } catch (SQLException e) {
@@ -344,7 +345,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   boolean sqlHasRow(Connection connection, String sql) {
-    log.trace("sqlRun: {}", sql);
+    log.log(Level.TRACE, "sqlRun: {0}", sql);
     try (Statement statement = connection.createStatement()) {
       try (ResultSet resultSet = statement.executeQuery(sql)) {
         if (resultSet.next()) {
@@ -358,7 +359,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   boolean sqlQueryMatch(Connection connection, String sql, String match) throws SQLException {
-    log.trace("sqlRun: {}", sql);
+    log.log(Level.TRACE, "sqlRun: {0}", sql);
     try (PreparedStatement stmt = connection.prepareStatement(sql)) {
       try (ResultSet resultSet = stmt.executeQuery()) {
         if (resultSet.next()) {

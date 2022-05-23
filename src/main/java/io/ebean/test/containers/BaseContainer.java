@@ -2,12 +2,11 @@ package io.ebean.test.containers;
 
 import io.ebean.test.containers.process.ProcessHandler;
 import io.ebean.test.containers.process.ProcessResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.System.Logger.Level;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +16,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 abstract class BaseContainer implements Container {
 
-  static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
+  static final System.Logger log = Commands.log;
 
   protected final BaseConfig<?, ?> buildConfig;
   protected InternalConfig config;
@@ -96,10 +95,10 @@ abstract class BaseContainer implements Container {
     @Override
     public void run() {
       if (StopMode.Remove == mode) {
-        log.info("Stop remove container {}", config.containerName());
+        log.log(Level.INFO, "Stop remove container {0}", config.containerName());
         stopRemove();
       } else {
-        log.info("Stop container {}", config.containerName());
+        log.log(Level.INFO, "Stop container {0}", config.containerName());
         stopIfRunning();
       }
     }
@@ -124,7 +123,7 @@ abstract class BaseContainer implements Container {
   protected boolean startWithConnectivity() {
     startIfNeeded();
     if (!waitForConnectivity()) {
-      log.warn("Container {} failed to start - waiting for connectivity", config.containerName());
+      log.log(Level.WARNING, "Container {0} failed to start - waiting for connectivity", config.containerName());
       return false;
     }
     return true;
@@ -172,8 +171,8 @@ abstract class BaseContainer implements Container {
 
   void runContainer() {
     ProcessResult result = ProcessHandler.process(runProcess());
-    if (log.isDebugEnabled()) {
-      log.debug("run output {}", result.getOutLines());
+    if (log.isLoggable(Level.DEBUG)) {
+      log.log(Level.DEBUG, "run output {0}", result.getOutLines());
     }
     if (!hasContainerName()) {
       usingContainerId = true;
@@ -196,7 +195,7 @@ abstract class BaseContainer implements Container {
     if (assignedPort == 0) {
       throw new IllegalStateException("Unable to determine assigned port for containerId [" + config.containerName() + "]");
     }
-    log.debug("Container {} using port {}", config.containerName(), assignedPort);
+    log.log(Level.DEBUG, "Container {0} using port {1,number,#}", config.containerName(), assignedPort);
     config.setAssignedPort(assignedPort);
   }
 
@@ -224,7 +223,7 @@ abstract class BaseContainer implements Container {
    * Return true when we can make IP connections to the database (JDBC).
    */
   boolean waitForConnectivity() {
-    log.debug("waitForConnectivity {} max attempts:{} ... ", config.containerName(), waitForConnectivityAttempts);
+    log.log(Level.DEBUG, "waitForConnectivity {0} max attempts:{1} ... ", config.containerName(), waitForConnectivityAttempts);
     for (int i = 0; i < waitForConnectivityAttempts; i++) {
       if (checkConnectivity()) {
         return true;
@@ -233,7 +232,7 @@ abstract class BaseContainer implements Container {
         int sleep = (i < 10) ? 10 : (i < 20) ? 20 : 200;
         Thread.sleep(sleep);
         if (i > 200 && i % 100 == 0) {
-          log.info("waitForConnectivity {} attempts {} of {} ... ", config.containerName(), i, waitForConnectivityAttempts);
+          log.log(Level.INFO, "waitForConnectivity {0} attempts {1} of {2} ... ", config.containerName(), i, waitForConnectivityAttempts);
         }
       } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
@@ -271,8 +270,8 @@ abstract class BaseContainer implements Container {
   protected ProcessBuilder createProcessBuilder(List<String> args) {
     ProcessBuilder pb = new ProcessBuilder();
     pb.command(args);
-    if (log.isDebugEnabled()) {
-      log.debug(String.join(" ", args));
+    if (log.isLoggable(Level.DEBUG)) {
+      log.log(Level.DEBUG, String.join(" ", args));
     }
     return pb;
   }
@@ -312,14 +311,14 @@ abstract class BaseContainer implements Container {
    * Log that the container is already running.
    */
   void logRunning() {
-    log.info("Container {} already running with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
+    log.log(Level.INFO, "Container {0} already running with host:{1} port:{2,number,#}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
    * Log that we are about to run an existing container.
    */
   void logRun() {
-    log.info("Run container {} with host:{} port:{} shutdownMode:{}", logContainerName(), config.getHost(), config.getPort(), logContainerShutdown());
+    log.log(Level.INFO, "Run container {0} with host:{1} port:{2,number,#} shutdownMode:{3}", logContainerName(), config.getHost(), config.getPort(), logContainerShutdown());
   }
 
   String logContainerShutdown() {
@@ -334,21 +333,21 @@ abstract class BaseContainer implements Container {
    * Log that we are about to start a container.
    */
   void logStart() {
-    log.info("Start container {} with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
+    log.log(Level.INFO, "Start container {0} with host:{1} port:{2,number,#}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
    * Log that the container failed to start.
    */
   void logNotStarted() {
-    log.warn("Failed to start container {} with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
+    log.log(Level.WARNING, "Failed to start container {0} with host:{1} port:{2,number,#}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
    * Log that the container has started.
    */
   void logStarted() {
-    log.debug("Container {} ready with host:{} port:{}", config.containerName(), config.getHost(), config.getPort());
+    log.log(Level.DEBUG, "Container {0} ready with host:{1} port:{2,number,#}", config.containerName(), config.getHost(), config.getPort());
   }
 
   /**
