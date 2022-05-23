@@ -191,7 +191,7 @@ abstract class BaseContainer implements Container {
     if (outLines == null || outLines.isEmpty()) {
       throw new IllegalStateException("Expected docker run output to contain containerId but got [" + outLines + "]");
     }
-    config.setContainerId(outLines.get(0).trim());
+    config.setContainerId(outLines.get(outLines.size() - 1).trim());
   }
 
   private void obtainPort() {

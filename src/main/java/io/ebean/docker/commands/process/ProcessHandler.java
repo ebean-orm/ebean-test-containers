@@ -67,7 +67,6 @@ public class ProcessHandler {
         throw new CommandException("command failed: " + result.getOutLines(), result);
       }
       return result;
-
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -80,7 +79,6 @@ public class ProcessHandler {
   }
 
   private ProcessResult read() {
-
     try {
       BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
       String s;
