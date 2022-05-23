@@ -1,3 +1,6 @@
+[![ebean-test-containers EA](https://github.com/ebean-orm/ebean-test-containers/actions/workflows/jdk-ea.yml/badge.svg)](https://github.com/ebean-orm/ebean-test-containers/actions/workflows/jdk-ea.yml)
+[![Maven Central](https://img.shields.io/maven-central/v/io.ebean/ebean-test-containers.svg?label=Maven%20Central)](https://mvnrepository.com/artifact/io.ebean/ebean-test-containers)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/ebean/ebean-test-containers/blob/master/LICENSE)
 
 # ebean-test-containers
 Ability to start, setup and remove docker containers. e.g. Postgres running as docker container for testing.
@@ -23,7 +26,7 @@ Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Hana, LocalDynamoDB, Loca
   <dependency>
     <groupId>io.ebean</groupId>
     <artifactId>ebean-test-containers</artifactId>
-    <version>6.0</version>
+    <version>5.5</version>
     <scope>test</scope>
   </dependency>
 
