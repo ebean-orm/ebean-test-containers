@@ -5,15 +5,14 @@ import java.io.File;
 /**
  * Detect if we should skip container stop/stopRemove for local development.
  * <p>
- * Developers put a marker file <code>~/.ebean/ignore-docker-shutdown</code> which is then
- * used by
+ * Developers put a marker file <code>~/.ebean/ignore-docker-shutdown</code> which is
+ * detected and keeps the docker container running for the next test run.
  */
 public class SkipShutdown {
 
   /**
    * Return true to skip docker container stop for local development.
    * <p>
-   *
    */
   public static boolean isSkip() {
     return new SkipShutdown().ignoreDockerShutdown();

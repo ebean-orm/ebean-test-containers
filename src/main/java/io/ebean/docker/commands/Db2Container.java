@@ -39,7 +39,7 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
     private Builder(String version) {
       super("db2", 50000, 50000, version);
       this.image = "ibmcom/db2:" + version;
-      this.tmpfs ="/database:rw";
+      this.tmpfs = "/database:rw";
     }
 
     @Override

@@ -17,5 +17,6 @@ final class TrimSplit {
         names.add(serviceName);
       }
     }
-    return names;  }
+    return names;
+  }
 }

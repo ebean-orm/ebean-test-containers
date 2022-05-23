@@ -1,7 +1,6 @@
 package io.ebean.docker.commands;
 
 import io.ebean.docker.container.Container;
-import io.ebean.docker.container.StopMode;
 
 /**
  * Commands for controlling a postgres docker container.

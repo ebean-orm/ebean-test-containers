@@ -1,5 +1,9 @@
 package io.ebean.docker.commands;
 
+import io.ebean.docker.container.Container;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -11,11 +15,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import io.ebean.docker.container.Container;
 
 /**
  * Commands for controlling a SAP HANA docker container.
@@ -288,7 +287,7 @@ public class HanaContainer extends DbContainer implements Container {
     }
     if (!hanaConfig.isAgreeToSapLicense()) {
       throw new IllegalStateException(
-          "You must agree to the SAP license (https://www.sap.com/docs/download/cmp/2016/06/sap-hana-express-dev-agmt-and-exhibit.pdf) by setting the property 'hana.agreeToSapLicense' to 'true'");
+        "You must agree to the SAP license (https://www.sap.com/docs/download/cmp/2016/06/sap-hana-express-dev-agmt-and-exhibit.pdf) by setting the property 'hana.agreeToSapLicense' to 'true'");
     }
   }
 
@@ -401,7 +400,7 @@ public class HanaContainer extends DbContainer implements Container {
     sqlProcess(connection -> {
       if (!userExists(connection)) {
         sqlRun(connection, "create user " + dbConfig.getUsername() + " password " + dbConfig.getPassword()
-            + " no force_first_password_change");
+          + " no force_first_password_change");
       }
     });
     return true;
@@ -409,7 +408,7 @@ public class HanaContainer extends DbContainer implements Container {
 
   private boolean userExists(Connection connection) {
     try (PreparedStatement statement = connection
-        .prepareStatement("select count(*) from sys.users where user_name = upper(?)")) {
+      .prepareStatement("select count(*) from sys.users where user_name = upper(?)")) {
       statement.setString(1, dbConfig.getUsername());
       try (ResultSet rs = statement.executeQuery()) {
         if (rs.next()) {

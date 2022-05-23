@@ -6,11 +6,7 @@ import io.ebean.docker.container.Container;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -341,7 +337,7 @@ abstract class DbContainer extends BaseContainer implements Container {
 
   void sqlRun(Connection connection, String sql) {
     log.debug("sqlRun: {}", sql);
-    try(Statement statement = connection.createStatement()) {
+    try (Statement statement = connection.createStatement()) {
       statement.execute(sql);
     } catch (SQLException e) {
       throw new IllegalStateException("Failed to execute sql", e);
@@ -350,7 +346,7 @@ abstract class DbContainer extends BaseContainer implements Container {
 
   boolean sqlHasRow(Connection connection, String sql) {
     log.trace("sqlRun: {}", sql);
-    try(Statement statement = connection.createStatement()) {
+    try (Statement statement = connection.createStatement()) {
       try (ResultSet resultSet = statement.executeQuery(sql)) {
         if (resultSet.next()) {
           return true;
