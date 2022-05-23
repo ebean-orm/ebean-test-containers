@@ -9,7 +9,7 @@
 
   <groupId>io.ebean</groupId>
   <artifactId>ebean-test-containers</artifactId>
-  <version>5.8</version>
+  <version>6.0-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:ebean-orm/ebean-test-containers.git</developerConnection>
