@@ -30,7 +30,7 @@ public class ElasticContainer extends BaseContainer {
 
     private Builder(String version) {
       super("elastic", 9201, 9200, version);
-      this.image = "elasticsearch:" + version;
+      this.image = "docker.elastic.co/elasticsearch/elasticsearch:" + version;
       this.maxReadyAttempts = 400;
     }
 
