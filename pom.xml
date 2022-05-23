@@ -9,11 +9,11 @@
 
   <groupId>io.ebean</groupId>
   <artifactId>ebean-test-containers</artifactId>
-  <version>5.6</version>
+  <version>5.7-SNAPSHOT</version>
 
   <scm>
     <developerConnection>scm:git:git@github.com:ebean-orm/ebean-test-containers.git</developerConnection>
-    <tag>ebean-test-containers-5.6</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
