@@ -175,6 +175,9 @@ abstract class BaseContainer implements Container {
 
   void runContainer() {
     ProcessResult result = ProcessHandler.process(runProcess());
+    if (log.isDebugEnabled()) {
+      log.debug("run output {}", result.getOutLines());
+    }
     if (!hasContainerName()) {
       usingContainerId = true;
       parseContainerId(result.getOutLines());
