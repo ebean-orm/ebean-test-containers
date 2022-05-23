@@ -17,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 abstract class BaseContainer implements Container {
 
-  static final Logger log = LoggerFactory.getLogger(Commands.class);
+  static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   protected final BaseConfig<?, ?> buildConfig;
   protected InternalConfig config;

@@ -14,7 +14,7 @@ import java.util.List;
  */
 public class Commands {
 
-  private static final Logger log = LoggerFactory.getLogger(Commands.class);
+  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   private final String docker;
 

@@ -12,7 +12,7 @@ import java.util.Properties;
  */
 public class AutoStart {
 
-  private static Logger log = LoggerFactory.getLogger(AutoStart.class);
+  private static Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   /**
    * Search for docker-run.properties and start containers.

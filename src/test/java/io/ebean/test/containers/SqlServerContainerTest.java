@@ -12,7 +12,7 @@ import java.util.Properties;
 
 class SqlServerContainerTest {
 
-  private static final Logger log = LoggerFactory.getLogger(SqlServerContainerTest.class);
+  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   static final String SQLSERVER_VER = "2019-CU15-ubuntu-20.04";
 

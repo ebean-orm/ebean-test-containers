@@ -20,6 +20,8 @@ import java.util.Properties;
  */
 public class HanaContainer extends DbContainer implements Container {
 
+  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
+
   /**
    * Create a builder for HanaContainer.
    */
@@ -63,7 +65,6 @@ public class HanaContainer extends DbContainer implements Container {
    */
   public static class Builder extends DbConfig<HanaContainer, Builder> {
 
-    private static final Logger log = LoggerFactory.getLogger(Builder.class);
 
     private String mountsDirectory;
     private URL passwordsUrl;
@@ -269,8 +270,6 @@ public class HanaContainer extends DbContainer implements Container {
     }
   }
 
-
-  private static final Logger log = LoggerFactory.getLogger(Commands.class);
 
   private final Builder hanaConfig;
 

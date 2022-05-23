@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
  */
 abstract class BaseDbContainer extends DbContainer implements Container {
 
-  protected static final Logger log = LoggerFactory.getLogger(Commands.class);
+  protected static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   BaseDbContainer(DbConfig config) {
     super(config);

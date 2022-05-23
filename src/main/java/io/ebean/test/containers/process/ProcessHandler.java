@@ -15,7 +15,7 @@ import java.util.List;
  */
 public class ProcessHandler {
 
-  private static final Logger log = LoggerFactory.getLogger(ProcessHandler.class);
+  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   private final ProcessBuilder builder;
 

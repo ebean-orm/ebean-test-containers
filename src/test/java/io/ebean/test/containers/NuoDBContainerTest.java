@@ -12,7 +12,7 @@ import java.util.Random;
 
 class NuoDBContainerTest {
 
-  private static final Logger log = LoggerFactory.getLogger(NuoDBContainerTest.class);
+  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   @Disabled
   @Test
