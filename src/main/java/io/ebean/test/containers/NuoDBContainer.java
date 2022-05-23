@@ -1,9 +1,10 @@
 package io.ebean.test.containers;
 
-import io.ebean.test.containers.process.ProcessResult;
 import io.ebean.test.containers.process.ProcessHandler;
+import io.ebean.test.containers.process.ProcessResult;
 
 import java.io.File;
+import java.lang.System.Logger.Level;
 import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -199,7 +200,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
 
     final ProcessResult result = ProcessHandler.process(createProcessBuilder(args));
     if (!result.success()) {
-      log.error("Error performing shutdown database " + result);
+      log.log(Level.ERROR, "Error performing shutdown database " + result);
       return false;
     }
     waitTime(100);
@@ -296,7 +297,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private void removeContainersAndRun() {
-    log.info("Archive directory is empty, remove containers and run");
+    log.log(Level.INFO, "Archive directory is empty, remove containers and run");
     commands.removeContainers(teName, smName, adName);
     runContainer();
   }
@@ -345,18 +346,18 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private boolean dbStateOk(String trimmedOut) {
-    log.trace("checking dbStateOk [{}]", trimmedOut);
+    log.log(Level.TRACE, "checking dbStateOk [{0}]", trimmedOut);
     return trimmedOut.contains("NOT_RUNNING") || trimmedOut.contains("RUNNING");
   }
 
   private boolean startStorageManager(int attempt) {
     commands.start(smName);
     if (!waitForStorageManager()) {
-      log.error("Failed waiting for NuoDB storage manager [" + adName + "] to start running");
+      log.log(Level.ERROR, "Failed waiting for NuoDB storage manager [" + adName + "] to start running");
       return false;
     }
     if (storageManagerUnableToConnect()) {
-      log.info("Retry NuoDB storage manager [" + adName + "] attempt:" + attempt);
+      log.log(Level.INFO, "Retry NuoDB storage manager [" + adName + "] attempt:" + attempt);
       return attempt <= 2 && startStorageManager(attempt + 1);
     }
     return true;
@@ -490,7 +491,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   private Path archivePath() {
     File nuoArchive = archiveFile();
     if (nuoArchive.exists()) {
-      log.info("delete " + nuoArchive.toPath());
+      log.log(Level.INFO, "delete " + nuoArchive.toPath());
       deleteDirectory(nuoArchive);
     } else {
       nuoArchive.setWritable(true, false);
@@ -613,7 +614,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private void exeSql(Connection connection, String sql) throws SQLException {
-    log.debug("exeSql {}", sql);
+    log.log(Level.DEBUG, "exeSql {0}", sql);
     try (PreparedStatement st = connection.prepareStatement(sql)) {
       st.execute();
     }

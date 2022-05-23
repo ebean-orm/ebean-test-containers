@@ -1,5 +1,6 @@
 package io.ebean.test.containers;
 
+import java.lang.System.Logger.Level;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -149,12 +150,12 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
       try {
         return databaseExistsAttempt(connection, dbName);
       } catch (Exception e) {
-        log.info("Failed databaseExistsAttempt() {} with {}", i, e.getMessage());
+        log.log(Level.INFO, "Failed databaseExistsAttempt() {0} with {1}", i, e.getMessage());
         lastError = e;
         waitTime();
       }
     }
-    log.warn("Failed databaseExists() check with last error captured of ...", lastError);
+    log.log(Level.WARNING, "Failed databaseExists() check with last error captured of ...", lastError);
     throw new IllegalStateException("Failed databaseExists check with", lastError);
   }
 

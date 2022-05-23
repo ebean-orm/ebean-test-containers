@@ -13,6 +13,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 
 import java.io.IOException;
+import java.lang.System.Logger.Level;
 import java.util.List;
 import java.util.Properties;
 
@@ -189,8 +190,8 @@ public class LocalstackContainer extends BaseContainer {
   boolean checkConnectivity() {
     try {
       String content = readUrlContent(healthUrl());
-      if (log.isTraceEnabled()) {
-        log.trace("checkConnectivity content: {}", content);
+      if (log.isLoggable(Level.TRACE)) {
+        log.log(Level.TRACE, "checkConnectivity content: {0}", content);
       }
       return checkStatus(content);
     } catch (IOException e) {

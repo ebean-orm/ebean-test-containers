@@ -2,17 +2,17 @@ package io.ebean.test.containers;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Random;
 
+import static java.lang.System.Logger.Level.DEBUG;
+
 class NuoDBContainerTest {
 
-  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
+  private static final System.Logger log = System.getLogger("io.ebean.test.containers.NuoDBContainerTest");
 
   @Disabled
   @Test
@@ -52,7 +52,7 @@ class NuoDBContainerTest {
 
   private void exeSql(Connection connection, String sql) throws SQLException {
     try (PreparedStatement st = connection.prepareStatement(sql)) {
-      log.debug("execute SQL {}", sql);
+      log.log(DEBUG, "execute SQL {0}", sql);
       st.execute();
     }
   }

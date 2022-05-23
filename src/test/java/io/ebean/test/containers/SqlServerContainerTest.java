@@ -2,8 +2,6 @@ package io.ebean.test.containers;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -11,8 +9,6 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 class SqlServerContainerTest {
-
-  private static final Logger log = LoggerFactory.getLogger("io.ebean.test.containers");
 
   static final String SQLSERVER_VER = "2019-CU15-ubuntu-20.04";
 
@@ -105,8 +101,6 @@ class SqlServerContainerTest {
       exeSql(connection, "create table test_junk (acol integer)");
       exeSql(connection, "insert into test_junk (acol) values (42)");
       exeSql(connection, "insert into test_junk (acol) values (43)");
-
-      log.info("executed test sql scripts");
 
     } catch (SQLException e) {
       throw new RuntimeException(e);

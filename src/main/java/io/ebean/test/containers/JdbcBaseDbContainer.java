@@ -2,6 +2,8 @@ package io.ebean.test.containers;
 
 import java.sql.Connection;
 
+import static java.lang.System.Logger.Level.WARNING;
+
 abstract class JdbcBaseDbContainer extends DbContainer {
 
   JdbcBaseDbContainer(DbConfig<?, ?> config) {
@@ -37,7 +39,7 @@ abstract class JdbcBaseDbContainer extends DbContainer {
     }
     startIfNeeded();
     if (!waitForConnectivity()) {
-      log.warn("Failed waiting for connectivity");
+      log.log(WARNING, "Failed waiting for connectivity");
       return false;
     }
     return true;
