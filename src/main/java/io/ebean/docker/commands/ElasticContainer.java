@@ -30,7 +30,8 @@ public class ElasticContainer extends BaseContainer {
 
     private Builder(String version) {
       super("elastic", 9201, 9200, version);
-      this.image = "docker.elastic.co/elasticsearch/elasticsearch:" + version;
+      this.image = "elasticsearch:" + version;
+      this.maxReadyAttempts = 400;
     }
 
     @Override
@@ -41,6 +42,7 @@ public class ElasticContainer extends BaseContainer {
 
   private ElasticContainer(Builder builder) {
     super(builder);
+    this.waitForConnectivityAttempts = builder.maxReadyAttempts;
   }
 
   /**
@@ -62,9 +64,7 @@ public class ElasticContainer extends BaseContainer {
   protected ProcessBuilder runProcess() {
     List<String> args = dockerRun();
     args.add("-e");
-    args.add("http.host=0.0.0.0");
-    args.add("-e");
-    args.add("transport.host=127.0.0.1");
+    args.add("discovery.type=single-node");
     args.add("-e");
     args.add("xpack.security.enabled=false");
     args.add(config.image());

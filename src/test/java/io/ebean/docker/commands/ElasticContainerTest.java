@@ -8,7 +8,7 @@ class ElasticContainerTest {
 
   @Test
   void randomPort() {
-    ElasticContainer container = ElasticContainer.builder("5.6.0")
+    ElasticContainer container = ElasticContainer.builder("8.2.0")
       .port(0)
       .build();
 
@@ -18,7 +18,7 @@ class ElasticContainerTest {
 
   @Test
   void runProcess() {
-    ElasticContainer elastic = ElasticContainer.builder("5.6.0").build();
+    ElasticContainer elastic = ElasticContainer.builder("8.2.0").build();
 
     elastic.start();
     elastic.stop();
