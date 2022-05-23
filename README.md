@@ -26,7 +26,7 @@ Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Hana, LocalDynamoDB, Loca
   <dependency>
     <groupId>io.ebean</groupId>
     <artifactId>ebean-test-containers</artifactId>
-    <version>5.5</version>
+    <version>5.6</version>
     <scope>test</scope>
   </dependency>
 
