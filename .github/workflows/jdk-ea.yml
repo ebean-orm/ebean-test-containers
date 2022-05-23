@@ -1,5 +1,4 @@
-
-name: ebean-test-docker EA
+name: ebean-test-containers EA
 
 on:
   push:

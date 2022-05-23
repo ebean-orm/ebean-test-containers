@@ -1,5 +1,5 @@
 
-# ebean-test-docker
+# ebean-test-containers
 Ability to start, setup and remove docker containers. e.g. Postgres running as docker container for testing.
 
 The issues this solves for us is to:
@@ -22,12 +22,15 @@ Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Hana, LocalDynamoDB, Loca
 
   <dependency>
     <groupId>io.ebean</groupId>
-    <artifactId>ebean-test-docker</artifactId>
-    <version>5.0</version>
+    <artifactId>ebean-test-containers</artifactId>
+    <version>6.0</version>
     <scope>test</scope>
   </dependency>
 
 ```
+
+Note: Was previously `io.ebean:ebean-test-docker` and before that `org.avaje.docker:docker-commands`.
+
 
 ## Designed for fast testing
 
