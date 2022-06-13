@@ -26,7 +26,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
   public static class Builder extends DbConfig<OracleContainer, OracleContainer.Builder> {
 
-    private String apexPort = "8181";
+    private String apexPort;
     private String internalApexPort = "8080";
     /**
      * Wait time allowed when starting oracle from scratch.
@@ -35,10 +35,10 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
     private Builder(String version) {
       super("oracle", 1521, 1521, version);
-      this.image = "vitorfec/oracle-xe-18c:" + version;
+      this.image = "gvenzl/oracle-xe:" + version;
       this.adminUsername = "system";
       this.adminPassword = "oracle";
-      this.dbName = "XE";
+      this.dbName = "XE";//XEPDB1
       this.username = "test_user";
     }
 
@@ -162,10 +162,12 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
   @Override
   protected ProcessBuilder runProcess() {
     List<String> args = dockerRun();
-    args.add("-p");
-    args.add(apexPort + ":" + internalApexPort);
+    if (apexPort != null && !apexPort.isEmpty()) {
+      args.add("-p");
+      args.add(apexPort + ":" + internalApexPort);
+    }
     args.add("-e");
-    args.add("ORACLE_PWD=" + dbConfig.getAdminPassword());
+    args.add("ORACLE_PASSWORD=" + dbConfig.getAdminPassword());
     args.add(config.getImage());
     return createProcessBuilder(args);
   }

@@ -13,7 +13,7 @@ class OracleContainerTest {
   @Disabled
   @Test
   void start() {
-    OracleContainer container = OracleContainer.builder("latest")
+    OracleContainer container = OracleContainer.builder("21.3.0-slim")
       //.user("test_ebean")
       .build();
 
@@ -42,7 +42,7 @@ class OracleContainerTest {
   @Test
   void viaContainerFactory() {
     Properties properties = new Properties();
-    properties.setProperty("oracle.version", "latest");
+    properties.setProperty("oracle.version", "21.3.0-slim");
     //properties.setProperty("oracle.containerName", "junk_oracle");
     //properties.setProperty("oracle.port", "1521");
     //properties.setProperty("oracle.dbName", "test_rob");

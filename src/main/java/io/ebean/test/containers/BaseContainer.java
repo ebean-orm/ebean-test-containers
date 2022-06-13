@@ -304,6 +304,7 @@ abstract class BaseContainer implements Container {
   }
 
   boolean hasContainerName() {
+    config.setDefaultContainerName();
     return notEmpty(config.containerName());
   }
 
