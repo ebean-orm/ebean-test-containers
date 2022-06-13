@@ -31,7 +31,7 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
   String extraDb;
   private String extraDbUser;
   private String extraDbPassword;
-  private String extraDbExtensions;
+  String extraDbExtensions;
   private String extraDbInitSqlFile;
   private String extraDbSeedSqlFile;
 
@@ -58,7 +58,7 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
   /**
    * Comma delimited list of database extensions required (hstore, pgcrypto etc).
    */
-  private String extensions;
+  String extensions;
 
   /**
    * SQL file executed against the database after it has been created.
