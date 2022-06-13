@@ -1,7 +1,5 @@
 package io.ebean.test.containers;
 
-import io.ebean.test.containers.Container;
-import io.ebean.test.containers.ContainerFactory;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -12,28 +10,28 @@ import static org.assertj.core.api.Assumptions.assumeThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class ContainerFactoryTest {
+class ContainerFactoryTest {
 
   static final String MYSQL_VER = "8.0";
 
   @Test
-  public void runWith() {
-
+  void runWith() {
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
     properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("sqlserver.version", "2017-CE");
+    properties.setProperty("postgis.version", "14-3.2");
 
     ContainerFactory factory = new ContainerFactory(properties);
 
     assertEquals("9.6", factory.runWithVersion("postgres"));
     assertEquals(MYSQL_VER, factory.runWithVersion("mysql"));
     assertEquals("2017-CE", factory.runWithVersion("sqlserver"));
+    assertEquals("14-3.2", factory.runWithVersion("postgis"));
   }
 
   @Test
-  public void runWithNuoDB() {
-
+  void runWithNuoDB() {
     Properties properties = new Properties();
     properties.setProperty("nuodb.version", "4.0.0");
     properties.setProperty("nuodb.schema", "junk");
@@ -48,8 +46,7 @@ public class ContainerFactoryTest {
 
   @Disabled
   @Test
-  public void runWith_Cockroach() {
-
+  void runWith_Cockroach() {
     Properties properties = new Properties();
     properties.setProperty("cockroach.version", "v21.2.9");
 
@@ -61,8 +58,7 @@ public class ContainerFactoryTest {
   }
 
   @Test
-  public void runWith_Yugabyte() {
-
+  void runWith_Yugabyte() {
     Properties properties = new Properties();
     properties.setProperty("yugabyte.version", "2.11.2.0-b89");
 
@@ -74,8 +70,7 @@ public class ContainerFactoryTest {
   }
 
   @Test
-  public void runWithHana() {
-
+  void runWithHana() {
     assumeThat(System.getProperty("os.name").toLowerCase()).contains("linux");
 
     Properties properties = new Properties();
@@ -93,8 +88,7 @@ public class ContainerFactoryTest {
   }
 
   @Test
-  public void runWith_specifiedWithComma() {
-
+  void runWith_specifiedWithComma() {
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
     properties.setProperty("mysql.version", MYSQL_VER);
@@ -110,8 +104,7 @@ public class ContainerFactoryTest {
   }
 
   @Test
-  public void runWith_specifiedOne() {
-
+  void runWith_specifiedOne() {
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
     properties.setProperty("mysql.version", MYSQL_VER);
@@ -127,15 +120,13 @@ public class ContainerFactoryTest {
   }
 
   @Test
-  public void runWith_specified_viaEnv() {
-
+  void runWith_specified_viaEnv() {
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "9.6");
     properties.setProperty("mysql.version", MYSQL_VER);
     properties.setProperty("sqlserver.version", "2017-CE");
     properties.setProperty("hana.version", "2.00.033.00.20180925.2");
     properties.setProperty("yugabyte.version", "2.8");
-
 
     System.setProperty("docker_run_with", "mysql");
     try {
@@ -153,8 +144,7 @@ public class ContainerFactoryTest {
   }
 
   @Test
-  public void create() throws Exception {
-
+  void create() throws Exception {
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "11");
     properties.setProperty("postgres.containerName", "junk_postgres11");

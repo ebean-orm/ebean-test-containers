@@ -57,6 +57,10 @@ public class ContainerFactory {
     if (pgVersion != null) {
       containers.add(PostgresContainer.builder(pgVersion).properties(properties).build());
     }
+    String pgisVersion = runWithVersion("postgis");
+    if (pgisVersion != null) {
+      containers.add(PostgisContainer.builder(pgisVersion).properties(properties).build());
+    }
     String mysqlVersion = runWithVersion("mysql");
     if (mysqlVersion != null) {
       containers.add(MySqlContainer.builder(mysqlVersion).properties(properties).build());
