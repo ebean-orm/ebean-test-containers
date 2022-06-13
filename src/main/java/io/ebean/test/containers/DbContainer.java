@@ -340,7 +340,7 @@ abstract class DbContainer extends BaseContainer implements Container {
     try (Statement statement = connection.createStatement()) {
       statement.execute(sql);
     } catch (SQLException e) {
-      throw new IllegalStateException("Failed to execute sql", e);
+      throw new IllegalStateException("Failed to execute sql [" + sql + "]", e);
     }
   }
 

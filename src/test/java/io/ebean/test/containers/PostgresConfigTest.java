@@ -75,6 +75,7 @@ class PostgresConfigTest {
     properties.setProperty("postgres.seedSqlFile", "seed.sql");
     properties.setProperty("postgres.extraDb.initSqlFile", "extra_init.sql");
     properties.setProperty("postgres.extraDb.seedSqlFile", "extra_seed.sql");
+    properties.setProperty("postgres.extraDb.extensions", "hstore,pgcrypto");
 
     InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
     assertEquals(config.containerName(), "junk_postgres");
@@ -90,6 +91,7 @@ class PostgresConfigTest {
     assertEquals(config.getSeedSqlFile(), "seed.sql");
     assertEquals(config.getExtraDbInitSqlFile(), "extra_init.sql");
     assertEquals(config.getExtraDbSeedSqlFile(), "extra_seed.sql");
+    assertEquals(config.getExtraDbExtensions(), "hstore,pgcrypto");
 
     assertEquals(config.jdbcAdminUrl(), "jdbc:postgresql://172.17.0.1:9823/postgres");
     assertEquals(config.jdbcUrl(), "jdbc:postgresql://172.17.0.1:9823/baz");

@@ -81,6 +81,11 @@ public interface ContainerBuilderDb<C, SELF extends ContainerBuilderDb<C, SELF>>
   SELF extraDbPassword(String extraDbPassword);
 
   /**
+   * Set extra database extensions.
+   */
+  SELF extraDbExtensions(String extraDbExtensions);
+
+  /**
    * Set extra database init sql file to execute.
    */
   SELF extraDbInitSqlFile(String extraDbInitSqlFile);

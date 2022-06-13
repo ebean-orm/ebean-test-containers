@@ -267,6 +267,13 @@ abstract class BaseConfig<C, SELF extends BaseConfig<C, SELF>> implements Contai
     throw new IllegalStateException("Not valid for this type");
   }
 
+  /**
+   * Override to build jdbc url for extraDb.
+   */
+  protected String buildExtraJdbcUrl() {
+    throw new IllegalStateException("Not valid for this type");
+  }
+
   protected String buildJdbcAdminUrl() {
     return buildJdbcUrl();
   }
@@ -321,6 +328,11 @@ abstract class BaseConfig<C, SELF extends BaseConfig<C, SELF>> implements Contai
     @Override
     public String jdbcUrl() {
       return buildJdbcUrl();
+    }
+
+    @Override
+    public String jdbcExtraUrl() {
+      return buildExtraJdbcUrl();
     }
 
     @Override

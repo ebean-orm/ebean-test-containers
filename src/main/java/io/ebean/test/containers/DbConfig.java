@@ -28,9 +28,10 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
   /**
    * An additional database.
    */
-  private String extraDb;
+  String extraDb;
   private String extraDbUser;
   private String extraDbPassword;
+  private String extraDbExtensions;
   private String extraDbInitSqlFile;
   private String extraDbSeedSqlFile;
 
@@ -126,6 +127,7 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
     extraDb = prop(properties, "extraDb.dbName", prop(properties, "extraDb", extraDb));
     extraDbUser = prop(properties, "extraDb.username", extraDbUser);
     extraDbPassword = prop(properties, "extraDb.password", extraDbPassword);
+    extraDbExtensions = prop(properties, "extraDb.extensions", extraDbExtensions);
     extraDbInitSqlFile = prop(properties, "extraDb.initSqlFile", extraDbInitSqlFile);
     extraDbSeedSqlFile = prop(properties, "extraDb.seedSqlFile", extraDbSeedSqlFile);
     return self();
@@ -293,6 +295,12 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
   @Override
   public SELF extraDbPassword(String extraDbPassword) {
     this.extraDbPassword = extraDbPassword;
+    return self();
+  }
+
+  @Override
+  public SELF extraDbExtensions(String extraDbExtensions) {
+    this.extraDbExtensions = extraDbExtensions;
     return self();
   }
 
@@ -473,6 +481,11 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
     @Override
     public String getExtraDbPassword() {
       return extraDbPassword;
+    }
+
+    @Override
+    public String getExtraDbExtensions() {
+      return extraDbExtensions;
     }
 
     @Override

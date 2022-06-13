@@ -32,6 +32,8 @@ interface InternalConfigDb extends InternalConfig {
 
   String getExtraDbPassword();
 
+  String getExtraDbExtensions();
+
   String getExtraDbInitSqlFile();
 
   String getExtraDbSeedSqlFile();

@@ -12,7 +12,7 @@ import java.util.List;
  */
 abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Container {
 
-  BasePostgresContainer(DbConfig config) {
+  BasePostgresContainer(DbConfig<?, ?> config) {
     super(config);
   }
 
@@ -60,13 +60,21 @@ abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Cont
       }
       createRole(connection, extraUser, getWithDefault(dbConfig.getExtraDbPassword(), dbConfig.getPassword()));
       if (databaseNotExists(connection, extraDb)) {
-        createDatabase(connection, false, extraDb, extraUser, dbConfig.getExtraDbInitSqlFile(), dbConfig.getExtraDbSeedSqlFile());
+        createExtraDatabase(connection, extraDb, extraUser);
       }
     }
   }
 
   private void createDatabase(Connection connection) {
-    createDatabase(connection, true, dbConfig.getDbName(), dbConfig.getUsername(), dbConfig.getInitSqlFile(), dbConfig.getSeedSqlFile());
+    createDatabaseWithOwner(connection, dbConfig.getDbName(), dbConfig.getUsername());
+    addExtensions(dbConfig.getExtensions(), dbConfig.jdbcUrl());
+    createDatabaseInitSql(dbConfig.getDbName(), dbConfig.getUsername(),  dbConfig.getInitSqlFile(), dbConfig.getSeedSqlFile());
+  }
+
+  private void createExtraDatabase(Connection connection, String extraDb, String extraUser) {
+    createDatabaseWithOwner(connection, extraDb, extraUser);
+    addExtensions(dbConfig.getExtraDbExtensions(), dbConfig.jdbcExtraUrl());
+    createDatabaseInitSql(extraDb, extraUser,  dbConfig.getExtraDbInitSqlFile(), dbConfig.getExtraDbSeedSqlFile());
   }
 
   private void createRole(Connection connection) {
@@ -83,13 +91,11 @@ abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Cont
     return !sqlHasRow(connection, "select 1 from pg_database where datname = '" + dbName + "'");
   }
 
-  private void createDatabase(Connection connection, boolean withExtensions, String dbName,
-                              String owner, String initSql, String seedSql) {
-
+  private void createDatabaseWithOwner(Connection connection, String dbName, String owner) {
     sqlRun(connection, "create database " + dbName + " with owner " + owner);
-    if (withExtensions) {
-      addExtensions();
-    }
+  }
+
+  private void createDatabaseInitSql(String dbName, String owner, String initSql, String seedSql) {
     if (defined(initSql)) {
       runDbSqlFile(dbName, owner, initSql);
     }
@@ -98,13 +104,13 @@ abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Cont
     }
   }
 
-  private void addExtensions() {
-    if (!defined(dbConfig.getExtensions())) {
+  private void addExtensions(String dbExtensions, String jdbcUrl) {
+    if (!defined(dbExtensions)) {
       return;
     }
-    final List<String> extensions = parseExtensions(dbConfig.getExtensions());
+    final List<String> extensions = parseExtensions(dbExtensions);
     if (!extensions.isEmpty()) {
-      try (Connection connection = dbConfig.createAdminConnection(dbConfig.jdbcUrl())) {
+      try (Connection connection = dbConfig.createAdminConnection(jdbcUrl)) {
         for (String extension : extensions) {
           sqlRun(connection, "create extension if not exists \"" + extension + "\"");
         }

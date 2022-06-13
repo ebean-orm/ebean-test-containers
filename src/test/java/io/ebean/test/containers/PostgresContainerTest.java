@@ -14,6 +14,28 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class PostgresContainerTest {
 
   @Test
+  void extraDb() {
+    PostgresContainer container = PostgresContainer.builder("14")
+      .port(0)
+      .extensions("hstore")
+      .extraDb("myextra")
+      .extraDbUser("extra1")
+      .extraDbPassword("extraPwd")
+      .extraDbExtensions("pgcrypto")
+      .build();
+
+    container.start();
+    assertThat(container.port()).isGreaterThan(0);
+
+    ContainerConfig containerConfig = container.config();
+    assertThat(containerConfig.port()).isEqualTo(container.port());
+
+    String jdbcUrl = container.config().jdbcUrl();
+    assertThat(jdbcUrl).contains(":" + containerConfig.port());
+    runSomeSql(container);
+  }
+
+  @Test
   void randomPort() {
     PostgresContainer container = PostgresContainer.builder("14")
       .port(0)
