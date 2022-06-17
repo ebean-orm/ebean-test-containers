@@ -362,8 +362,10 @@ abstract class DbContainer extends BaseContainer implements Container {
     log.log(Level.TRACE, "sqlRun: {0}", sql);
     try (PreparedStatement stmt = connection.prepareStatement(sql)) {
       try (ResultSet resultSet = stmt.executeQuery()) {
-        if (resultSet.next()) {
-          return resultSet.getString(1).equalsIgnoreCase(match);
+        while (resultSet.next()) {
+          if (resultSet.getString(1).equalsIgnoreCase(match)) {
+            return true;
+          }
         }
       }
     }

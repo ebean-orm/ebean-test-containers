@@ -17,18 +17,18 @@ class NuoDBContainerTest {
   @Disabled
   @Test
   void start_executeSql_stop() {
-
-    NuoDBContainer container = NuoDBContainer.builder("4.0")
-    //config.setContainerName("nuodb");
-    //config.setAdminUser("dba");
-    //config.setAdminPassword("dba");
-    //config.setDbName("testdb");
-      .schema("my_app2")
-      .user("my_app2")
+    NuoDBContainer container = NuoDBContainer.builder("4.3.2")
+      //.port(48004)
+      //.adminPort(8888)
+      //.containerName("nuodb")
+      //.adminUser("dba")
+      //.adminPassword("dba")
+      .schema("test_user")
+      .user("test_user")
       .password("test")
       .build();
 
-    container.startWithDropCreate();
+    container.start();
 
     try (Connection connection = container.createConnection()) {
       final Random random = new Random();
@@ -43,10 +43,6 @@ class NuoDBContainerTest {
 
     } catch (SQLException e) {
       throw new RuntimeException(e);
-
-    } finally {
-//      container.stop();
-//      container.stopRemove();
     }
   }
 

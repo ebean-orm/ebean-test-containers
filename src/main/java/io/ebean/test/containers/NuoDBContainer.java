@@ -3,9 +3,7 @@ package io.ebean.test.containers;
 import io.ebean.test.containers.process.ProcessHandler;
 import io.ebean.test.containers.process.ProcessResult;
 
-import java.io.File;
 import java.lang.System.Logger.Level;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -31,22 +29,18 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
 
   public static class Builder extends DbConfig<NuoDBContainer, NuoDBContainer.Builder> {
 
-    private String network = "nuodb-net";
+    private String network;
     private String sm1 = "sm";
     private String te1 = "te";
-    private String labels = "node localhost";
-
-    private int port2 = 48004;
-    private int internalPort2 = 48004;
-    private int port3 = 48005;
-    private int internalPort3 = 48005;
 
     private Builder(String version) { //4.0
-      super("nuodb", 8888, 8888, version);
+      super("nuodb", 48004, 48004, version);
       this.containerName = platform;
       this.image = "nuodb/nuodb-ce:" + version;
       this.adminUsername = "dba";
       this.adminPassword = "dba";
+      this.adminPort = 8888;
+      this.adminInternalPort = 8888;
       // for testing purposes generally going to use single 'testdb'
       // and different apps have different schema
       this.dbName = "testdb";
@@ -59,27 +53,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
 
     @Override
     protected String buildJdbcUrl() {
-      return "jdbc:com.nuodb://" + getHost() + "/" + getDbName();
-    }
-
-    public Builder port2(int port2) {
-      this.port2 = port2;
-      return self();
-    }
-
-    public Builder internalPort2(int internalPort2) {
-      this.internalPort2 = internalPort2;
-      return self();
-    }
-
-    public Builder port3(int port3) {
-      this.port3 = port3;
-      return self();
-    }
-
-    public Builder internalPort3(int internalPort3) {
-      this.internalPort3 = internalPort3;
-      return self();
+      return "jdbc:com.nuodb://" + getHost() + ":" + getPort() + "/" + getDbName();
     }
 
     public Builder network(String network) {
@@ -97,37 +71,12 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
       return self();
     }
 
-    public Builder labels(String labels) {
-      this.labels = labels;
-      return self();
-    }
-
     private String getSm1() {
       return sm1;
     }
 
     private String getTe1() {
       return te1;
-    }
-
-    private String getLabels() {
-      return labels;
-    }
-
-    private int getPort2() {
-      return port2;
-    }
-
-    private int getInternalPort2() {
-      return internalPort2;
-    }
-
-    private int getPort3() {
-      return port3;
-    }
-
-    private int getInternalPort3() {
-      return internalPort3;
     }
 
     private String getNetwork() {
@@ -140,15 +89,14 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     }
   }
 
-  private static final String AD_RESET = "com.nuodb.nagent.AgentMain main Entering initializing for server";
-  private static final String AD_RUNNING = "com.nuodb.nagent.AgentMain main NuoAdmin Server running";
+  private static final String AD_RESET = "Entering initializing for server";
+  private static final String AD_RUNNING = "NuoAdmin Server running";
   private static final String SM_RESET = "Starting Storage Manager";
   private static final String SM_RUNNING = "Database formed";
   private static final String SM_UNABLE_TO_CONNECT = "Unable to connect ";
   private static final String TE_RESET = "Starting Transaction Engine";
   private static final String TE_RUNNING = "Database entered";
 
-  private final Builder nuoConfig;
   private final String network;
   private final String adName;
   private final String smName;
@@ -156,13 +104,14 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
 
   private NuoDBContainer(Builder builder) {
     super(builder);
-    this.nuoConfig = builder;
     this.checkConnectivityUsingAdmin = true;
-    nuoConfig.initDefaultSchema();
-    this.network = nuoConfig.getNetwork();
+    builder.initDefaultSchema();
+    builder.internalConfig().setDefaultContainerName();
     this.adName = config.containerName();
-    this.smName = adName + "_" + nuoConfig.getSm1();
-    this.teName = adName + "_" + nuoConfig.getTe1();
+    String network_ = builder.getNetwork();
+    this.network = network_ == null ? adName + "-net" : network_;
+    this.smName = adName + "_" + builder.getSm1();
+    this.teName = adName + "_" + builder.getTe1();
   }
 
   @Override
@@ -185,7 +134,6 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private boolean stopDatabase() {
-
     //  nuocmd shutdown database --db-name testdb
     List<String> args = new ArrayList<>();
     args.add(config.docker());
@@ -226,7 +174,6 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private boolean storageManagerUnableToConnect() {
-
     boolean unableToConnect = false;
 
     final List<String> logs = commands.logs(smName);
@@ -276,30 +223,19 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
 
   @Override
   void startContainer() {
-    if (!isArchivePopulated()) {
-      removeContainersAndRun();
-
+    commands.start(adName);
+    if (!waitForAdminProcess() || !waitForDatabaseState()) {
+      throw new RuntimeException("Failed waiting for NuoDB admin container [" + smName + "] to start running");
     } else {
-      commands.start(adName);
-      if (!waitForAdminProcess() || !waitForDatabaseState()) {
-        throw new RuntimeException("Failed waiting for NuoDB admin container [" + smName + "] to start running");
+      if (!startStorageManager(0)) {
+        throw new RuntimeException("Failed to start storage manager NuoDB [" + adName + "]");
       } else {
-        if (!startStorageManager(0)) {
-          throw new RuntimeException("Failed to start storage manager NuoDB [" + adName + "]");
-        } else {
-          commands.start(teName);
-          if (!waitForTransactionManager()) {
-            throw new RuntimeException("Failed waiting for NuoDB transaction manager [" + smName + "] to start running");
-          }
+        commands.start(teName);
+        if (!waitForTransactionManager()) {
+          throw new RuntimeException("Failed waiting for NuoDB transaction manager [" + smName + "] to start running");
         }
       }
     }
-  }
-
-  private void removeContainersAndRun() {
-    log.log(Level.INFO, "Archive directory is empty, remove containers and run");
-    commands.removeContainers(teName, smName, adName);
-    runContainer();
   }
 
   private boolean waitForDatabaseState() {
@@ -328,7 +264,6 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     args.add("dbState:{state}");
     args.add("--db-name");
     args.add(dbConfig.getDbName());
-
     try {
       final ProcessResult result = ProcessHandler.process(createProcessBuilder(args));
       if (result.success()) {
@@ -374,7 +309,6 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private ProcessBuilder procNetworkCreate() {
-
     List<String> args = new ArrayList<>();
     args.add(config.docker());
     args.add("network");
@@ -384,7 +318,6 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private ProcessBuilder procNetworkRemove() {
-
     List<String> args = new ArrayList<>();
     args.add(config.docker());
     args.add("network");
@@ -394,7 +327,6 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private ProcessBuilder procNetworkList() {
-
     List<String> args = new ArrayList<>();
     args.add(config.docker());
     args.add("network");
@@ -410,7 +342,6 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private ProcessBuilder runAdminProcess() {
-
     List<String> args = new ArrayList<>();
     args.add(config.docker());
     args.add("run");
@@ -419,31 +350,18 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     args.add(adName);
     args.add("--hostname");
     args.add(adName);
-    args.add("--net");
+    args.add("--network");
     args.add(network);
     args.add("-p");
     args.add(config.getPort() + ":" + config.getInternalPort());
-    args.add("-p");
-    args.add(nuoConfig.getPort2() + ":" + nuoConfig.getInternalPort2());
-    args.add("-p");
-    args.add(nuoConfig.getPort3() + ":" + nuoConfig.getInternalPort3());
-
-    if (defined(dbConfig.getAdminPassword())) {
-      args.add("-e");
-      args.add("NUODB_DOMAIN_ENTRYPOINT=" + adName);
-    }
+    args.add("--env");
+    args.add("NUODB_DOMAIN_ENTRYPOINT=" + adName);
     args.add(config.getImage());
     args.add("nuoadmin");
     return createProcessBuilder(args);
   }
 
   private ProcessBuilder runStorageManager() {
-
-    // volumes for backup and archive not added yet
-    // as generally we are application testing with this
-
-    final Path archiveDir = archivePath();
-
     List<String> args = new ArrayList<>();
     args.add(config.docker());
     args.add("run");
@@ -452,14 +370,12 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     args.add(smName);
     args.add("--hostname");
     args.add(smName);
-    args.add("--volume");
-    args.add(archiveDir.toAbsolutePath().toString() + ":/var/opt/nuodb/archive");
-    args.add("--net");
+    args.add("--network");
     args.add(network);
     args.add(config.getImage());
     args.add("nuodocker");
     args.add("--api-server");
-    args.add(adName + ":" + config.getPort());
+    args.add(adName + ":" + config.getAdminInternalPort());
     args.add("start");
     args.add("sm");
     args.add("--db-name");
@@ -470,54 +386,10 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     args.add(dbConfig.getAdminUsername());
     args.add("--dba-password");
     args.add(dbConfig.getAdminPassword());
-    args.add("--labels");
-    args.add(nuoConfig.getLabels());
-    args.add("--archive-dir");
-    args.add("/var/opt/nuodb/archive");
-
     return createProcessBuilder(args);
   }
 
-  boolean deleteDirectory(File dir) {
-    File[] allContents = dir.listFiles();
-    if (allContents != null) {
-      for (File file : allContents) {
-        deleteDirectory(file);
-      }
-    }
-    return dir.delete();
-  }
-
-  private Path archivePath() {
-    File nuoArchive = archiveFile();
-    if (nuoArchive.exists()) {
-      log.log(Level.INFO, "delete " + nuoArchive.toPath());
-      deleteDirectory(nuoArchive);
-    } else {
-      nuoArchive.setWritable(true, false);
-      if (!nuoArchive.mkdirs()) {
-        throw new RuntimeException("Failed to re-create " + nuoArchive.getAbsolutePath());
-      }
-    }
-    return nuoArchive.toPath();
-  }
-
-  private boolean isArchivePopulated() {
-    final File file = archiveFile();
-    if (file.exists()) {
-      final File[] files = file.listFiles();
-      return files != null && files.length > 0;
-    }
-    return false;
-  }
-
-  private File archiveFile() {
-    final File tmp = new File(System.getProperty("java.io.tmpdir"));
-    return new File(new File(tmp, "nuodb"), dbConfig.getDbName());
-  }
-
   private ProcessBuilder runTransactionManager() {
-
     List<String> args = new ArrayList<>();
     args.add(config.docker());
     args.add("run");
@@ -526,19 +398,18 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     args.add(teName);
     args.add("--hostname");
     args.add(teName);
-    args.add("--net");
+    args.add("--network");
     args.add(network);
     args.add(config.getImage());
     args.add("nuodocker");
     args.add("--api-server");
-    args.add(adName + ":" + config.getPort());
+    args.add(adName + ":" + config.getAdminInternalPort());
     args.add("start");
     args.add("te");
     args.add("--db-name");
     args.add(dbConfig.getDbName());
     args.add("--server-id");
     args.add(adName);
-
     return createProcessBuilder(args);
   }
 
@@ -563,18 +434,14 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
   }
 
   private void createSchemaAndUser(boolean withDrop) {
-
     try (Connection connection = config.createAdminConnection()) {
-
       if (withDrop) {
         sqlDropSchema(connection, dbConfig.getSchema());
       }
-
       final boolean schemaExists = sqlSchemaExists(connection, dbConfig.getSchema());
       if (!schemaExists) {
         sqlCreateSchema(connection, dbConfig.getSchema());
       }
-
       final boolean userExists = sqlUserExists(connection, dbConfig.getUsername());
       if (!userExists) {
         sqlCreateUser(connection, dbConfig.getUsername(), dbConfig.getPassword());

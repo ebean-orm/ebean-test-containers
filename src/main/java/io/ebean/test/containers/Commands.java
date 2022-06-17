@@ -84,7 +84,7 @@ public class Commands {
   public void removeContainers(String... containerNames) {
     log.log(Level.DEBUG, "remove {0}", Arrays.toString(containerNames));
     try {
-      dockerCmd("rm", containerNames);
+      dockerCmd("rm", "-f", containerNames);
     } catch (CommandException e) {
       log.log(Level.DEBUG, "removing containers that don't exist " + e.getMessage());
     }
@@ -100,9 +100,16 @@ public class Commands {
   }
 
   private void dockerCmd(String cmd, String[] containerNames) {
+    dockerCmd(cmd, null, containerNames);
+  }
+
+  private void dockerCmd(String cmd, String option, String[] containerNames) {
     final List<String> cmds = new ArrayList<>();
     cmds.add(docker);
     cmds.add(cmd);
+    if (option != null) {
+      cmds.add(option);
+    }
     for (String containerName : containerNames) {
       cmds.add(containerName);
     }
