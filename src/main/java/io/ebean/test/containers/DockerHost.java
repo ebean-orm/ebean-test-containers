@@ -1,6 +1,7 @@
 package io.ebean.test.containers;
 
 import java.io.File;
+import java.lang.System.Logger.Level;
 import java.util.Locale;
 
 /**
@@ -40,7 +41,12 @@ public class DockerHost {
   }
 
   String initDockerHost() {
-    return !runningInDocker ? "localhost" : dockerInDockerHost();
+    String host = !runningInDocker ? "localhost" : dockerInDockerHost();
+    String oldValue = System.setProperty("docker.host", host);
+    if (oldValue != null && !oldValue.equals(host)) {
+      Commands.log.log(Level.WARNING, "Replacing System property docker.host oldValue:{0} with newValue:{1}", oldValue, host);
+    }
+    return host;
   }
 
   /**
