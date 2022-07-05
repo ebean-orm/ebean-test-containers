@@ -34,6 +34,13 @@ Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Hana, LocalDynamoDB, Loca
 
 Note: Was previously `io.ebean:ebean-test-docker` and before that `org.avaje.docker:docker-commands`.
 
+## `docker.host` system property
+
+ebean-test-container will set a system property for `docker.host` to be either `localhost`,
+`172.17.0.1` or `host.docker.internal` as appropriate depending on if it is running docker-in-docker.
+
+We can then use this in configuration as necessary, for example in a jdbc url like:
+`jdbc:postgresql://${docker.host}:6432/my_test`
 
 ## Designed for fast testing
 
