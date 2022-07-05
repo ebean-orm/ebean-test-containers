@@ -8,6 +8,7 @@ import com.amazonaws.services.kinesis.AmazonKinesis;
 import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.model.*;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
@@ -18,14 +19,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class LocalstackContainerTest {
 
+  @Disabled
   @Test
   void start_viaBuilder() {
-    LocalstackContainer container = LocalstackContainer.builder("0.14")
+    LocalstackContainer container = LocalstackContainer.builder("0.14.4")
       .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs")
-      .port(4567)
+      //.port(4567)
       .containerName("ut_localstack_dkss")
-      .image("localstack/localstack:0.14")
+      .image("localstack/localstack:0.14.4")
       .build();
 
     // container.stopRemove();
@@ -97,6 +99,7 @@ class LocalstackContainerTest {
     sqs.deleteQueue(sqsUrl);
   }
 
+  @Disabled
   @Test
   void randomPort() {
     LocalstackContainer container = LocalstackContainer.builder("0.14")
@@ -115,10 +118,11 @@ class LocalstackContainerTest {
     container.stop();
   }
 
+  @Disabled
   @Test
   void start() {
 
-    LocalstackContainer container = LocalstackContainer.builder("0.14")
+    LocalstackContainer container = LocalstackContainer.builder("0.14.4")
       //.setShutdownMode(StopMode.None)
       .build();
     container.start();

@@ -237,6 +237,8 @@ public class LocalstackContainer extends BaseContainer {
       args.add("-e");
       args.add("START_WEB=" + startWeb);
     }
+    args.add("-e");
+    args.add("DEBUG=1");
     args.add(config.image());
     return createProcessBuilder(args);
   }
