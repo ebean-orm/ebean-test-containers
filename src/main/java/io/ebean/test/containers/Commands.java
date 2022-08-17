@@ -1,5 +1,6 @@
 package io.ebean.test.containers;
 
+import io.avaje.applog.AppLog;
 import io.ebean.test.containers.process.ProcessHandler;
 import io.ebean.test.containers.process.ProcessResult;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class Commands {
 
-  static final System.Logger log = System.getLogger("io.ebean.test.containers");
+  static final System.Logger log = AppLog.getLogger("io.ebean.test.containers");
 
   private final String docker;
 
@@ -74,7 +75,7 @@ public class Commands {
       ProcessHandler.command(docker, "stop", containerName);
     } catch (CommandException e) {
       if (e.getMessage().contains("No such container")) {
-        log.log(Level.TRACE,"container not running {0}", containerName);
+        log.log(Level.TRACE, "container not running {0}", containerName);
       } else {
         log.log(Level.INFO, "Error stopping container - " + e.getMessage());
       }
