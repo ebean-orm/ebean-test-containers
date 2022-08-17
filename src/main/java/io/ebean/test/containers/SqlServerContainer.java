@@ -70,6 +70,30 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
   }
 
   private void createRoleAndDatabase(boolean withDrop) {
+    IllegalStateException cause = null;
+    for (int i = 0; i < 3; i++) {
+      try {
+        createRoleAndDatabaseAttempt(withDrop);
+        return;
+      } catch (IllegalStateException e) {
+        log.log(Level.WARNING, "Error during retry attempt " + (i+1), e);
+        cause = e;
+        backoff();
+      }
+    }
+    throw new IllegalStateException("Failed retry attempts. Last error was:", cause);
+  }
+
+  private static void backoff() {
+    try {
+      Thread.sleep(500);
+    } catch (InterruptedException ex) {
+      Thread.currentThread().interrupt();
+      throw new IllegalStateException("Interrupted backoff during retry", ex);
+    }
+  }
+
+  private void createRoleAndDatabaseAttempt(boolean withDrop) {
     try (Connection connection = config.createAdminConnection()) {
       if (withDrop) {
         dropDatabaseIfExists(connection);
@@ -77,9 +101,8 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
       createDatabase(connection);
       createLogin(connection);
       createUser();
-
     } catch (SQLException e) {
-      throw new RuntimeException("Error when creating database and role", e);
+      throw new IllegalStateException("Error when creating database and role", e);
     }
   }
 
