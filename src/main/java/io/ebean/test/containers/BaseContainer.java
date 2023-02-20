@@ -70,6 +70,7 @@ abstract class BaseContainer implements Container {
       } else if (SkipShutdown.isSkip()) {
         return StopMode.None;
       } else {
+        log.log(Level.INFO, "Using shutdown remove mode as no marker file: {0}", SkipShutdown.ignoreMarkerFile());
         return StopMode.Remove;
       }
     }
@@ -94,7 +95,7 @@ abstract class BaseContainer implements Container {
 
     @Override
     public void run() {
-      String ignoreFile = SkipShutdown.isSkip() ? "" : ", No " + SkipShutdown.ignoreMarkerFile() + " marker file";
+      String ignoreFile = SkipShutdown.isSkip() ? "" : ", No marker file: " + SkipShutdown.ignoreMarkerFile();
       if (StopMode.Remove == mode) {
         log.log(Level.INFO, "Stop remove container {0}{1}", config.containerName(), ignoreFile);
         stopRemove();
