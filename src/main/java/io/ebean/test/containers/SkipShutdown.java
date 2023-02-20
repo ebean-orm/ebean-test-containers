@@ -24,8 +24,11 @@ public class SkipShutdown {
    * So we just want the shutdown mode to be used on the CI server.
    */
   boolean ignoreDockerShutdown() {
-    String localDev = System.getProperty("ebean.test.localDevelopment", "~/.ebean/ignore-docker-shutdown");
-    return ignoreDockerShutdown(localDev);
+    return ignoreDockerShutdown(ignoreMarkerFile());
+  }
+
+  static String ignoreMarkerFile() {
+    return System.getProperty("ebean.test.localDevelopment", "~/.ebean/ignore-docker-shutdown");
   }
 
   boolean ignoreDockerShutdown(String localDev) {

@@ -94,11 +94,12 @@ abstract class BaseContainer implements Container {
 
     @Override
     public void run() {
+      String ignoreFile = SkipShutdown.isSkip() ? "" : ", No " + SkipShutdown.ignoreMarkerFile() + " marker file";
       if (StopMode.Remove == mode) {
-        log.log(Level.INFO, "Stop remove container {0}", config.containerName());
+        log.log(Level.INFO, "Stop remove container {0}{1}", config.containerName(), ignoreFile);
         stopRemove();
       } else {
-        log.log(Level.INFO, "Stop container {0}", config.containerName());
+        log.log(Level.INFO, "Stop container {0}{1}", config.containerName(), ignoreFile);
         stopIfRunning();
       }
     }
