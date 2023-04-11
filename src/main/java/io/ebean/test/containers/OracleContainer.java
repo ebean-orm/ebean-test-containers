@@ -32,14 +32,16 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
      * Wait time allowed when starting oracle from scratch.
      */
     private int startupWaitMinutes = 8;
+    private final String version;
 
     private Builder(String version) {
       super("oracle", 1521, 1521, version);
       this.image = "gvenzl/oracle-xe:" + version;
       this.adminUsername = "system";
       this.adminPassword = "oracle";
-      this.dbName = "XE";//XEPDB1
+      this.dbName = "XE";
       this.username = "test_user";
+      this.version = version;
     }
 
     @Override
@@ -93,6 +95,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     }
   }
 
+  private final String version;
   private final String apexPort;
   private final String internalApexPort;
   private final int startupWaitMinutes;
@@ -108,6 +111,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     this.startupWaitMinutes = builder.startupWaitMinutes;
     this.checkConnectivityUsingAdmin = true;
     this.waitForConnectivityAttempts = 2000;
+    this.version = builder.version;
   }
 
   @Override
@@ -134,7 +138,9 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
   private void sqlRunOracleScript(Connection connection) {
     if (!oracleScript) {
-      sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
+      if (!version.startsWith("11")) {
+        sqlRun(connection, "alter session set \"_ORACLE_SCRIPT\"=true");
+      }
       oracleScript = true;
     }
   }
