@@ -12,7 +12,7 @@ class PostgisContainerTest {
 
   @Test
   void extraDb() {
-    PostgisContainer container = PostgisContainer.builder("14-3.2")
+    PostgisContainer container = PostgisContainer.builder("15")
       .port(0)
       .extraDb("myextra")
       .build();

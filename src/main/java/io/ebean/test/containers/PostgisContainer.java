@@ -31,7 +31,7 @@ public class PostgisContainer extends BasePostgresContainer implements Container
 
     private Builder(String version) {
       super("postgis", 6432, 5432, version);
-      this.image = "postgis/postgis:" + version;
+      this.image = "ghcr.io/baosystems/postgis:" + version;
       this.adminUsername = "postgres";
       this.tmpfs = "/var/lib/postgresql/data:rw";
       this.extensions = "hstore,pgcrypto,postgis";
