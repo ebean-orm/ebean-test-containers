@@ -42,14 +42,18 @@ public class RedisContainer extends BaseContainer {
 
   @Override
   boolean checkConnectivity() {
-    String osName = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
-    if (osName.indexOf("win") > -1) {
+    String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+    if (os.contains("win")) {
       return doWindowsCheck();
     }
     try {
-      ProcessBuilder pb = new ProcessBuilder("nc", config.getHost(), Integer.toString(config.getPort()), "-q", "0");
+      ProcessBuilder pb;
+      if (os.contains("mac")) {
+        pb = new ProcessBuilder("nc", config.getHost(), Integer.toString(config.getPort()));
+      } else {
+        pb = new ProcessBuilder("nc", config.getHost(), Integer.toString(config.getPort()), "-q", "0");
+      }
       pb.redirectErrorStream(true);
-
       Process process = pb.start();
 
       OutputStreamWriter ow = new OutputStreamWriter(process.getOutputStream());
