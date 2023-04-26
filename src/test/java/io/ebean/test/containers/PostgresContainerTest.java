@@ -128,7 +128,6 @@ class PostgresContainerTest {
 
     log.log(INFO, "start() ... stopRemove()");
     container.stopRemove();
-    Thread.sleep(8_000);
     log.log(INFO, "start() ... .startWithCreate()");
     container.startWithCreate();
     container.startContainerOnly();
@@ -143,7 +142,7 @@ class PostgresContainerTest {
     }
 
     final String url = container.jdbcUrl();
-    assertEquals(url, "jdbc:postgresql://localhost:9823/main_db");
+    assertEquals(url, "jdbc:postgresql://localhost:9828/main_db");
     container.stopRemove();
     log.log(INFO, "start() finished");
   }
