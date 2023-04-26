@@ -140,9 +140,9 @@ class PostgresContainerTest {
   void viaContainerFactory() {
     Properties properties = new Properties();
     properties.setProperty("postgres.version", "15");
-    properties.setProperty("postgres.containerName", "temp_postgres15");
+    properties.setProperty("postgres.containerName", "temp_pg15_b");
     properties.setProperty("postgres.host", "127.0.0.1");
-    properties.setProperty("postgres.port", "9823");
+    properties.setProperty("postgres.port", "9824");
 
     properties.setProperty("postgres.extensions", "hstore,pgcrypto");
 
