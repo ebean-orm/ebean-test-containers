@@ -67,13 +67,13 @@ class PostgresContainerTest {
   void startPortBased() {
     PostgresContainer container = PostgresContainer.builder("15")
       .containerName("temp_postgres15")
-      .port(9823)
+      .port(9824)
       .build();
 
     container.stopRemove();
     container.startContainerOnly();
 
-    runBasedOnPort(9823);
+    runBasedOnPort(9824);
 
     container.stopRemove();
   }
