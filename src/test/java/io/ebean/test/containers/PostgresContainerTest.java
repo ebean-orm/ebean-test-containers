@@ -1,5 +1,6 @@
 package io.ebean.test.containers;
 
+import io.avaje.applog.AppLog;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -7,11 +8,14 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import static java.lang.System.Logger.Level.INFO;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PostgresContainerTest {
+
+  private final System.Logger log = AppLog.getLogger(PostgresContainerTest.class);
 
   @Test
   void extraDb() {
@@ -65,6 +69,7 @@ class PostgresContainerTest {
 
   @Test
   void startPortBased() {
+    log.log(INFO, "startPortBased() start ...");
     PostgresContainer container = PostgresContainer.builder("15")
       .containerName("temp_pg15_9824")
       .port(9824)
@@ -76,10 +81,11 @@ class PostgresContainerTest {
     runBasedOnPort(9824);
 
     container.stopRemove();
+    log.log(INFO, "startPortBased() finished");
   }
 
   private void runBasedOnPort(int port) {
-    System.out.println("runBasedOnPort ... will connect and not start docker container");
+    log.log(INFO, "runBasedOnPort ... will connect and not start docker container");
     PostgresContainer container = PostgresContainer.builder("15")
       .containerName("not_started")
       .port(port)
@@ -89,6 +95,7 @@ class PostgresContainerTest {
     container.start();
 
     runSomeSql(container);
+    log.log(INFO, "runBasedOnPort done");
   }
 
   private void runSomeSql(PostgresContainer container) {
@@ -104,6 +111,7 @@ class PostgresContainerTest {
 
   @Test
   void start() throws SQLException, InterruptedException {
+    log.log(INFO, "start() ... ");
     PostgresContainer container = PostgresContainer.builder("15")
       .containerName("temp_postgres15")
       .port(9823)
@@ -118,7 +126,10 @@ class PostgresContainerTest {
       .extraDbSeedSqlFile("seed-extra-database.sql")
       .build();
 
+    log.log(INFO, "start() ... stopRemove()");
     container.stopRemove();
+    Thread.sleep(8_000);
+    log.log(INFO, "start() ... .startWithCreate()");
     container.startWithCreate();
     container.startContainerOnly();
     container.startWithDropCreate();
@@ -134,6 +145,7 @@ class PostgresContainerTest {
     final String url = container.jdbcUrl();
     assertEquals(url, "jdbc:postgresql://localhost:9823/main_db");
     container.stopRemove();
+    log.log(INFO, "start() finished");
   }
 
   @Test
@@ -142,7 +154,7 @@ class PostgresContainerTest {
     properties.setProperty("postgres.version", "15");
     properties.setProperty("postgres.containerName", "temp_pg15_b");
     properties.setProperty("postgres.host", "127.0.0.1");
-    properties.setProperty("postgres.port", "9824");
+    properties.setProperty("postgres.port", "9825");
 
     properties.setProperty("postgres.extensions", "hstore,pgcrypto");
 
@@ -155,7 +167,6 @@ class PostgresContainerTest {
 
     Container container = factory.container("postgres");
     ContainerConfig config = container.config();
-    // assertEquals(9823, config.port());
     container.start();
 
     //String url = config.jdbcUrl();
