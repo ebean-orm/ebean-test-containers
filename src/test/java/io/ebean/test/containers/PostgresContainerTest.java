@@ -15,7 +15,7 @@ class PostgresContainerTest {
 
   @Test
   void extraDb() {
-    PostgresContainer container = PostgresContainer.builder("14")
+    PostgresContainer container = PostgresContainer.builder("15")
       .port(0)
       .extensions("hstore")
       .extraDb("myextra")
@@ -37,7 +37,7 @@ class PostgresContainerTest {
 
   @Test
   void randomPort() {
-    PostgresContainer container = PostgresContainer.builder("14")
+    PostgresContainer container = PostgresContainer.builder("15")
       .port(0)
       .extensions("hstore")
       .build();
@@ -55,7 +55,7 @@ class PostgresContainerTest {
 
   @Test
   void defaultPort() {
-    PostgresContainer container = PostgresContainer.builder("14")
+    PostgresContainer container = PostgresContainer.builder("15")
       .extensions("hstore")
       .build();
 
@@ -65,8 +65,8 @@ class PostgresContainerTest {
 
   @Test
   void startPortBased() {
-    PostgresContainer container = PostgresContainer.builder("14")
-      .containerName("temp_postgres14")
+    PostgresContainer container = PostgresContainer.builder("15")
+      .containerName("temp_postgres15")
       .port(9823)
       .build();
 
@@ -80,7 +80,7 @@ class PostgresContainerTest {
 
   private void runBasedOnPort(int port) {
     System.out.println("runBasedOnPort ... will connect and not start docker container");
-    PostgresContainer container = PostgresContainer.builder("14")
+    PostgresContainer container = PostgresContainer.builder("15")
       .containerName("not_started")
       .port(port)
       .extensions("hstore,uuid-ossp")
@@ -104,8 +104,8 @@ class PostgresContainerTest {
 
   @Test
   void start() throws SQLException {
-    PostgresContainer container = PostgresContainer.builder("14")
-      .containerName("temp_postgres14")
+    PostgresContainer container = PostgresContainer.builder("15")
+      .containerName("temp_postgres15")
       .port(9823)
       .extensions(" hstore, , pgcrypto ")
       .inMemory(true)
@@ -139,8 +139,8 @@ class PostgresContainerTest {
   @Test
   void viaContainerFactory() {
     Properties properties = new Properties();
-    properties.setProperty("postgres.version", "14");
-    properties.setProperty("postgres.containerName", "temp_postgres14");
+    properties.setProperty("postgres.version", "15");
+    properties.setProperty("postgres.containerName", "temp_postgres15");
     properties.setProperty("postgres.host", "127.0.0.1");
     properties.setProperty("postgres.port", "9823");
 

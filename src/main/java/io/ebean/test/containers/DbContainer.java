@@ -196,6 +196,9 @@ abstract class DbContainer extends BaseContainer implements Container {
       }
       return true;
     } catch (Throwable e) {
+      if (e.getMessage().contains("No suitable driver found for")) {
+        throw new RuntimeException("Error checking connectivity, missing JDBC Driver? " + e.getMessage(), e);
+      }
       log.log(Level.TRACE, "connection failed: " + e.getMessage());
       return false;
     }
