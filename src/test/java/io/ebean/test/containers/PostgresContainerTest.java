@@ -66,7 +66,7 @@ class PostgresContainerTest {
   @Test
   void startPortBased() {
     PostgresContainer container = PostgresContainer.builder("15")
-      .containerName("temp_postgres15")
+      .containerName("temp_pg15_9824")
       .port(9824)
       .build();
 
@@ -103,7 +103,7 @@ class PostgresContainerTest {
   }
 
   @Test
-  void start() throws SQLException {
+  void start() throws SQLException, InterruptedException {
     PostgresContainer container = PostgresContainer.builder("15")
       .containerName("temp_postgres15")
       .port(9823)
