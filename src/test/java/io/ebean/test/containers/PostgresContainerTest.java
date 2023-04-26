@@ -114,7 +114,7 @@ class PostgresContainerTest {
     log.log(INFO, "start() ... ");
     PostgresContainer container = PostgresContainer.builder("15")
       .containerName("temp_postgres15")
-      .port(9823)
+      .port(9828)
       .extensions(" hstore, , pgcrypto ")
       .inMemory(true)
       .user("main_user")
