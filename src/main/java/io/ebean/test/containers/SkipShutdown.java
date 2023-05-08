@@ -10,12 +10,16 @@ import java.io.File;
  */
 public class SkipShutdown {
 
+  private static final boolean skip = new SkipShutdown().ignoreDockerShutdown();
+
   /**
    * Return true to skip docker container stop for local development.
    * <p>
+   * Used with <code>ebean.test.containers.mirror</code> when we want to use a mirror
+   * to pull test images for CI builds (and not use the mirror for local builds).
    */
   public static boolean isSkip() {
-    return new SkipShutdown().ignoreDockerShutdown();
+    return skip;
   }
 
   /**

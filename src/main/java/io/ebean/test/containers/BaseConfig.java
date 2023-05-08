@@ -47,6 +47,11 @@ abstract class BaseConfig<C, SELF extends BaseConfig<C, SELF>> implements Contai
   protected int adminInternalPort;
 
   /**
+   * Define a mirror for images to use with CI builds.
+   */
+  protected String mirror;
+
+  /**
    * Image name.
    */
   protected String image;
@@ -124,6 +129,13 @@ abstract class BaseConfig<C, SELF extends BaseConfig<C, SELF>> implements Contai
     docker = properties.getProperty("docker", docker);
     containerName = prop(properties, "containerName", containerName);
     image = prop(properties, "image", image);
+    if (!SkipShutdown.isSkip()) {
+      // CI build, maybe use the mirror to obtain container images
+      mirror = mirrorProperty(properties);
+      if (mirror != null && !mirror.isBlank()) {
+        image = imageWithMirror(mirror, image);
+      }
+    }
     host = prop(properties, "host", host);
     port = prop(properties, "port", port);
     internalPort = prop(properties, "internalPort", internalPort);
@@ -144,6 +156,44 @@ abstract class BaseConfig<C, SELF extends BaseConfig<C, SELF>> implements Contai
     }
     extraProperties(properties);
     return self();
+  }
+
+  private String mirrorProperty(Properties properties) {
+    final String mirrorFromProps = properties.getProperty("ebean.test.containers.mirror", null);
+    return System.getProperty("ebean.test.containers.mirror", mirrorFromProps);
+  }
+
+  /**
+   * Return the image with the mirror prefixed.
+   */
+  static String imageWithMirror(String mirror, String image) {
+    int beforeName = image.lastIndexOf('/');
+    if (beforeName == -1) {
+      // name[@sha][:tag] format, source image from docker hub - e.g. redis/latest
+      return imageWithMirrorPrefix(mirror, "docker.io/", image);
+    }
+    int beforePath = image.lastIndexOf('/', beforeName - 1);
+    if (beforePath == -1) {
+      if (image.startsWith("localhost/")) {
+        return image;
+      }
+      // when path/name[@sha][:tag] format, source image from docker hub - e.g. localstack/localstack:tag
+      return imageWithMirrorPrefix(mirror, "docker.io/", image);
+    }
+    // when repo/path/name[@sha][:tag] format, source image is NOT from docker hub
+    return imageWithMirrorPrefix(mirror, null, image);
+  }
+
+  private static String imageWithMirrorPrefix(String mirror, String dockerHub, String image) {
+    String mirrorTrimmed = mirror.trim();
+    StringBuilder sb = new StringBuilder(mirrorTrimmed);
+    if (!mirrorTrimmed.endsWith("/")) {
+      sb.append("/");
+    }
+    if (dockerHub != null) {
+      sb.append(dockerHub);
+    }
+    return sb.append(image).toString();
   }
 
   /**
