@@ -30,7 +30,7 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
    */
   String extraDb;
   private String extraDbUser;
-  private String extraDbPassword;
+  private String extraDbPassword = "test";
   String extraDbExtensions;
   private String extraDbInitSqlFile;
   private String extraDbSeedSqlFile;
