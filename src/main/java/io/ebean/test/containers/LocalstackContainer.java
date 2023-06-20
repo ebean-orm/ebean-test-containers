@@ -36,6 +36,12 @@ import java.util.Properties;
  */
 public class LocalstackContainer extends BaseContainer {
 
+  @Override
+  public LocalstackContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for LocalstackContainer given the localstack image version.
    */
@@ -107,6 +113,11 @@ public class LocalstackContainer extends BaseContainer {
      */
     public LocalstackContainer build() {
       return new LocalstackContainer(this);
+    }
+
+    @Override
+    public LocalstackContainer start() {
+      return build().start();
     }
   }
 

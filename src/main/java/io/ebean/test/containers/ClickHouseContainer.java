@@ -7,6 +7,12 @@ import java.util.List;
 
 public class ClickHouseContainer extends JdbcBaseDbContainer {
 
+  @Override
+  public ClickHouseContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Return a new builder for ClickHouseContainer.
    */
@@ -46,6 +52,11 @@ public class ClickHouseContainer extends JdbcBaseDbContainer {
     @Override
     public ClickHouseContainer build() {
       return new ClickHouseContainer(this);
+    }
+
+    @Override
+    public ClickHouseContainer start() {
+      return build().start();
     }
   }
 

@@ -44,9 +44,16 @@ abstract class BaseContainer implements Container {
   }
 
   @Override
-  public boolean start() {
+  public boolean startMaybe() {
     setDefaultContainerName();
     return shutdownHook(logStarted(startWithConnectivity()));
+  }
+
+  @Override
+  public void startOrThrow() {
+    if (!startMaybe()) {
+      throw new IllegalStateException("Failed to start container, review logs for ERRORS");
+    }
   }
 
   @Override
@@ -125,7 +132,7 @@ abstract class BaseContainer implements Container {
   protected boolean startWithConnectivity() {
     startIfNeeded();
     if (!waitForConnectivity()) {
-      log.log(Level.WARNING, "Container {0} failed to start - waiting for connectivity", config.containerName());
+      log.log(Level.ERROR, "Container {0} failed to start - waiting for connectivity", config.containerName());
       return false;
     }
     return true;

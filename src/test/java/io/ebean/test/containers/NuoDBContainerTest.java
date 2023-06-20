@@ -28,7 +28,7 @@ class NuoDBContainerTest {
       .password("test")
       .build();
 
-    container.start();
+    container.startMaybe();
 
     try (Connection connection = container.createConnection()) {
       final Random random = new Random();

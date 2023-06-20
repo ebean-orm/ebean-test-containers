@@ -10,6 +10,12 @@ import java.util.List;
  */
 public class CockroachContainer extends BaseDbContainer implements Container {
 
+  @Override
+  public CockroachContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for CockroachContainer.
    */
@@ -46,6 +52,11 @@ public class CockroachContainer extends BaseDbContainer implements Container {
     @Override
     public CockroachContainer build() {
       return new CockroachContainer(this);
+    }
+
+    @Override
+    public CockroachContainer start() {
+      return build().start();
     }
   }
 

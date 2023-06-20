@@ -16,7 +16,7 @@ class RedisContainerTest {
       .port(0)
       .build();
 
-    assertTrue(container.start());
+    assertTrue(container.startMaybe());
     assertThat(container.port()).isGreaterThan(0);
   }
 
@@ -27,7 +27,7 @@ class RedisContainerTest {
       .containerName("temp_redis")
       .build();
 
-    assertTrue(container.start());
+    assertTrue(container.startMaybe());
     container.stopRemove();
   }
 

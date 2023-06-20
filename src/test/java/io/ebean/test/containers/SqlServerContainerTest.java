@@ -85,7 +85,7 @@ class SqlServerContainerTest {
 
     //config.setStartMode(StartMode.DropCreate);
     //config.setStopMode(StopMode.Remove);
-    container.start();
+    container.startMaybe();
 
 //    config.setStartMode(StartMode.Container);
 //    container.start();

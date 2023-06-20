@@ -17,7 +17,7 @@ class PostgisContainerTest {
       .extraDb("myextra")
       .build();
 
-    container.start();
+    container.startMaybe();
     assertThat(container.port()).isGreaterThan(0);
 
     ContainerConfig containerConfig = container.config();

@@ -10,6 +10,12 @@ import java.util.List;
  */
 public class SqlServerContainer extends JdbcBaseDbContainer implements Container {
 
+  @Override
+  public SqlServerContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for SqlServerContainer.
    */
@@ -52,6 +58,11 @@ public class SqlServerContainer extends JdbcBaseDbContainer implements Container
     @Override
     public SqlServerContainer build() {
       return new SqlServerContainer(this);
+    }
+
+    @Override
+    public SqlServerContainer start() {
+      return build().start();
     }
   }
 

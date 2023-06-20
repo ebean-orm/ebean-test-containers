@@ -5,6 +5,12 @@ package io.ebean.test.containers;
  */
 public class PostgresContainer extends BasePostgresContainer implements Container {
 
+  @Override
+  public PostgresContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for PostgresContainer.
    */
@@ -53,6 +59,11 @@ public class PostgresContainer extends BasePostgresContainer implements Containe
     @Override
     public PostgresContainer build() {
       return new PostgresContainer(this);
+    }
+
+    @Override
+    public PostgresContainer start() {
+      return build().start();
     }
   }
 }

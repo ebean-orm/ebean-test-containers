@@ -6,6 +6,12 @@ import java.util.Locale;
 
 public class RedisContainer extends BaseContainer {
 
+  @Override
+  public RedisContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for RedisContainer.
    */
@@ -33,6 +39,11 @@ public class RedisContainer extends BaseContainer {
     @Override
     public RedisContainer build() {
       return new RedisContainer(this);
+    }
+
+    @Override
+    public RedisContainer start() {
+      return build().start();
     }
   }
 

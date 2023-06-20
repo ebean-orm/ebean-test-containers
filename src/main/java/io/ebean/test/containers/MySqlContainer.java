@@ -2,6 +2,12 @@ package io.ebean.test.containers;
 
 public class MySqlContainer extends MySqlBaseContainer {
 
+  @Override
+  public MySqlContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for MySqlContainer.
    */
@@ -46,6 +52,11 @@ public class MySqlContainer extends MySqlBaseContainer {
     @Override
     public MySqlContainer build() {
       return new MySqlContainer(this);
+    }
+
+    @Override
+    public MySqlContainer start() {
+      return build().start();
     }
   }
 

@@ -5,6 +5,12 @@ package io.ebean.test.containers;
  */
 public class MariaDBContainer extends MySqlBaseContainer {
 
+  @Override
+  public MariaDBContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for MariaDBContainer.
    */
@@ -50,6 +56,11 @@ public class MariaDBContainer extends MySqlBaseContainer {
     @Override
     public MariaDBContainer build() {
       return new MariaDBContainer(this);
+    }
+
+    @Override
+    public MariaDBContainer start() {
+      return build().start();
     }
   }
 

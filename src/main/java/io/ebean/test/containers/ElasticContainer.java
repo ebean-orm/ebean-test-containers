@@ -8,6 +8,12 @@ import java.util.List;
  */
 public class ElasticContainer extends BaseContainer {
 
+  @Override
+  public ElasticContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for ElasticContainer.
    */
@@ -37,6 +43,11 @@ public class ElasticContainer extends BaseContainer {
     @Override
     public ElasticContainer build() {
       return new ElasticContainer(this);
+    }
+
+    @Override
+    public ElasticContainer start() {
+      return build().start();
     }
   }
 

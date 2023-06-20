@@ -8,6 +8,12 @@ import java.util.List;
  */
 public class YugabyteContainer extends BasePostgresContainer {
 
+  @Override
+  public YugabyteContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for YugabyteContainer.
    */
@@ -44,6 +50,11 @@ public class YugabyteContainer extends BasePostgresContainer {
     @Override
     public YugabyteContainer build() {
       return new YugabyteContainer(this);
+    }
+
+    @Override
+    public YugabyteContainer start() {
+      return build().start();
     }
   }
 

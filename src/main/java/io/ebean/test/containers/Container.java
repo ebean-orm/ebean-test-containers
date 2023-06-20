@@ -11,9 +11,21 @@ public interface Container {
   ContainerConfig config();
 
   /**
-   * Start the container.
+   * Start and return the container.
+   * <p>
+   * Throws an IllegalStateException if the container can not be started.
    */
-  boolean start();
+  <C extends Container> C start();
+
+  /**
+   * Start the container or throw a IllegalStateException.
+   */
+  void startOrThrow();
+
+  /**
+   * Start the container returning true if successful.
+   */
+  boolean startMaybe();
 
   /**
    * Stop the container.

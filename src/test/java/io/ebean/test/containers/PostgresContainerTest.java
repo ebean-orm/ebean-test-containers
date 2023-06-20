@@ -28,7 +28,7 @@ class PostgresContainerTest {
       .extraDbExtensions("pgcrypto")
       .build();
 
-    container.start();
+    container.startMaybe();
     assertThat(container.port()).isGreaterThan(0);
 
     ContainerConfig containerConfig = container.config();
@@ -46,7 +46,7 @@ class PostgresContainerTest {
       .extensions("hstore")
       .build();
 
-    container.start();
+    container.startMaybe();
     assertThat(container.port()).isGreaterThan(0);
 
     ContainerConfig containerConfig = container.config();
@@ -63,7 +63,7 @@ class PostgresContainerTest {
       .extensions("hstore")
       .build();
 
-    container.start();
+    container.startMaybe();
     runSomeSql(container);
   }
 
@@ -92,7 +92,7 @@ class PostgresContainerTest {
       .extensions("hstore,uuid-ossp")
       .build();
 
-    container.start();
+    container.startMaybe();
 
     runSomeSql(container);
     log.log(INFO, "runBasedOnPort done");
@@ -166,7 +166,7 @@ class PostgresContainerTest {
 
     Container container = factory.container("postgres");
     ContainerConfig config = container.config();
-    container.start();
+    container.startMaybe();
 
     //String url = config.jdbcUrl();
     //String url = "jdbc:postgresql://localhost:" + config.dbPort + "/" + config.dbName;

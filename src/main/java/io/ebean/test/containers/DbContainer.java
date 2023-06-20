@@ -55,7 +55,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   @Override
-  public boolean start() {
+  public boolean startMaybe() {
     setDefaultContainerName();
     return shutdownHook(logStarted(startForMode()));
   }
@@ -96,12 +96,12 @@ abstract class DbContainer extends BaseContainer implements Container {
   public boolean startContainerOnly() {
     startIfNeeded();
     if (!waitForDatabaseReady()) {
-      log.log(Level.WARNING, "Failed waitForDatabaseReady for container {0}", config.containerName());
+      log.log(Level.ERROR, "Failed waitForDatabaseReady for container {0}", config.containerName());
       return false;
     }
 
     if (!waitForConnectivity()) {
-      log.log(Level.WARNING, "Failed waiting for connectivity for {0}", config.containerName());
+      log.log(Level.ERROR, "Failed waiting for connectivity for {0}", config.containerName());
       return false;
     }
     return true;
