@@ -23,6 +23,17 @@ public interface ContainerBuilder<C, SELF extends ContainerBuilder<C, SELF>> {
   SELF properties(Properties properties);
 
   /**
+   * Set a container mirror for images to use with CI builds.
+   * <p>
+   * For example "my.ecr/mirror".
+   * <p>
+   * The mirror is not used when deemed to be running locally. Typically determined
+   * via a <code>~/.ebean/ignore-docker-shutdown</code> file or alternative marker
+   * file set via system property <code>ebean.test.localDevelopment></code>.
+   */
+  SELF mirror(String mirror);
+
+  /**
    * Set the container name to use.
    */
   SELF containerName(String containerName);

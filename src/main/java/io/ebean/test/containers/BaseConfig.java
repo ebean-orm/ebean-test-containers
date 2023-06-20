@@ -224,6 +224,21 @@ abstract class BaseConfig<C, SELF extends BaseConfig<C, SELF>> implements Contai
   }
 
   /**
+   * Set a container mirror for images to use with CI builds.
+   * <p>
+   * For example "my.ecr/mirror".
+   * <p>
+   * The mirror is not used when deemed to be running locally. Typically determined
+   * via a <code>~/.ebean/ignore-docker-shutdown</code> file or alternative marker
+   * file set via system property <code>ebean.test.localDevelopment></code>.
+   */
+  @Override
+  public SELF mirror(String mirror) {
+    this.mirror = mirror;
+    return self();
+  }
+
+  /**
    * Set the exposed port with 0 meaning use a random port.
    * <p>
    * When the port is set to `0` then docker will assign a random port.
