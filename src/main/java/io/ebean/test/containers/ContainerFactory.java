@@ -134,7 +134,7 @@ public class ContainerFactory {
       if (logging != null) {
         logging.accept(container.config().startDescription());
       }
-      container.start();
+      container.startMaybe();
     }
   }
 

@@ -10,7 +10,7 @@ class ClickHouseContainerTest {
       .startMode(StartMode.DropCreate)
       .build();
 
-    container.start();
+    container.startMaybe();
     container.stopRemove();
   }
 }

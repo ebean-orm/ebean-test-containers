@@ -57,7 +57,7 @@ class OracleContainerTest {
     ContainerConfig config = container.config();
 
     //config.setStartMode(StartMode.DropCreate);
-    container.start();
+    container.startMaybe();
 
 //    config.setStartMode(StartMode.Container);
 //    container.start();

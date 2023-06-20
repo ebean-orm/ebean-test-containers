@@ -5,6 +5,12 @@ package io.ebean.test.containers;
  */
 public class PostgisContainer extends BasePostgresContainer implements Container {
 
+  @Override
+  public PostgisContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for PostgisContainer.
    */
@@ -56,6 +62,11 @@ public class PostgisContainer extends BasePostgresContainer implements Container
     @Override
     public PostgisContainer build() {
       return new PostgisContainer(this);
+    }
+
+    @Override
+    public PostgisContainer start() {
+      return build().start();
     }
   }
 }

@@ -18,7 +18,7 @@ class MariaDBContainerTest {
       .port(0)
       .build();
 
-    container.start();
+    container.startMaybe();
 
     String jdbcUrl = container.jdbcUrl();
     assertThat(jdbcUrl).contains(":" + container.port());

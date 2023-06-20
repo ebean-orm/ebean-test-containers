@@ -9,6 +9,12 @@ import java.util.List;
  */
 public class OracleContainer extends JdbcBaseDbContainer implements Container {
 
+  @Override
+  public OracleContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for OracleContainer.
    */
@@ -92,6 +98,11 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     @Override
     public OracleContainer build() {
       return new OracleContainer(this);
+    }
+
+    @Override
+    public OracleContainer start() {
+      return build().start();
     }
   }
 

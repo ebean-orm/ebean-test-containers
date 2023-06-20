@@ -13,6 +13,12 @@ import java.util.Properties;
  */
 public class Db2Container extends JdbcBaseDbContainer implements Container {
 
+  @Override
+  public Db2Container start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Return a builder for Db2Container.
    */
@@ -76,6 +82,11 @@ public class Db2Container extends JdbcBaseDbContainer implements Container {
     @Override
     public Db2Container build() {
       return new Db2Container(this);
+    }
+
+    @Override
+    public Db2Container start() {
+      return build().start();
     }
   }
 

@@ -44,14 +44,14 @@ abstract class BaseContainer implements Container {
   }
 
   @Override
-  public boolean start() {
+  public boolean startMaybe() {
     setDefaultContainerName();
     return shutdownHook(logStarted(startWithConnectivity()));
   }
 
   @Override
   public void startOrThrow() {
-    if (!start()) {
+    if (!startMaybe()) {
       throw new IllegalStateException("Failed to start container, review logs for ERRORS");
     }
   }

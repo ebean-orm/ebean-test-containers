@@ -55,7 +55,7 @@ abstract class DbContainer extends BaseContainer implements Container {
   }
 
   @Override
-  public boolean start() {
+  public boolean startMaybe() {
     setDefaultContainerName();
     return shutdownHook(logStarted(startForMode()));
   }

@@ -20,6 +20,12 @@ public class HanaContainer extends DbContainer implements Container {
 
   private static final System.Logger log = Commands.log;
 
+  @Override
+  public HanaContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for HanaContainer.
    */
@@ -132,6 +138,11 @@ public class HanaContainer extends DbContainer implements Container {
     @Override
     public HanaContainer build() {
       return new HanaContainer(this);
+    }
+
+    @Override
+    public HanaContainer start() {
+      return build().start();
     }
 
     /**

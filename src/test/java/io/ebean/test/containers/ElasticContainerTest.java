@@ -12,7 +12,7 @@ class ElasticContainerTest {
       .port(0)
       .build();
 
-    container.start();
+    container.startMaybe();
     assertThat(container.endpointUrl()).contains(":" + container.port());
   }
 
@@ -20,7 +20,7 @@ class ElasticContainerTest {
   void runProcess() {
     ElasticContainer elastic = ElasticContainer.builder("6.8.23").build();
 
-    elastic.start();
+    elastic.startMaybe();
     elastic.stop();
   }
 

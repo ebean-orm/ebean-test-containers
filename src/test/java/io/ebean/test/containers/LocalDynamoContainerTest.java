@@ -16,7 +16,7 @@ class LocalDynamoContainerTest {
       .port(0)
       .build();
 
-    container.start();
+    container.startMaybe();
 
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
     createTable(amazonDynamoDB);
@@ -31,7 +31,7 @@ class LocalDynamoContainerTest {
       .build();
 
     // start the container (if not already started)
-    container.start();
+    container.startMaybe();
 
     // obtain the AWS DynamoDB client
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
@@ -44,7 +44,7 @@ class LocalDynamoContainerTest {
   @Test
   void start() {
     LocalDynamoDBContainer container = LocalDynamoDBContainer.builder("1.13.2").build();
-    container.start();
+    container.startMaybe();
 
     AmazonDynamoDB dynamoDB = container.dynamoDB();
     createTable(dynamoDB);

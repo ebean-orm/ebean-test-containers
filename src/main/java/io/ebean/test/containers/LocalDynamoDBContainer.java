@@ -49,6 +49,12 @@ import java.util.Properties;
  */
 public class LocalDynamoDBContainer extends BaseContainer {
 
+  @Override
+  public LocalDynamoDBContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for LocalDynamoDBContainer given the localstack image version.
    */
@@ -86,6 +92,11 @@ public class LocalDynamoDBContainer extends BaseContainer {
      */
     public LocalDynamoDBContainer build() {
       return new LocalDynamoDBContainer(this);
+    }
+
+    @Override
+    public LocalDynamoDBContainer start() {
+      return build().start();
     }
   }
 

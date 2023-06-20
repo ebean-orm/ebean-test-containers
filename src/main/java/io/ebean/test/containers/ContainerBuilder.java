@@ -13,6 +13,11 @@ public interface ContainerBuilder<C, SELF extends ContainerBuilder<C, SELF>> {
   C build();
 
   /**
+   * Build and start the container.
+   */
+  C start();
+
+  /**
    * Set configuration from properties.
    */
   SELF properties(Properties properties);

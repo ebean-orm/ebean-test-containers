@@ -134,7 +134,7 @@ public class HanaContainerTest {
     ContainerConfig config = container.config();
 
     //config.setStartMode(StartMode.DropCreate);
-    assertTrue(container.start());
+    assertTrue(container.startMaybe());
 
 //    config.setStartMode(StartMode.Container);
 //    assertTrue(container.start());

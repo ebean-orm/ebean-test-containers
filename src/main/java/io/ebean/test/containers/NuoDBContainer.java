@@ -12,6 +12,12 @@ import java.util.List;
 
 public class NuoDBContainer extends JdbcBaseDbContainer {
 
+  @Override
+  public NuoDBContainer start() {
+    startOrThrow();
+    return this;
+  }
+
   /**
    * Create a builder for NuoDB container.
    */
@@ -86,6 +92,11 @@ public class NuoDBContainer extends JdbcBaseDbContainer {
     @Override
     public NuoDBContainer build() {
       return new NuoDBContainer(this);
+    }
+
+    @Override
+    public NuoDBContainer start() {
+      return build().start();
     }
   }
 

@@ -31,7 +31,7 @@ class LocalstackContainerTest {
       .build();
 
     // container.stopRemove();
-    container.start();
+    container.startMaybe();
 
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
     createTable(amazonDynamoDB);
@@ -106,7 +106,7 @@ class LocalstackContainerTest {
       .port(0)
       .build();
 
-    container.start();
+    container.startMaybe();
 
     int assignedPort = container.port();
     assertThat(assignedPort).isGreaterThan(0);
@@ -125,7 +125,7 @@ class LocalstackContainerTest {
     LocalstackContainer container = LocalstackContainer.builder("0.14.4")
       //.setShutdownMode(StopMode.None)
       .build();
-    container.start();
+    container.startMaybe();
 
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
     createTable(amazonDynamoDB);

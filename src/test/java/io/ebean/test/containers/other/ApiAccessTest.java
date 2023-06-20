@@ -17,6 +17,6 @@ class ApiAccessTest {
         .port(9826)
         .build();
 
-      container.start();
+      container.startMaybe();
   }
 }
