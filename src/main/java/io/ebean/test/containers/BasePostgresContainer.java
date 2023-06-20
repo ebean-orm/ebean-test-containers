@@ -83,7 +83,7 @@ abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Cont
 
   private void createRole(Connection connection, String username, String password) {
     if (!sqlHasRow(connection, "select rolname from pg_roles where rolname = '" + username + "'")) {
-      sqlRun(connection, "create role " + username + " password '" + password + "' login createrole");
+      sqlRun(connection, "create role " + username + " password '" + password + "' login createrole superuser");
     }
   }
 
