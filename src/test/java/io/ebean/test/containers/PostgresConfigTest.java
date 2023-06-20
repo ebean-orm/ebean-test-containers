@@ -13,7 +13,7 @@ class PostgresConfigTest {
     Properties properties = new Properties();
     properties.setProperty("shutdownMode", "remove");
 
-    InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
+    InternalConfigDb config = PostgresContainer.builder("15").properties(properties).internalConfig();
     assertEquals(config.shutdownMode(), StopMode.Remove);
   }
 
@@ -21,7 +21,7 @@ class PostgresConfigTest {
   void stopMode_defaultStop() {
     Properties properties = new Properties();
 
-    InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
+    InternalConfigDb config = PostgresContainer.builder("15").properties(properties).internalConfig();
     assertEquals(config.shutdownMode(), StopMode.Auto);
   }
 
@@ -31,7 +31,7 @@ class PostgresConfigTest {
     properties.setProperty("shutdownMode", "remove");
     properties.setProperty("postgres.shutdownMode", "none");
 
-    InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
+    InternalConfigDb config = PostgresContainer.builder("15").properties(properties).internalConfig();
     assertEquals(config.shutdownMode(), StopMode.None);
   }
 
@@ -40,7 +40,7 @@ class PostgresConfigTest {
   void properties_default() {
     Properties properties = new Properties();
 
-    InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
+    InternalConfigDb config = PostgresContainer.builder("15").properties(properties).internalConfig();
     assertNull(config.containerName());
     config.setDefaultContainerName();
     assertEquals(config.containerName(), "ut_postgres");
@@ -77,7 +77,7 @@ class PostgresConfigTest {
     properties.setProperty("postgres.extraDb.seedSqlFile", "extra_seed.sql");
     properties.setProperty("postgres.extraDb.extensions", "hstore,pgcrypto");
 
-    InternalConfigDb config = PostgresContainer.builder("11").properties(properties).internalConfig();
+    InternalConfigDb config = PostgresContainer.builder("15").properties(properties).internalConfig();
     assertEquals(config.containerName(), "junk_postgres");
     assertEquals(config.getPort(), 9823);
     assertEquals(config.getHost(), "172.17.0.1");

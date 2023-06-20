@@ -7,6 +7,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BaseConfigTest {
 
   @Test
+  void mirror() {
+    PostgresContainer.Builder builder =
+      PostgresContainer
+        .builder("15")
+        .mirror("my.ecr/mirror");
+
+    assertThat(builder.mirror).isEqualTo("my.ecr/mirror");
+  }
+
+  @Test
   void imageWithMirror_nameOnly() {
     String val = BaseConfig.imageWithMirror("my.ecr/mirror", "redis:latest");
     assertThat(val).isEqualTo("my.ecr/mirror/docker.io/redis:latest");
