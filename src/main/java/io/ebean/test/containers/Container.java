@@ -11,6 +11,11 @@ public interface Container {
   ContainerConfig config();
 
   /**
+   * Start the container or throw a IllegalStateException.
+   */
+  void startOrThrow();
+
+  /**
    * Start the container.
    */
   boolean start();

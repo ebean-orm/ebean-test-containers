@@ -50,6 +50,13 @@ abstract class BaseContainer implements Container {
   }
 
   @Override
+  public void startOrThrow() {
+    if (!start()) {
+      throw new IllegalStateException("Failed to start container, review logs for ERRORS");
+    }
+  }
+
+  @Override
   public int port() {
     return config.getPort();
   }
@@ -125,7 +132,7 @@ abstract class BaseContainer implements Container {
   protected boolean startWithConnectivity() {
     startIfNeeded();
     if (!waitForConnectivity()) {
-      log.log(Level.WARNING, "Container {0} failed to start - waiting for connectivity", config.containerName());
+      log.log(Level.ERROR, "Container {0} failed to start - waiting for connectivity", config.containerName());
       return false;
     }
     return true;
