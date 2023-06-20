@@ -65,11 +65,9 @@ The dbName needs to be a valid database name so please just use alpha and unders
 special characters. For example, with Postgres it needs to be a valid postgres database name.
 
 ```java
-    PostgresContainer container = PostgresContainer.newBuilder("14")
+    PostgresContainer container = PostgresContainer.builder("14")
       .dbName("my_app1") // this needs to be unique, not clash with other projects
-      .build();
-
-    container.start();
+      .start();
 
 ```
 
@@ -126,21 +124,19 @@ occurring automatically on JVM shutdown.
 
 ```java
 
-    PostgresContainer container = PostgresContainer.newBuilder("14")
+    PostgresContainer container = PostgresContainer.builder("14")
       //.containerName("ut_postgres")
       //.port(6423)
       .dbName("my_app1")
       .extensions("hstore,pgcrypto")
-      .build();
-
-    container.start();
+      .start();
 
 ```
 ... a more extensive example:
 
 ```java
 
-    PostgresContainer container = PostgresContainer.newBuilder("14")
+    PostgresContainer container = PostgresContainer.builder("14")
       .dbName("my_app2")
       .containerName("temp_postgres14")
       .port(9823)
@@ -153,23 +149,20 @@ occurring automatically on JVM shutdown.
       .extraDb("extra")
       .extraDbInitSqlFile("init-extra-database.sql")
       .extraDbSeedSqlFile("seed-extra-database.sql")
-      .build();
+      .start();
 
-    container.start();
 ```
 
 #### SqlServer
 
 ```java
 
-    SqlServerContainer container = SqlServerContainer.newBuilder(SQLSERVER_VER)
+    SqlServerContainer container = SqlServerContainer.builder(SQLSERVER_VER)
       .dbName("my_third_app")
       .collation("SQL_Latin1_General_CP1_CS_AS")
       // .containerName("ut_sqlserver")
       // .port(1433)
-      .build();
-
-    container.start();
+      .start();
 
 ```
 
@@ -177,14 +170,12 @@ occurring automatically on JVM shutdown.
 #### Localstack - `localstack/localstack`
 
 ```java
-    LocalstackContainer container = LocalstackContainer.newBuilder("0.14")
+    LocalstackContainer container = LocalstackContainer.builder("0.14")
       .services("dynamodb,kinesis,sns,sqs")
       //.awsRegion("ap-southeast-2")
       //.port(4566)
       //.image("localstack/localstack:0.14")
-      .build();
-
-    container.start();
+      .start();
 
     // obtain what we need ...
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
@@ -200,14 +191,11 @@ occurring automatically on JVM shutdown.
 
 ```java
 
-    LocalDynamoDBContainer container = LocalDynamoDBContainer.newBuilder("1.13.2")
+    LocalDynamoDBContainer container = LocalDynamoDBContainer.builder("1.13.2")
       //.port(8001)
       //.containerName("ut_dynamodb")
       //.image("amazon/dynamodb-local:1.13.2")
-      .build();
-
-    // start the container (if not already started)
-    container.start();
+      .start();
 
     // obtain the AWS DynamoDB client
     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
@@ -219,68 +207,61 @@ occurring automatically on JVM shutdown.
 
 ```java
 
-    MySqlContainer container = MySqlContainer.newBuilder(MYSQL_VER)
+    MySqlContainer container = MySqlContainer.builder(MYSQL_VER)
       //.containerName("ut_mysql")
       //.port(4306)
       .dbName("my_app4")
       .characterSet("utf8mb4")
       .collation("utf8mb4_unicode_ci")
-      .build();
-
-    container.start();
+      .start();
 
 ```
 
 #### MariaDB
 
 ```java
-    MariaDBContainer container = MariaDBContainer.newBuilder("latest")
+    MariaDBContainer container = MariaDBContainer.builder("latest")
       .dbName("my_app5")
       //.port(4306)
-      .build();
+      .start();
 
-    container.start();
 ```
 
 #### ElasticSearch
 
 ```java
-    ElasticContainer container = ElasticContainer.newBuilder("5.6.0")
-      .build();
+    ElasticContainer container = ElasticContainer.builder("5.6.0")
+      .start();
 
-      container.start();
 ```
 
 #### Redis
 
 ```java
-    RedisContainer container = RedisContainer.newBuilder("latest")
-      .build();
+    RedisContainer container = RedisContainer.builder("latest")
+      .start();
 
-      container.start();
 ```
 
 #### Oracle
 
 ```java
-  OracleContainer container = OracleContainer.newBuilder("latest")
+  OracleContainer container = OracleContainer.builder("latest")
     .user("my_unique_user")
     .stopMode(StopMode.NONE)
-    .build();
+    .start();
 
-  container.start();
 ```
 
 
 #### DB2
 
 ```java
-    Db2Container container = Db2Container.newBuilder("11.5.4.0")
+    Db2Container container = Db2Container.builder("11.5.4.0")
       .dbName("my_app6")
       .port(50050)
-      .build();
+      .start();
 
-    container.start();
 ```
 
 #### Hana
@@ -293,22 +274,20 @@ occurring automatically on JVM shutdown.
 #### Clickhouse
 
 ```java
-  ClickHouseContainer container = ClickHouseContainer.newBuilder("latest")
-    .build();
+  ClickHouseContainer container = ClickHouseContainer.builder("latest")
+    .start();
 
-  container.start();
 ```
 
 #### Yugabyte
 
 ```java
-    YugabyteContainer container = YugabyteContainer.newBuilder("2.11.2.0-b89")
+    YugabyteContainer container = YugabyteContainer.builder("2.11.2.0-b89")
       //.port(6433)
       .dbName("my_app7")
       .extensions("pgcrypto")
-      .build();
+      .start();
 
-    container.start();
 ```
 
 ## Ebean ORM use
