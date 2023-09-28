@@ -11,9 +11,17 @@ import com.amazonaws.services.sns.AmazonSNS;
 import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
+import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.kinesis.KinesisClient;
+import software.amazon.awssdk.services.sns.SnsClient;
+import software.amazon.awssdk.services.sqs.SqsClient;
 
 import java.io.IOException;
 import java.lang.System.Logger.Level;
+import java.net.URI;
 import java.util.List;
 import java.util.Properties;
 
@@ -121,6 +129,8 @@ public class LocalstackContainer extends BaseContainer {
     }
   }
 
+  private final AwsBasicCredentials awsBasicCredentials = AwsBasicCredentials.create("localstack", "localstack");
+
   private final List<String> serviceNames;
   private final String services;
   private final String awsRegion;
@@ -142,7 +152,20 @@ public class LocalstackContainer extends BaseContainer {
   }
 
   /**
-   * Return the AmazonDynamoDB that can be used for this container.
+   * Return the DynamoDbClient (V2 SDK) that can be used for this container.
+   * <p>
+   * This should be used AFTER the container is started.
+   */
+  public DynamoDbClient dynamoDBClient() {
+    return DynamoDbClient.builder()
+      .credentialsProvider(credentialsProvider())
+      .endpointOverride(endpoint())
+      .region(region())
+      .build();
+  }
+
+  /**
+   * Return the AmazonDynamoDB (V1 SDK) that can be used for this container.
    * <p>
    * This should be used AFTER the container is started.
    */
@@ -154,7 +177,20 @@ public class LocalstackContainer extends BaseContainer {
   }
 
   /**
-   * Return AmazonKinesis that can be used for this container.
+   * Return KinesisClient (V2 SDK) that can be used for this container.
+   * <p>
+   * This should be used AFTER the container is started.
+   */
+  public KinesisClient kinesisClient() {
+    return KinesisClient.builder()
+      .credentialsProvider(credentialsProvider())
+      .endpointOverride(endpoint())
+      .region(region())
+      .build();
+  }
+
+  /**
+   * Return AmazonKinesis (V1 SDK) that can be used for this container.
    * <p>
    * This should be used AFTER the container is started.
    */
@@ -166,7 +202,18 @@ public class LocalstackContainer extends BaseContainer {
   }
 
   /**
-   * Return the AmazonSNS client for this container.
+   * Return the SnsClient (V2 SDK) client for this container.
+   */
+  public SnsClient snsClient() {
+    return SnsClient.builder()
+      .credentialsProvider(credentialsProvider())
+      .endpointOverride(endpoint())
+      .region(region())
+      .build();
+  }
+
+  /**
+   * Return the AmazonSNS (V1 SDK) client for this container.
    */
   public AmazonSNS sns() {
     return AmazonSNSClientBuilder.standard()
@@ -176,7 +223,18 @@ public class LocalstackContainer extends BaseContainer {
   }
 
   /**
-   * Return the AmazonSQS client for this container.
+   * Return the SnsClient (V2 SDK) client for this container.
+   */
+  public SqsClient sqsClient() {
+    return SqsClient.builder()
+      .credentialsProvider(credentialsProvider())
+      .endpointOverride(endpoint())
+      .region(region())
+      .build();
+  }
+
+  /**
+   * Return the AmazonSQS (V1 SDK) client for this container.
    */
   public AmazonSQS sqs() {
     return AmazonSQSClientBuilder.standard()
@@ -185,8 +243,34 @@ public class LocalstackContainer extends BaseContainer {
       .build();
   }
 
+  /**
+   * Return SDK 2 AwsCredentialsProvider.
+   */
+  public AwsCredentialsProvider credentialsProvider() {
+    return this::basicCredentials;
+  }
+
+  private AwsBasicCredentials basicCredentials() {
+    return awsBasicCredentials;
+  }
+
+  /**
+   * Return SDK 1 AWSStaticCredentialsProvider.
+   */
+  @Deprecated
   public AWSStaticCredentialsProvider credentials() {
     return new AWSStaticCredentialsProvider(new BasicAWSCredentials("localstack", "localstack"));
+  }
+
+  /**
+   * Return SDK 2 Region.
+   */
+  public Region region() {
+    return Region.of(awsRegion);
+  }
+
+  public URI endpoint() {
+    return URI.create(endpointUrl());
   }
 
   public String endpointUrl() {
