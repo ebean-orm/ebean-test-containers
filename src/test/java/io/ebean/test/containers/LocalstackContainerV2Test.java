@@ -23,7 +23,7 @@ class LocalstackContainerV2Test {
   @Disabled
   @Test
   void start_viaBuilder() {
-    LocalstackContainer container = LocalstackContainer.builder("0.14.4")
+    Localstack2Container container = Localstack2Container.builder("0.14.4")
       .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs")
       //.port(4567)
@@ -34,17 +34,17 @@ class LocalstackContainerV2Test {
     // container.stopRemove();
     container.startMaybe();
 
-    var amazonDynamoDB = container.dynamoDBClient();
+    AwsSDKv2 sdk = container.sdk2();
+    var amazonDynamoDB = sdk.dynamoDBClient();
     createTable(amazonDynamoDB);
 
-    KinesisClient kinesis = container.kinesisClient();
-    SnsClient sns = container.snsClient();
-    SqsClient sqs = container.sqsClient();
+    KinesisClient kinesis = sdk.kinesisClient();
+    SnsClient sns = sdk.snsClient();
+    SqsClient sqs = sdk.sqsClient();
 
-    useSnsSqs(container);
-    useKinesis(container);
+    useSnsSqs(sdk);
+    useKinesis(sdk);
 
-    assertThat(container.credentials()).isNotNull();
     assertThat(container.endpointUrl()).isNotNull();
     assertThat(container.awsRegion()).isEqualTo("ap-southeast-2");
 
@@ -55,8 +55,8 @@ class LocalstackContainerV2Test {
     // container.stopRemove();
   }
 
-  private void useKinesis(LocalstackContainer container) {
-    KinesisClient kinesis = container.kinesisClient();
+  private void useKinesis(AwsSDKv2 sdk) {
+    KinesisClient kinesis = sdk.kinesisClient();
     try {
       System.out.println(kinesis.createStream(CreateStreamRequest.builder()
         .streamName("hello-stream")
@@ -67,10 +67,10 @@ class LocalstackContainerV2Test {
     }
   }
 
-  private void useSnsSqs(LocalstackContainer container) {
+  private void useSnsSqs(AwsSDKv2 sdk) {
 
-    SqsClient sqs = container.sqsClient();
-    SnsClient sns = container.snsClient();
+    SqsClient sqs = sdk.sqsClient();
+    SnsClient sns = sdk.snsClient();
 
     String sqsName = "SQS_NAME";
     String snsTopicName = "SNS_TOPIC";
@@ -126,7 +126,7 @@ class LocalstackContainerV2Test {
   @Disabled
   @Test
   void randomPort() {
-    LocalstackContainer container = LocalstackContainer.builder("0.14")
+    Localstack2Container container = Localstack2Container.builder("0.14.4")
       .port(0)
       .build();
 
@@ -135,7 +135,8 @@ class LocalstackContainerV2Test {
     int assignedPort = container.port();
     assertThat(assignedPort).isGreaterThan(0);
 
-    DynamoDbClient amazonDynamoDB = container.dynamoDBClient();
+    AwsSDKv2 sdk = container.sdk2();
+    DynamoDbClient amazonDynamoDB = sdk.dynamoDBClient();
     createTable(amazonDynamoDB);
 
     container.stop();
@@ -146,12 +147,13 @@ class LocalstackContainerV2Test {
   @Test
   void start() {
 
-    LocalstackContainer container = LocalstackContainer.builder("0.14.4")
+    Localstack2Container container = Localstack2Container.builder("0.14.4")
       //.setShutdownMode(StopMode.None)
       .build();
     container.startMaybe();
 
-    DynamoDbClient amazonDynamoDB = container.dynamoDBClient();
+    AwsSDKv2 sdk = container.sdk();
+    DynamoDbClient amazonDynamoDB = sdk.dynamoDBClient();
     createTable(amazonDynamoDB);
 
     //container.stop();
