@@ -33,7 +33,7 @@ public class PostgresContainer extends BasePostgresContainer<PostgresContainer> 
   /**
    * Builder for Postgres container.
    */
-  public static class Builder extends DbConfig<PostgresContainer, Builder> {
+  public static class Builder extends BaseDbBuilder<PostgresContainer, Builder> {
 
     private Builder(String version) {
       super("postgres", 6432, 5432, version);

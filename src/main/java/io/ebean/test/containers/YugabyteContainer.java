@@ -29,7 +29,7 @@ public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> 
     return builder(version);
   }
 
-  public static class Builder extends DbConfig<YugabyteContainer, YugabyteContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<YugabyteContainer, Builder> {
 
     private Builder(String version) {
       super("yugabyte", 6433, 5433, version);

@@ -1,6 +1,6 @@
 package io.ebean.test.containers;
 
-public class MySqlContainer extends MySqlBaseContainer<MySqlContainer> {
+public class MySqlContainer extends BaseMySqlContainer<MySqlContainer> {
 
   @Override
   public MySqlContainer start() {
@@ -23,7 +23,7 @@ public class MySqlContainer extends MySqlBaseContainer<MySqlContainer> {
     return builder(version);
   }
 
-  public static class Builder extends DbConfig<MySqlContainer, MySqlContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<MySqlContainer, Builder> {
 
     private Builder(String version) {
       super("mysql", 4306, 3306, version);

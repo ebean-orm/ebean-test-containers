@@ -18,7 +18,7 @@ abstract class DbContainer<C extends DbContainer<C>> extends BaseContainer<C> {
   boolean checkConnectivityUsingAdmin;
   int conditionPauseMillis = 100;
 
-  DbContainer(DbConfig<?, ?> config) {
+  DbContainer(BaseDbBuilder<?, ?> config) {
     super(config);
     this.dbConfig = config.internalConfig();
   }

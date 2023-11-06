@@ -32,7 +32,7 @@ public class ElasticContainer extends BaseContainer<ElasticContainer> {
   /**
    * Builder for ElasticContainer.
    */
-  public static class Builder extends BaseConfig<ElasticContainer, ElasticContainer.Builder> {
+  public static class Builder extends BaseBuilder<ElasticContainer, Builder> {
 
     private Builder(String version) {
       super("elastic", 9201, 9200, version);

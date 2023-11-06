@@ -26,7 +26,7 @@ public class CockroachContainer extends BaseDbContainer<CockroachContainer> {
   /**
    * Builder for CockroachContainer.
    */
-  public static class Builder extends DbConfig<CockroachContainer, CockroachContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<CockroachContainer, Builder> {
 
     private Builder(String version) {
       super("cockroach", 26257, 26257, version);

@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Commands for controlling a DB2 docker container.
  */
-public class Db2Container extends JdbcBaseDbContainer<Db2Container> {
+public class Db2Container extends BaseJdbcContainer<Db2Container> {
 
   @Override
   public Db2Container start() {
@@ -37,7 +37,7 @@ public class Db2Container extends JdbcBaseDbContainer<Db2Container> {
   /**
    * Builder for Db2Container.
    */
-  public static class Builder extends DbConfig<Db2Container, Db2Container.Builder> {
+  public static class Builder extends BaseDbBuilder<Db2Container, Builder> {
 
     private String createOptions;
     private String configOptions;

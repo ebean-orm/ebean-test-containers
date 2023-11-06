@@ -8,7 +8,7 @@ import java.util.Properties;
 /**
  * Configuration for an DBMS like Postgres, MySql, Oracle, SQLServer
  */
-abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C, SELF> implements ContainerBuilderDb<C, SELF> {
+abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends BaseBuilder<C, SELF> implements ContainerBuilderDb<C, SELF> {
 
   /**
    * Set for in-memory tmpfs use.
@@ -91,7 +91,7 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
    */
   protected String collation;
 
-  DbConfig(String platform, int port, int internalPort, String version) {
+  BaseDbBuilder(String platform, int port, int internalPort, String version) {
     super(platform, port, internalPort, version);
   }
 
@@ -357,7 +357,7 @@ abstract class DbConfig<C, SELF extends DbConfig<C, SELF>> extends BaseConfig<C,
     return new InnerConfig();
   }
 
-  private class InnerConfig extends BaseConfig<?, ?>.Inner implements InternalConfigDb {
+  private class InnerConfig extends BaseBuilder<?, ?>.Inner implements InternalConfigDb {
 
     /**
      * Return a description of the configuration.

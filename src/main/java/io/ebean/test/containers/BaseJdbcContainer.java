@@ -4,9 +4,9 @@ import java.sql.Connection;
 
 import static java.lang.System.Logger.Level.WARNING;
 
-abstract class JdbcBaseDbContainer<C extends JdbcBaseDbContainer<C>> extends DbContainer<C> {
+abstract class BaseJdbcContainer<C extends BaseJdbcContainer<C>> extends DbContainer<C> {
 
-  JdbcBaseDbContainer(DbConfig<?, ?> config) {
+  BaseJdbcContainer(BaseDbBuilder<?, ?> config) {
     super(config);
     this.checkConnectivityUsingAdmin = true;
   }

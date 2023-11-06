@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Commands for controlling a SqlServer docker container.
  */
-public class SqlServerContainer extends JdbcBaseDbContainer<SqlServerContainer> {
+public class SqlServerContainer extends BaseJdbcContainer<SqlServerContainer> {
 
   @Override
   public SqlServerContainer start() {
@@ -34,7 +34,7 @@ public class SqlServerContainer extends JdbcBaseDbContainer<SqlServerContainer> 
   /**
    * Builder for SqlServerContainer.
    */
-  public static class Builder extends DbConfig<SqlServerContainer, SqlServerContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<SqlServerContainer, Builder> {
 
     private Builder(String version) {
       super("sqlserver", 1433, 1433, version);

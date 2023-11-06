@@ -18,7 +18,7 @@ abstract class BaseContainer<C extends Container<C>> implements Container<C> {
 
   static final System.Logger log = Commands.log;
 
-  protected final BaseConfig<?, ?> buildConfig;
+  protected final BaseBuilder<?, ?> buildConfig;
   protected InternalConfig config;
   protected final Commands commands;
   protected int waitForConnectivityAttempts = 200;
@@ -27,7 +27,7 @@ abstract class BaseContainer<C extends Container<C>> implements Container<C> {
   protected boolean usingRandomPort;
   protected boolean removeOnExit;
 
-  BaseContainer(BaseConfig<?, ?> buildConfig) {
+  BaseContainer(BaseBuilder<?, ?> buildConfig) {
     this.buildConfig = buildConfig;
     this.commands = new Commands(buildConfig.docker);
     this.config = buildConfig.internalConfig();

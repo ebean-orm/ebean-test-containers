@@ -9,7 +9,7 @@ abstract class BaseDbContainer<C extends BaseDbContainer<C>> extends DbContainer
 
   protected static final System.Logger log = Commands.log;
 
-  BaseDbContainer(DbConfig config) {
+  BaseDbContainer(BaseDbBuilder config) {
     super(config);
   }
 

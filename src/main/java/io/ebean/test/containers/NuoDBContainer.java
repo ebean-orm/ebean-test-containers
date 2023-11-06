@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NuoDBContainer extends JdbcBaseDbContainer<NuoDBContainer> {
+public class NuoDBContainer extends BaseJdbcContainer<NuoDBContainer> {
 
   @Override
   public NuoDBContainer start() {
@@ -33,7 +33,7 @@ public class NuoDBContainer extends JdbcBaseDbContainer<NuoDBContainer> {
     return builder(version);
   }
 
-  public static class Builder extends DbConfig<NuoDBContainer, NuoDBContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<NuoDBContainer, Builder> {
 
     private String network;
     private String sm1 = "sm";

@@ -3,7 +3,7 @@ package io.ebean.test.containers;
 /**
  * MariaDB container.
  */
-public class MariaDBContainer extends MySqlBaseContainer<MariaDBContainer> {
+public class MariaDBContainer extends BaseMySqlContainer<MariaDBContainer> {
 
   @Override
   public MariaDBContainer start() {
@@ -26,7 +26,7 @@ public class MariaDBContainer extends MySqlBaseContainer<MariaDBContainer> {
     return builder(version);
   }
 
-  public static class Builder extends DbConfig<MariaDBContainer, MariaDBContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<MariaDBContainer, Builder> {
 
     private Builder(String version) {
       super("mariadb", 4306, 3306, version);

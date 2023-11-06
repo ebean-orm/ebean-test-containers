@@ -33,7 +33,7 @@ public class PostgisContainer extends BasePostgresContainer<PostgisContainer> {
   /**
    * Builder for Postgis container.
    */
-  public static class Builder extends DbConfig<PostgisContainer, Builder> {
+  public static class Builder extends BaseDbBuilder<PostgisContainer, Builder> {
 
     private Builder(String version) {
       super("postgis", 6432, 5432, version);

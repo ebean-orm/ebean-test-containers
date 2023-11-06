@@ -60,7 +60,7 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
   /**
    * Builder for LocalstackContainer.
    */
-  public static class Builder extends BaseConfig<LocalstackContainer, LocalstackContainer.Builder> {
+  public static class Builder extends BaseBuilder<LocalstackContainer, Builder> {
 
     private String services = "dynamodb";
     private String awsRegion = "ap-southeast-2";

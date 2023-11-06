@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClickHouseContainer extends JdbcBaseDbContainer<ClickHouseContainer> {
+public class ClickHouseContainer extends BaseJdbcContainer<ClickHouseContainer> {
 
   @Override
   public ClickHouseContainer start() {
@@ -20,7 +20,7 @@ public class ClickHouseContainer extends JdbcBaseDbContainer<ClickHouseContainer
     return new Builder(version);
   }
 
-  public static class Builder extends DbConfig<ClickHouseContainer, ClickHouseContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<ClickHouseContainer, Builder> {
 
     private Builder(String version) {
       super("clickhouse", 8123, 8123, version);

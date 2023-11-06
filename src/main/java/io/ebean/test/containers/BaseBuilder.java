@@ -7,7 +7,7 @@ import java.util.Properties;
 /**
  * Configuration for an DBMS like Postgres, MySql, Oracle, SQLServer
  */
-abstract class BaseConfig<C, SELF extends BaseConfig<C, SELF>> implements ContainerBuilder<C, SELF> {
+abstract class BaseBuilder<C, SELF extends BaseBuilder<C, SELF>> implements ContainerBuilder<C, SELF> {
 
   /**
    * The database platform.
@@ -81,7 +81,7 @@ abstract class BaseConfig<C, SELF extends BaseConfig<C, SELF>> implements Contai
 
   protected final String version;
 
-  BaseConfig(String platform, int port, int internalPort, String version) {
+  BaseBuilder(String platform, int port, int internalPort, String version) {
     this.platform = platform;
     this.port = port;
     this.internalPort = internalPort;
