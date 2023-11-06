@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClickHouseContainer extends JdbcBaseDbContainer {
+public class ClickHouseContainer extends JdbcBaseDbContainer<ClickHouseContainer> {
 
   @Override
   public ClickHouseContainer start() {

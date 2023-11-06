@@ -16,7 +16,7 @@ import java.util.Properties;
 /**
  * Commands for controlling a SAP HANA docker container.
  */
-public class HanaContainer extends DbContainer implements Container {
+public class HanaContainer extends DbContainer<HanaContainer> {
 
   private static final System.Logger log = Commands.log;
 

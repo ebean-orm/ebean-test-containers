@@ -5,7 +5,7 @@ import java.lang.System.Logger.Level;
 /**
  * Common DB Container.
  */
-abstract class BaseDbContainer extends DbContainer implements Container {
+abstract class BaseDbContainer<C extends BaseDbContainer<C>> extends DbContainer<C> {
 
   protected static final System.Logger log = Commands.log;
 

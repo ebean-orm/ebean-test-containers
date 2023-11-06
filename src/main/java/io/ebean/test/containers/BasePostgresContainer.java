@@ -10,7 +10,7 @@ import java.util.List;
  * <p>
  * References: <a href="https://github.com/docker-library/postgres/issues/146">docker-library/postgres/issues/146</a>
  */
-abstract class BasePostgresContainer extends JdbcBaseDbContainer implements Container {
+abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends JdbcBaseDbContainer<C> {
 
   BasePostgresContainer(DbConfig<?, ?> config) {
     super(config);

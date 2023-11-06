@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * ElasticSearch container commands.
  */
-public class ElasticContainer extends BaseContainer {
+public class ElasticContainer extends BaseContainer<ElasticContainer> {
 
   @Override
   public ElasticContainer start() {

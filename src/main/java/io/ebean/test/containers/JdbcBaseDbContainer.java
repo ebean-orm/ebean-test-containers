@@ -4,7 +4,7 @@ import java.sql.Connection;
 
 import static java.lang.System.Logger.Level.WARNING;
 
-abstract class JdbcBaseDbContainer extends DbContainer {
+abstract class JdbcBaseDbContainer<C extends JdbcBaseDbContainer<C>> extends DbContainer<C> {
 
   JdbcBaseDbContainer(DbConfig<?, ?> config) {
     super(config);

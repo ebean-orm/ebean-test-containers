@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Commands for controlling a CockroachDB docker container.
  */
-public class CockroachContainer extends BaseDbContainer implements Container {
+public class CockroachContainer extends BaseDbContainer<CockroachContainer> {
 
   @Override
   public CockroachContainer start() {

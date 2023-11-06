@@ -47,7 +47,7 @@ import java.util.Properties;
  *   touch ~/.ebean/ignore-docker-shutdown
  * </pre>
  */
-public class LocalDynamoDBContainer extends BaseContainer {
+public class LocalDynamoDBContainer extends BaseContainer<LocalDynamoDBContainer> {
 
   @Override
   public LocalDynamoDBContainer start() {

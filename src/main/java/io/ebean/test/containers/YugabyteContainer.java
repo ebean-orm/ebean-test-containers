@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * Creates Yugabyte container (with common commands for roles and database as Postgres).
  */
-public class YugabyteContainer extends BasePostgresContainer {
+public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> {
 
   @Override
   public YugabyteContainer start() {

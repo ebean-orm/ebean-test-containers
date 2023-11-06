@@ -4,7 +4,7 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Locale;
 
-public class RedisContainer extends BaseContainer {
+public class RedisContainer extends BaseContainer<RedisContainer> {
 
   @Override
   public RedisContainer start() {

@@ -34,7 +34,7 @@ import java.util.Properties;
  *
  * }</pre>
  */
-public class LocalstackContainer extends BaseContainer {
+public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
 
   @Override
   public LocalstackContainer start() {

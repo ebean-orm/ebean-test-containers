@@ -3,7 +3,7 @@ package io.ebean.test.containers;
 /**
  * Commands for starting and stopping a DB container.
  */
-public interface Container {
+public interface Container<C extends Container<C>> {
 
   /**
    * Returns the container configuration.
@@ -15,7 +15,7 @@ public interface Container {
    * <p>
    * Throws an IllegalStateException if the container can not be started.
    */
-  <C extends Container> C start();
+  C start();
 
   /**
    * Start the container or throw a IllegalStateException.

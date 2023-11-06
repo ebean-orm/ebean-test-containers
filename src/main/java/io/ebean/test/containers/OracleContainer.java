@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Commands for controlling an Oracle docker container.
  */
-public class OracleContainer extends JdbcBaseDbContainer implements Container {
+public class OracleContainer extends JdbcBaseDbContainer<OracleContainer> {
 
   @Override
   public OracleContainer start() {

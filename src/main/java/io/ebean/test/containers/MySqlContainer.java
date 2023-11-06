@@ -1,6 +1,6 @@
 package io.ebean.test.containers;
 
-public class MySqlContainer extends MySqlBaseContainer {
+public class MySqlContainer extends MySqlBaseContainer<MySqlContainer> {
 
   @Override
   public MySqlContainer start() {

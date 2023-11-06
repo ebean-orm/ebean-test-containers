@@ -3,7 +3,7 @@ package io.ebean.test.containers;
 /**
  * Commands for controlling a postgres docker container.
  */
-public class PostgresContainer extends BasePostgresContainer implements Container {
+public class PostgresContainer extends BasePostgresContainer<PostgresContainer> {
 
   @Override
   public PostgresContainer start() {

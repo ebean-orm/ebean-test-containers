@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Commands for controlling a SqlServer docker container.
  */
-public class SqlServerContainer extends JdbcBaseDbContainer implements Container {
+public class SqlServerContainer extends JdbcBaseDbContainer<SqlServerContainer> {
 
   @Override
   public SqlServerContainer start() {

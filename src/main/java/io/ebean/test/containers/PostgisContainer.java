@@ -3,7 +3,7 @@ package io.ebean.test.containers;
 /**
  * Commands for controlling a postgis docker container.
  */
-public class PostgisContainer extends BasePostgresContainer implements Container {
+public class PostgisContainer extends BasePostgresContainer<PostgisContainer> {
 
   @Override
   public PostgisContainer start() {

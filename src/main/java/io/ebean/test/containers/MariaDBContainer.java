@@ -3,7 +3,7 @@ package io.ebean.test.containers;
 /**
  * MariaDB container.
  */
-public class MariaDBContainer extends MySqlBaseContainer {
+public class MariaDBContainer extends MySqlBaseContainer<MariaDBContainer> {
 
   @Override
   public MariaDBContainer start() {

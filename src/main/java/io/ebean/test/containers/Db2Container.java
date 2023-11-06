@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Commands for controlling a DB2 docker container.
  */
-public class Db2Container extends JdbcBaseDbContainer implements Container {
+public class Db2Container extends JdbcBaseDbContainer<Db2Container> {
 
   @Override
   public Db2Container start() {

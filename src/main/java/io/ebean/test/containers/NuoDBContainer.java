@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NuoDBContainer extends JdbcBaseDbContainer {
+public class NuoDBContainer extends JdbcBaseDbContainer<NuoDBContainer> {
 
   @Override
   public NuoDBContainer start() {
