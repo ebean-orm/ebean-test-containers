@@ -1,17 +1,5 @@
 package io.ebean.test.containers;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
-import com.amazonaws.services.kinesis.AmazonKinesis;
-import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
-import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.AmazonSNSClientBuilder;
-import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-
 import java.io.IOException;
 import java.lang.System.Logger.Level;
 import java.net.URI;
@@ -19,53 +7,46 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Localstack container support.
+ * Localstack container that supports both AWS SDK old and new (v1 and v2).
  *
  * <pre>{@code
  *
- *     LocalstackContainer container = LocalstackContainer.builder("0.14")
+ *     Localstack2Container container = Localstack2Container.builder("0.14")
  *       // .port(4566)
  *       // .image("localstack/localstack:0.14")
  *       .build();
  *
  *     container.start();
  *
- *     AmazonDynamoDB amazonDynamoDB = container.dynamoDB();
+ *     AwsSDKv2 sdk = container.sdk2();
+ *     DynamoDBClient amazonDynamoDB = sdk.dynamoDBClient();
  *     createTable(amazonDynamoDB);
  *
  * }</pre>
  */
-public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
+public class Localstack2Container extends BaseContainer<Localstack2Container> {
 
   @Override
-  public LocalstackContainer start() {
+  public Localstack2Container start() {
     startOrThrow();
     return this;
   }
 
   /**
-   * Create a builder for LocalstackContainer given the localstack image version.
+   * Create a builder for Localstack2Container given the localstack image version.
    */
   public static Builder builder(String version) {
     return new Builder(version);
   }
 
   /**
-   * Deprecated - migrate to builder().
+   * Builder for Localstack2Container.
    */
-  @Deprecated
-  public static Builder newBuilder(String version) {
-    return new Builder(version);
-  }
-
-  /**
-   * Builder for LocalstackContainer.
-   */
-  public static class Builder extends BaseBuilder<LocalstackContainer, Builder> {
+  public static class Builder extends BaseBuilder<Localstack2Container, Builder> {
 
     private String services = "dynamodb";
     private String awsRegion = "ap-southeast-2";
-    private String startWeb;// = "0";
+    private String startWeb;
 
     /**
      * Create with a version of localstack/localstack (example, 0.14)
@@ -112,12 +93,12 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
     /**
      * Build and return the LocalstackContainer to then start().
      */
-    public LocalstackContainer build() {
-      return new LocalstackContainer(this);
+    public Localstack2Container build() {
+      return new Localstack2Container(this);
     }
 
     @Override
-    public LocalstackContainer start() {
+    public Localstack2Container start() {
       return build().start();
     }
   }
@@ -130,7 +111,7 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
   /**
    * Create the container using the given config.
    */
-  public LocalstackContainer(LocalstackContainer.Builder builder) {
+  public Localstack2Container(Localstack2Container.Builder builder) {
     super(builder);
     this.services = builder.services;
     this.awsRegion = builder.awsRegion;
@@ -143,65 +124,47 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
   }
 
   /**
-   * Return the AmazonDynamoDB (V1 SDK) that can be used for this container.
-   * <p>
-   * This should be used AFTER the container is started.
+   * Return the AWS v2 SDK compatible helper that provides API for
+   * DynamoDB client, SNSClient, SQQClient etc.
    */
-  public AmazonDynamoDB dynamoDB() {
-    return AmazonDynamoDBClientBuilder.standard()
-      .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
-      .build();
+  public AwsSDKv2 sdk() {
+    return sdk2();
   }
 
   /**
-   * Return AmazonKinesis (V1 SDK) that can be used for this container.
-   * <p>
-   * This should be used AFTER the container is started.
+   * Return the AWS v2 SDK compatible helper that provides API for
+   * DynamoDB client, SNSClient, SQQClient etc.
    */
-  public AmazonKinesis kinesis() {
-    return AmazonKinesisClientBuilder.standard()
-      .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
-      .build();
+  public AwsSDKv2 sdk2() {
+    return new LocalstackSdkV2(awsRegion, endpoint());
   }
 
   /**
-   * Return the AmazonSNS (V1 SDK) client for this container.
+   * Return the AWS v1 SDK compatible helper that provides API for
+   * AmazonDynamoDB client, AmazonSNS, AmazonSQS etc.
    */
-  public AmazonSNS sns() {
-    return AmazonSNSClientBuilder.standard()
-      .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
-      .build();
+  public AwsSDKv1 sdk1() {
+    return new LocalstackSdkV1(awsRegion, endpointUrl());
   }
+
 
   /**
-   * Return the AmazonSQS (V1 SDK) client for this container.
+   * Return the endpoint as URI.
    */
-  public AmazonSQS sqs() {
-    return AmazonSQSClientBuilder.standard()
-      .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
-      .build();
-  }
-
-  /**
-   * Return SDK 1 AWSStaticCredentialsProvider.
-   */
-  @Deprecated
-  public AWSStaticCredentialsProvider credentials() {
-    return new AWSStaticCredentialsProvider(new BasicAWSCredentials("localstack", "localstack"));
-  }
-
   public URI endpoint() {
     return URI.create(endpointUrl());
   }
 
+  /**
+   * Return the endpoint as String.
+   */
   public String endpointUrl() {
     return String.format("http://%s:%s/", config.getHost(), config.getPort());
   }
 
+  /**
+   * Return the AWS region.
+   */
   public String awsRegion() {
     return awsRegion;
   }
