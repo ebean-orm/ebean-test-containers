@@ -16,7 +16,7 @@ import java.util.Properties;
 /**
  * Commands for controlling a SAP HANA docker container.
  */
-public class HanaContainer extends DbContainer implements Container {
+public class HanaContainer extends DbContainer<HanaContainer> {
 
   private static final System.Logger log = Commands.log;
 
@@ -67,7 +67,7 @@ public class HanaContainer extends DbContainer implements Container {
    * For more information about the HANA docker configuration see the tutorial
    * <a href="https://developers.sap.com/tutorials/hxe-ua-install-using-docker.html">Installing SAP HANA, express edition with Docker</a>
    */
-  public static class Builder extends DbConfig<HanaContainer, Builder> {
+  public static class Builder extends BaseDbBuilder<HanaContainer, Builder> {
 
 
     private String mountsDirectory;

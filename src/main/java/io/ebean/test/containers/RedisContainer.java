@@ -4,7 +4,7 @@ import java.io.OutputStreamWriter;
 import java.util.List;
 import java.util.Locale;
 
-public class RedisContainer extends BaseContainer {
+public class RedisContainer extends BaseContainer<RedisContainer> {
 
   @Override
   public RedisContainer start() {
@@ -30,7 +30,7 @@ public class RedisContainer extends BaseContainer {
   /**
    * The RedisContainer builder.
    */
-  public static class Builder extends BaseConfig<RedisContainer, RedisContainer.Builder> {
+  public static class Builder extends BaseBuilder<RedisContainer, Builder> {
 
     private Builder(String version) {
       super("redis", 6379, 6379, version);

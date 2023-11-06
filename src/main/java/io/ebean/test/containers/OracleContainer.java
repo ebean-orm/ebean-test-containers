@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * Commands for controlling an Oracle docker container.
  */
-public class OracleContainer extends JdbcBaseDbContainer implements Container {
+public class OracleContainer extends BaseJdbcContainer<OracleContainer> {
 
   @Override
   public OracleContainer start() {
@@ -30,7 +30,7 @@ public class OracleContainer extends JdbcBaseDbContainer implements Container {
     return builder(version);
   }
 
-  public static class Builder extends DbConfig<OracleContainer, OracleContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<OracleContainer, Builder> {
 
     private String apexPort;
     private String internalApexPort = "8080";

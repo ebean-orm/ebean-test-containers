@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-abstract class MySqlBaseContainer extends JdbcBaseDbContainer implements Container {
+abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJdbcContainer<C> {
 
-  MySqlBaseContainer(DbConfig<?, ?> config) {
+  BaseMySqlContainer(BaseDbBuilder<?, ?> config) {
     super(config);
   }
 

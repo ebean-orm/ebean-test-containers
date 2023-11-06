@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * ElasticSearch container commands.
  */
-public class ElasticContainer extends BaseContainer {
+public class ElasticContainer extends BaseContainer<ElasticContainer> {
 
   @Override
   public ElasticContainer start() {
@@ -32,7 +32,7 @@ public class ElasticContainer extends BaseContainer {
   /**
    * Builder for ElasticContainer.
    */
-  public static class Builder extends BaseConfig<ElasticContainer, ElasticContainer.Builder> {
+  public static class Builder extends BaseBuilder<ElasticContainer, Builder> {
 
     private Builder(String version) {
       super("elastic", 9201, 9200, version);
