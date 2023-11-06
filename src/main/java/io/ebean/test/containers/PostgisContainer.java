@@ -3,7 +3,7 @@ package io.ebean.test.containers;
 /**
  * Commands for controlling a postgis docker container.
  */
-public class PostgisContainer extends BasePostgresContainer implements Container {
+public class PostgisContainer extends BasePostgresContainer<PostgisContainer> {
 
   @Override
   public PostgisContainer start() {
@@ -33,7 +33,7 @@ public class PostgisContainer extends BasePostgresContainer implements Container
   /**
    * Builder for Postgis container.
    */
-  public static class Builder extends DbConfig<PostgisContainer, Builder> {
+  public static class Builder extends BaseDbBuilder<PostgisContainer, Builder> {
 
     private Builder(String version) {
       super("postgis", 6432, 5432, version);

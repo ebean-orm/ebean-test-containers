@@ -12,13 +12,13 @@ import java.util.List;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-abstract class DbContainer extends BaseContainer implements Container {
+abstract class DbContainer<C extends DbContainer<C>> extends BaseContainer<C> {
 
   final InternalConfigDb dbConfig;
   boolean checkConnectivityUsingAdmin;
   int conditionPauseMillis = 100;
 
-  DbContainer(DbConfig<?, ?> config) {
+  DbContainer(BaseDbBuilder<?, ?> config) {
     super(config);
     this.dbConfig = config.internalConfig();
   }

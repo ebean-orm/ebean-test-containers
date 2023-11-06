@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Commands for controlling a CockroachDB docker container.
  */
-public class CockroachContainer extends BaseDbContainer implements Container {
+public class CockroachContainer extends BaseDbContainer<CockroachContainer> {
 
   @Override
   public CockroachContainer start() {
@@ -26,7 +26,7 @@ public class CockroachContainer extends BaseDbContainer implements Container {
   /**
    * Builder for CockroachContainer.
    */
-  public static class Builder extends DbConfig<CockroachContainer, CockroachContainer.Builder> {
+  public static class Builder extends BaseDbBuilder<CockroachContainer, Builder> {
 
     private Builder(String version) {
       super("cockroach", 26257, 26257, version);
