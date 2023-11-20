@@ -1,16 +1,9 @@
 package io.ebean.test.containers;
 
-import com.amazonaws.auth.AWSStaticCredentialsProvider;
-import com.amazonaws.auth.BasicAWSCredentials;
-import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
-import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.kinesis.AmazonKinesis;
-import com.amazonaws.services.kinesis.AmazonKinesisClientBuilder;
 import com.amazonaws.services.sns.AmazonSNS;
-import com.amazonaws.services.sns.AmazonSNSClientBuilder;
 import com.amazonaws.services.sqs.AmazonSQS;
-import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 
 import java.io.IOException;
 import java.lang.System.Logger.Level;
@@ -148,10 +141,7 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
    * This should be used AFTER the container is started.
    */
   public AmazonDynamoDB dynamoDB() {
-    return AmazonDynamoDBClientBuilder.standard()
-      .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
-      .build();
+    return sdk1().dynamoDB();
   }
 
   /**
@@ -160,38 +150,37 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
    * This should be used AFTER the container is started.
    */
   public AmazonKinesis kinesis() {
-    return AmazonKinesisClientBuilder.standard()
-      .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
-      .build();
+    return sdk1().kinesis();
   }
 
   /**
    * Return the AmazonSNS (V1 SDK) client for this container.
    */
   public AmazonSNS sns() {
-    return AmazonSNSClientBuilder.standard()
-      .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
-      .build();
+    return sdk1().sns();
   }
 
   /**
    * Return the AmazonSQS (V1 SDK) client for this container.
    */
   public AmazonSQS sqs() {
-    return AmazonSQSClientBuilder.standard()
-      .withCredentials(credentials())
-      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUrl(), awsRegion))
-      .build();
+    return sdk1().sqs();
   }
 
   /**
-   * Return SDK 1 AWSStaticCredentialsProvider.
+   * Return the AWS v2 SDK compatible helper that provides API for
+   * DynamoDB client, SNSClient, SQQClient etc.
    */
-  @Deprecated
-  public AWSStaticCredentialsProvider credentials() {
-    return new AWSStaticCredentialsProvider(new BasicAWSCredentials("localstack", "localstack"));
+  public AwsSDKv2 sdk2() {
+    return new LocalstackSdkV2(awsRegion, endpoint());
+  }
+
+  /**
+   * Return the AWS v1 SDK compatible helper that provides API for
+   * AmazonDynamoDB client, AmazonSNS, AmazonSQS etc.
+   */
+  public AwsSDKv1 sdk1() {
+    return new LocalstackSdkV1(awsRegion, endpointUrl());
   }
 
   public URI endpoint() {
