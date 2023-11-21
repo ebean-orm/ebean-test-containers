@@ -14,6 +14,8 @@ public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> 
     return this;
   }
 
+  protected final YugabyteContainer.Builder builder;
+
   /**
    * Create a builder for YugabyteContainer.
    */
@@ -31,10 +33,29 @@ public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> 
 
   public static class Builder extends BaseDbBuilder<YugabyteContainer, Builder> {
 
+    int port9042 = 9042;
+    int port9000 = 9000;
+    int port7000 = 7000;
+
     private Builder(String version) {
       super("yugabyte", 6433, 5433, version);
       this.image = "yugabytedb/yugabyte:" + version;
       this.adminUsername = "postgres";
+    }
+
+    public YugabyteContainer.Builder port7000(int port7000) {
+      this.port7000 = port7000;
+      return self();
+    }
+
+    public YugabyteContainer.Builder port9000(int port9000) {
+      this.port9000 = port9000;
+      return self();
+    }
+
+    public YugabyteContainer.Builder port9042(int port9042) {
+      this.port9042 = port9042;
+      return self();
     }
 
     @Override
@@ -60,6 +81,7 @@ public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> 
 
   private YugabyteContainer(Builder builder) {
     super(builder);
+    this.builder = builder;
   }
 
   @Override
@@ -73,11 +95,12 @@ public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> 
     args.add("-p");
     args.add(config.getPort() + ":" + config.getInternalPort());
     args.add("-p");
-    args.add("7000:7000");
+    args.add(builder.port7000 + ":7000");
     args.add("-p");
-    args.add("9000:9000");
+    args.add(builder.port9000 + ":9000");
     args.add("-p");
-    args.add("9042:9042");
+    args.add(builder.port9042 +":9042");
+
 //    if (dbConfig.isInMemory() && dbConfig.getTmpfs() != null) {
 //      args.add("--tmpfs");
 //      args.add(dbConfig.getTmpfs());

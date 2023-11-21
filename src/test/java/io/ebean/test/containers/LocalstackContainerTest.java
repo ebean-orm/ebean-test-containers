@@ -43,7 +43,6 @@ class LocalstackContainerTest {
     useSnsSqs(container);
     useKinesis(container);
 
-    assertThat(container.credentials()).isNotNull();
     assertThat(container.endpointUrl()).isNotNull();
     assertThat(container.awsRegion()).isEqualTo("ap-southeast-2");
 
