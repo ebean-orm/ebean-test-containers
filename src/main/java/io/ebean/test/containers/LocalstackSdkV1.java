@@ -59,4 +59,13 @@ final class LocalstackSdkV1 implements AwsSDKv1 {
       .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUri, awsRegion))
       .build();
   }
+
+//  @Override
+//  public AmazonS3 s3() {
+//    return AmazonS3ClientBuilder.standard()
+//      .withCredentials(credentials())
+//      .withEndpointConfiguration(new AwsClientBuilder.EndpointConfiguration(endpointUri, awsRegion))
+//      .withPathStyleAccessEnabled(true)
+//      .build();
+//  }
 }

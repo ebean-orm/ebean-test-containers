@@ -5,6 +5,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
@@ -41,6 +42,11 @@ public interface AwsSDKv2 {
   SqsClient sqsClient();
 
   /**
+   * Return the S3Client (V2 SDK) for this container.
+   */
+  S3Client s3Client();
+
+  /**
    * Return SDK 2 Region.
    */
   Region region();
@@ -50,5 +56,8 @@ public interface AwsSDKv2 {
    */
   AwsCredentialsProvider credentialsProvider();
 
+  /**
+   * Return the basic credentials that can be used for this container.
+   */
   AwsBasicCredentials basicCredentials();
 }
