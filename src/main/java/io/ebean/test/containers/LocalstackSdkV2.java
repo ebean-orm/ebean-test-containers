@@ -5,6 +5,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
@@ -54,6 +55,16 @@ final class LocalstackSdkV2 implements AwsSDKv2 {
       .credentialsProvider(credentialsProvider())
       .endpointOverride(endpoint)
       .region(region())
+      .build();
+  }
+
+  @Override
+  public S3Client s3Client() {
+    return S3Client.builder()
+      .credentialsProvider(credentialsProvider())
+      .endpointOverride(endpoint)
+      .region(region())
+      .forcePathStyle(true)
       .build();
   }
 

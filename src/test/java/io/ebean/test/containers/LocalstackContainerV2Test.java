@@ -6,6 +6,10 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.Bucket;
+import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
+import software.amazon.awssdk.services.s3.model.ListBucketsResponse;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sns.model.CreateTopicRequest;
 import software.amazon.awssdk.services.sns.model.PublishRequest;
@@ -25,10 +29,11 @@ class LocalstackContainerV2Test {
   void start_viaBuilder() {
     Localstack2Container container = Localstack2Container.builder("0.14.4")
       .awsRegion("ap-southeast-2")
-      .services("dynamodb,kinesis,sns,sqs")
+      .services("dynamodb,kinesis,sns,sqs,s3")
       //.port(4567)
-      .containerName("ut_localstack_dkss")
+      .containerName("ut_localstack_dkss2")
       .image("localstack/localstack:0.14.4")
+      .port(4577)
       .build();
 
     // container.stopRemove();
@@ -41,9 +46,11 @@ class LocalstackContainerV2Test {
     KinesisClient kinesis = sdk.kinesisClient();
     SnsClient sns = sdk.snsClient();
     SqsClient sqs = sdk.sqsClient();
+    S3Client s3Client = sdk.s3Client();
 
     useSnsSqs(sdk);
     useKinesis(sdk);
+    useS3(s3Client);
 
     assertThat(container.endpointUrl()).isNotNull();
     assertThat(container.awsRegion()).isEqualTo("ap-southeast-2");
@@ -51,15 +58,27 @@ class LocalstackContainerV2Test {
     assertThat(kinesis).isNotNull();
     assertThat(sns).isNotNull();
     assertThat(sqs).isNotNull();
+    assertThat(s3Client).isNotNull();
 
     // container.stopRemove();
+  }
+
+  private void useS3(S3Client s3Client) {
+    CreateBucketResponse response = s3Client.createBucket(b -> {
+      b.bucket("s3test-" + System.currentTimeMillis());
+    });
+    assertThat(response.location()).startsWith("http:");
+
+    ListBucketsResponse listBucketsResponse = s3Client.listBuckets();
+    List<Bucket> buckets = listBucketsResponse.buckets();
+    assertThat(buckets).isNotEmpty();
   }
 
   private void useKinesis(AwsSDKv2 sdk) {
     KinesisClient kinesis = sdk.kinesisClient();
     try {
       System.out.println(kinesis.createStream(CreateStreamRequest.builder()
-        .streamName("hello-stream")
+        .streamName("hello-stream-" + System.currentTimeMillis())
         .shardCount(1)
         .build()));
     } catch (com.amazonaws.services.kinesis.model.ResourceInUseException e) {
