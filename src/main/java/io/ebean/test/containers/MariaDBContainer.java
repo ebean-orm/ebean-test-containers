@@ -45,12 +45,12 @@ public class MariaDBContainer extends BaseMySqlContainer<MariaDBContainer> {
 
     @Override
     protected String buildJdbcUrl() {
-      return "jdbc:mysql://" + getHost() + ":" + getPort() + "/" + getDbName();
+      return "jdbc:mariadb://" + getHost() + ":" + getPort() + "/" + getDbName();
     }
 
     @Override
     protected String buildJdbcAdminUrl() {
-      return "jdbc:mysql://" + getHost() + ":" + getPort() + "/mysql";
+      return "jdbc:mariadb://" + getHost() + ":" + getPort() + "/mysql";
     }
 
     @Override
