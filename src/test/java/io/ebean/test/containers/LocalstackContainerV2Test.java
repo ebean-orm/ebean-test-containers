@@ -27,12 +27,12 @@ class LocalstackContainerV2Test {
   @Disabled
   @Test
   void start_viaBuilder() {
-    Localstack2Container container = Localstack2Container.builder("0.14.4")
+    Localstack2Container container = Localstack2Container.builder("4.0.3")
       .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs,s3")
       //.port(4567)
       .containerName("ut_localstack_dkss2")
-      .image("localstack/localstack:0.14.4")
+      .image("localstack/localstack:4.0.3")
       .port(4577)
       .build();
 

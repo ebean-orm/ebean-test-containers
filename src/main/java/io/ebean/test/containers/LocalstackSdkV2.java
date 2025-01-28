@@ -70,7 +70,7 @@ final class LocalstackSdkV2 implements AwsSDKv2 {
 
   @Override
   public Region region() {
-    return Region.of(awsRegion);
+    return awsRegion == null ? null : Region.of(awsRegion);
   }
 
   @Override

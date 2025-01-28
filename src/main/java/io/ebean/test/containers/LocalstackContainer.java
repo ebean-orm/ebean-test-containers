@@ -16,9 +16,9 @@ import java.util.Properties;
  *
  * <pre>{@code
  *
- *     LocalstackContainer container = LocalstackContainer.builder("0.14")
+ *     LocalstackContainer container = LocalstackContainer.builder("4.0.3")
  *       // .port(4566)
- *       // .image("localstack/localstack:0.14")
+ *       // .image("localstack/localstack:4.0.3")
  *       .build();
  *
  *     container.start();
@@ -58,10 +58,11 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
 
     private String services = "dynamodb";
     private String awsRegion = "ap-southeast-2";
+    private String healthUri = "_localstack/health";
     private String startWeb;// = "0";
 
     /**
-     * Create with a version of localstack/localstack (example, 0.14)
+     * Create with a version of localstack/localstack (example, 4.0.3)
      */
     private Builder(String version) {
       super("localstack", 4566, 4566, version);
@@ -74,6 +75,7 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
       services = prop(properties, "services", services);
       awsRegion = prop(properties, "awsRegion", awsRegion);
       startWeb = prop(properties, "startWeb", startWeb);
+      healthUri = prop(properties, "healthUri", healthUri);
     }
 
     /**
@@ -103,6 +105,14 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
     }
 
     /**
+     * Set the healthUri option - defaults to _localstack/health.
+     */
+    public Builder healthUri(String healthUri) {
+      this.healthUri = healthUri;
+      return self();
+    }
+
+    /**
      * Build and return the LocalstackContainer to then start().
      */
     public LocalstackContainer build() {
@@ -119,6 +129,7 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
   private final String services;
   private final String awsRegion;
   private final String startWeb;
+  private final String healthUri;
 
   /**
    * Create the container using the given config.
@@ -128,11 +139,12 @@ public class LocalstackContainer extends BaseContainer<LocalstackContainer> {
     this.services = builder.services;
     this.awsRegion = builder.awsRegion;
     this.startWeb = builder.startWeb;
+    this.healthUri = builder.healthUri;
     this.serviceNames = TrimSplit.split(services);
   }
 
   private String healthUrl() {
-    return String.format("http://%s:%s/health", config.getHost(), config.getPort());
+    return String.format("http://%s:%s/%s", config.getHost(), config.getPort(), healthUri);
   }
 
   /**
