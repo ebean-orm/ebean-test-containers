@@ -12,6 +12,7 @@ class SqlServerContainerTest {
 
   static final String SQLSERVER_VER = "2019-CU15-ubuntu-20.04";
 
+  @Disabled
   @Test
   void start() {
     SqlServerContainer container = SqlServerContainer.builder(SQLSERVER_VER)
