@@ -2,6 +2,8 @@ package io.ebean.test.containers;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJdbcContainer<C> {
@@ -25,6 +27,9 @@ abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJ
       if (withDrop) {
         dropUserIfExists(connection, dbConfig.getUsername());
         dropDatabaseIfExists(connection, dbConfig.getDbName());
+        for (String extraDb : toDatabaseNames(dbConfig.getExtraDb())) {
+          dropDatabaseIfExists(connection, extraDb);
+        }
       }
       createDatabase(connection);
       createUser(connection);
@@ -34,13 +39,8 @@ abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJ
     }
   }
 
-  private void createUser(Connection connection) {
-    createUser(connection, dbConfig.getUsername(), dbConfig.getPassword(), dbConfig.getDbName());
-  }
-
-
   private void dropDatabaseIfExists(Connection connection, String dbName) {
-    if (databaseExists(connection, dbName)) {
+    if (notEmpty(dbName) && databaseExists(connection, dbName)) {
       sqlRun(connection, "drop database " + dbName);
     }
   }
@@ -51,19 +51,29 @@ abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJ
     }
   }
 
-  private void createUser(Connection connection, String dbUser, String dbPassword, String db) {
-    if (!userExists(connection, dbUser)) {
-      sqlRun(connection, "create user '" + dbUser + "'@'%' identified by '" + dbPassword + "'");
-      sqlRun(connection, "grant all on " + db + ".* to '" + dbUser + "'@'%'");
+  private void createUser(Connection connection) {
+    if (!userExists(connection, dbConfig.getUsername())) {
+      sqlRun(connection, "create user '" + dbConfig.getUsername() + "'@'%' identified by '" + dbConfig.getPassword() + "'");
+      sqlRun(connection, "grant all on " + dbConfig.getDbName() + ".* to '" + dbConfig.getUsername() + "'@'%'");
+      for (String extraDb : toDatabaseNames(dbConfig.getExtraDb())) {
+        sqlRun(connection, "grant all on " + extraDb + ".* to '" + dbConfig.getUsername() + "'@'%'");
+      }
     }
   }
 
   private void createDatabase(Connection connection) {
     if (!databaseExists(connection, dbConfig.getDbName())) {
       createDatabase(connection, dbConfig.getDbName());
+      createExtraDatabases(connection);
       if (!dbConfig.version().startsWith("5")) {
         setLogBinTrustFunction(connection);
       }
+    }
+  }
+
+  private void createExtraDatabases(Connection connection) {
+    for (String extraDb : toDatabaseNames(dbConfig.getExtraDb())) {
+      createDatabase(connection, extraDb);
     }
   }
 
@@ -85,7 +95,6 @@ abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJ
 
   @Override
   protected ProcessBuilder runProcess() {
-
     List<String> args = dockerRun();
     if (defined(dbConfig.getAdminPassword())) {
       args.add("-e");
@@ -116,4 +125,18 @@ abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJ
     return createProcessBuilder(args);
   }
 
+  static List<String> toDatabaseNames(String dbNames) {
+    if (dbNames == null) {
+      return Collections.emptyList();
+    }
+    String[] names = dbNames.split(",");
+    List<String> dbNameList = new ArrayList<>();
+    for (String name : names) {
+      name = name.trim();
+      if (!name.isEmpty()) {
+        dbNameList.add(name);
+      }
+    }
+    return dbNameList;
+  }
 }
