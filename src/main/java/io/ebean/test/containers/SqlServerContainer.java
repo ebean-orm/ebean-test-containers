@@ -80,6 +80,27 @@ public class SqlServerContainer extends BaseJdbcContainer<SqlServerContainer> {
     createRoleAndDatabase(true);
   }
 
+  @Override
+  boolean checkConnectivity(boolean useAdmin) {
+    if (!isDefaultCollation()) {
+      if (!logsContain("The default collation was successfully changed", "Attempting to change default collation")) {
+        // When starting a container other than the default collation, sql server rebuilds some indices for master/tempdb/...
+        // if these indices are accessed during this period (e.g. 'drop database test_db' will access systable indices)
+        // you will get a "Cannot resolve the collation conflict between" error or some other errors during startup
+        return false;
+      }
+    }
+    return super.checkConnectivity(useAdmin);
+  }
+
+  private boolean isDefaultCollation() {
+    if (dbConfig.getCollation() == null) {
+      return false;
+    }
+    return "default".equals(dbConfig.getCollation())
+      || "SQL_Latin1_General_CP1_CI_AS".equals(dbConfig.getCollation());
+  }
+
   private void createRoleAndDatabase(boolean withDrop) {
     IllegalStateException cause = null;
     for (int i = 0; i < 3; i++) {
