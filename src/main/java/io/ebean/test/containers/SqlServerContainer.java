@@ -172,6 +172,8 @@ public class SqlServerContainer extends BaseJdbcContainer<SqlServerContainer> {
   }
 
   private void dropDatabase(Connection connection, String dbName) {
+    sqlRun(connection, "alter database " + dbName + " set offline with rollback immediate"); // close all connections to DB
+    sqlRun(connection, "alter database " + dbName + " set online");
     sqlRun(connection, "drop database " + dbName);
   }
 

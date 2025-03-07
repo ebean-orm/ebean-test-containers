@@ -28,6 +28,27 @@ class SqlServerContainerTest {
     container.stopRemove();
   }
 
+  /**
+   * startWithDropCreate does not work, when the container is running and there is a connection open.
+   */
+  @Disabled
+  @Test
+  void start_dropCreate_withLeakingConnection() throws Exception {
+    SqlServerContainer container = SqlServerContainer.builder(SQLSERVER_VER)
+      .containerName("temp_sqlserver")
+      .port(2433)
+      .collation("Latin1_General_100_BIN2")
+      .build();
+    container.startWithDropCreate();
+    try (Connection conn = DriverManager.getConnection(container.jdbcUrl(), container.dbConfig.getUsername(), container.dbConfig.getPassword())) {
+      // drop during open connection
+      container.startWithDropCreate();
+    } finally {
+      container.stopRemove();
+
+    }
+  }
+
   @Disabled
   @Test
   void start_when_defaultCollation() {
