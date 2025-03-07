@@ -46,7 +46,6 @@ class SqlServerContainerTest {
       container.startWithDropCreate();
     } finally {
       container.stopRemove();
-
     }
   }
 
@@ -115,7 +114,7 @@ class SqlServerContainerTest {
    */
   @Disabled
   @Test
-  void start_dropCreate_explicitCollationTimmingTest() throws Exception {
+  void start_dropCreate_explicitCollationTimingTest() throws Exception {
     SqlServerContainer container = SqlServerContainer.builder(SQLSERVER_VER)
       .containerName("temp_sqlserver")
       .port(2433)
@@ -182,8 +181,8 @@ class SqlServerContainerTest {
   }
 
   private void exeSql(Connection connection, String sql) throws SQLException {
-    PreparedStatement st = connection.prepareStatement(sql);
-    st.execute();
-    st.close();
+    try (PreparedStatement st = connection.prepareStatement(sql)) {
+      st.execute();
+    }
   }
 }
