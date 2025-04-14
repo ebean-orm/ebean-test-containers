@@ -25,7 +25,6 @@ class Db2ContainerTest {
     container.startWithDropCreate();
 
     container.stopRemove();
-    container.dockerSu()
   }
 
   @Disabled
