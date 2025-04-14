@@ -44,7 +44,7 @@ public class Db2Container extends BaseJdbcContainer<Db2Container> {
 
     private Builder(String version) {
       super("db2", 50000, 50000, version);
-      this.image = "ibmcom/db2:" + version;
+      this.image = "icr.io/db2_community/db2:" + version;
       this.tmpfs = "/database:rw";
     }
 
@@ -184,7 +184,7 @@ public class Db2Container extends BaseJdbcContainer<Db2Container> {
   /**
    * Runs the given (linux) command inside the container as given user.
    */
-  protected List<String> dockerSu(String user, String cmd) {
+  public List<String> dockerSu(String user, String cmd) {
     List<String> args = new ArrayList<>();
     args.add(config.docker());
     args.add("exec");
@@ -203,7 +203,7 @@ public class Db2Container extends BaseJdbcContainer<Db2Container> {
   /**
    * Executes the (linux) command as DB-admin user.
    */
-  protected List<String> dockerSu(String cmd) {
+  public List<String> dockerSu(String cmd) {
     return dockerSu(dbConfig.getAdminUsername(), cmd);
   }
 
