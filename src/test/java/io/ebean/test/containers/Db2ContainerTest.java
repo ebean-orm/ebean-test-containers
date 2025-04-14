@@ -14,7 +14,7 @@ class Db2ContainerTest {
   @Disabled
   @Test
   void start() {
-    Db2Container container = Db2Container.builder("11.5.4.0")
+    Db2Container container = Db2Container.builder("11.5.8.0")
       .containerName("temp_db2")
       .port(50050)
       .fastStartMode(true)
@@ -25,13 +25,14 @@ class Db2ContainerTest {
     container.startWithDropCreate();
 
     container.stopRemove();
+    container.dockerSu()
   }
 
   @Disabled
   @Test
   void viaContainerFactory() {
     Properties properties = new Properties();
-    properties.setProperty("db2.version", "11.5.4.0");
+    properties.setProperty("db2.version", "11.5.8.0");
     properties.setProperty("db2.containerName", "temp_db2");
     properties.setProperty("db2.port", "50050");
 
