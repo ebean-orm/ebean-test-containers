@@ -89,9 +89,9 @@ class PostgresConfigTest {
 
     assertEquals(config.getInitSqlFile(), "init.sql");
     assertEquals(config.getSeedSqlFile(), "seed.sql");
-    assertEquals(config.getExtraDbInitSqlFile(), "extra_init.sql");
-    assertEquals(config.getExtraDbSeedSqlFile(), "extra_seed.sql");
-    assertEquals(config.getExtraDbExtensions(), "hstore,pgcrypto");
+    assertEquals(config.extra().initSqlFile(), "extra_init.sql");
+    assertEquals(config.extra().seedSqlFile(), "extra_seed.sql");
+    assertEquals(config.extra().extensions(), "hstore,pgcrypto");
 
     assertEquals(config.jdbcAdminUrl(), "jdbc:postgresql://172.17.0.1:9823/postgres");
     assertEquals(config.jdbcUrl(), "jdbc:postgresql://172.17.0.1:9823/baz");

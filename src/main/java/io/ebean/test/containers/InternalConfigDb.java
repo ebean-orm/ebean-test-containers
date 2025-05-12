@@ -26,21 +26,9 @@ interface InternalConfigDb extends InternalConfig {
 
   String getSeedSqlFile();
 
-  String getExtraDb();
+  ExtraAttributes extra();
 
-  String getExtraDbUser();
-
-  String getExtraDbUserWithDefault();
-
-  String getExtraDbPassword();
-
-  String getExtraDbPasswordWithDefault();
-
-  String getExtraDbExtensions();
-
-  String getExtraDbInitSqlFile();
-
-  String getExtraDbSeedSqlFile();
+  ExtraAttributes extra2();
 
   boolean isFastStartMode();
 

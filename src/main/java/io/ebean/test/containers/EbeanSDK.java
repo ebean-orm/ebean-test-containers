@@ -16,28 +16,38 @@ package io.ebean.test.containers;
  */
 public interface EbeanSDK {
 
-  /**
-   * Return an ebean Database builder for the underlying database (url, username, password).
-   * <p>
-   * The name of the ebean database will be dbName set for the container.
-   * <p>
-   * This builder will have ddlGenerate set to true and ddlRun set to true. Alternatively,
-   * set runMigrations(true) to run database migrations on startup.
-   */
-  io.ebean.DatabaseBuilder builder();
+    /**
+     * Return an ebean Database builder for the underlying database (url, username, password).
+     * <p>
+     * The name of the ebean database will be dbName set for the container.
+     * <p>
+     * This builder will have ddlGenerate set to true and ddlRun set to true. Alternatively,
+     * set runMigrations(true) to run database migrations on startup.
+     */
+    io.ebean.DatabaseBuilder builder();
 
-  /**
-   * Return a java.sql.DataSource builder for the underlying database (url, username, password).
-   */
-  io.ebean.datasource.DataSourceBuilder dataSourceBuilder();
+    /**
+     * Return a DataSource builder for the underlying database (url, username, password).
+     */
+    io.ebean.datasource.DataSourceBuilder dataSourceBuilder();
 
-  /**
-   * Return a java.sql.DataSource builder for the underlying database (url, username, password).
-   */
-  io.ebean.datasource.DataSourceBuilder extraDataSourceBuilder();
+    /**
+     * Return a DataSource builder for the extra database (url, username, password).
+     */
+    io.ebean.datasource.DataSourceBuilder extraDataSourceBuilder();
 
-  /**
-   * Return an ebean Database builder for the EXTRA database (extraUrl, extraDbUser, extraDbPassword).
-   */
-  io.ebean.DatabaseBuilder extraDatabaseBuilder();
+    /**
+     * Return a DataSource builder for the second extra database (url, username, password).
+     */
+    io.ebean.datasource.DataSourceBuilder extra2DataSourceBuilder();
+
+    /**
+     * Return an ebean Database builder for the EXTRA database.
+     */
+    io.ebean.DatabaseBuilder extraDatabaseBuilder();
+
+    /**
+     * Return an ebean Database builder for the second EXTRA2 database.
+     */
+    io.ebean.DatabaseBuilder extra2DatabaseBuilder();
 }

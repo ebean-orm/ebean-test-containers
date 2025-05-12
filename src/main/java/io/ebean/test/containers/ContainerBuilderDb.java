@@ -1,5 +1,7 @@
 package io.ebean.test.containers;
 
+import java.util.function.Consumer;
+
 /**
  * Builder for DB containers.
  */
@@ -94,6 +96,16 @@ public interface ContainerBuilderDb<C, SELF extends ContainerBuilderDb<C, SELF>>
    * Set extra database seed sql file to execute.
    */
   SELF extraDbSeedSqlFile(String extraDbSeedSqlFile);
+
+  /**
+   * Create an additional extra database with the given attributes.
+   */
+  SELF extra(Consumer<ExtraBuilder> extraBuilder);
+
+  /**
+   * Create a second additional extra database with the given attributes.
+   */
+  SELF extra2(Consumer<ExtraBuilder> extraBuilder);
 
   /**
    * Set to true to use in-memory database if supported.

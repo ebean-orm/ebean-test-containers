@@ -27,7 +27,7 @@ abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJ
       if (withDrop) {
         dropUserIfExists(connection, dbConfig.getUsername());
         dropDatabaseIfExists(connection, dbConfig.getDbName());
-        for (String extraDb : toDatabaseNames(dbConfig.getExtraDb())) {
+        for (String extraDb : toDatabaseNames(dbConfig.extra().dbName())) {
           dropDatabaseIfExists(connection, extraDb);
         }
       }
@@ -55,7 +55,7 @@ abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJ
     if (!userExists(connection, dbConfig.getUsername())) {
       sqlRun(connection, "create user '" + dbConfig.getUsername() + "'@'%' identified by '" + dbConfig.getPassword() + "'");
       sqlRun(connection, "grant all on " + dbConfig.getDbName() + ".* to '" + dbConfig.getUsername() + "'@'%'");
-      for (String extraDb : toDatabaseNames(dbConfig.getExtraDb())) {
+      for (String extraDb : toDatabaseNames(dbConfig.extra().dbName())) {
         sqlRun(connection, "grant all on " + extraDb + ".* to '" + dbConfig.getUsername() + "'@'%'");
       }
     }
@@ -72,7 +72,7 @@ abstract class BaseMySqlContainer<C extends BaseMySqlContainer<C>> extends BaseJ
   }
 
   private void createExtraDatabases(Connection connection) {
-    for (String extraDb : toDatabaseNames(dbConfig.getExtraDb())) {
+    for (String extraDb : toDatabaseNames(dbConfig.extra().dbName())) {
       createDatabase(connection, extraDb);
     }
   }
