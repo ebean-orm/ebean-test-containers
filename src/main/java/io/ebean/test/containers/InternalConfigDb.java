@@ -30,7 +30,11 @@ interface InternalConfigDb extends InternalConfig {
 
   String getExtraDbUser();
 
+  String getExtraDbUserWithDefault();
+
   String getExtraDbPassword();
+
+  String getExtraDbPasswordWithDefault();
 
   String getExtraDbExtensions();
 

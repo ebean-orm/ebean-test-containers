@@ -479,8 +479,18 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
     }
 
     @Override
+    public String getExtraDbUserWithDefault() {
+      return extraDbUser != null ? extraDbUser : extraDb;
+    }
+
+    @Override
     public String getExtraDbPassword() {
       return extraDbPassword;
+    }
+
+    @Override
+    public String getExtraDbPasswordWithDefault() {
+      return extraDbPassword != null ? extraDbPassword : password;
     }
 
     @Override

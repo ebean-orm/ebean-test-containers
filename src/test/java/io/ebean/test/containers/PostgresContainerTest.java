@@ -1,6 +1,8 @@
 package io.ebean.test.containers;
 
 import io.avaje.applog.AppLog;
+import io.ebean.Database;
+import io.ebean.datasource.DataSourcePool;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -60,8 +62,10 @@ class PostgresContainerTest {
   @Test
   void defaultPort() {
     PostgresContainer container = PostgresContainer.builder("15")
+      .dbName("my_test")
       .extensions("hstore")
-      .build();
+      .build()
+      .start();
 
     container.startMaybe();
     runSomeSql(container);
@@ -141,8 +145,30 @@ class PostgresContainerTest {
       exeSql(connection, "drop table if exists test_doesnotexist");
     }
 
-    final String url = container.jdbcUrl();
-    assertEquals(url, "jdbc:postgresql://localhost:9828/main_db");
+    assertEquals("jdbc:postgresql://localhost:9828/main_db", container.jdbcUrl());
+
+    Database ebean = container.ebean().builder().build();
+    ebean.sqlUpdate("insert into foo_main (mcol) values (?)")
+      .setParameter(2)
+      .execute();
+
+    Database extraEbean = container.ebean().extraDatabaseBuilder().build();
+    extraEbean.sqlUpdate("insert into foo_extra (acol) values (?)")
+      .setParameter(2)
+      .execute();
+
+    DataSourcePool dataSource = container.ebean().dataSourceBuilder().build();
+    try (Connection connection = dataSource.getConnection()) {
+      exeSql(connection, "insert into foo_main (mcol) values (1)");
+    }
+    dataSource.shutdown();
+
+    DataSourcePool extraDataSource = container.ebean().extraDataSourceBuilder().build();
+    try (Connection connection = extraDataSource.getConnection()) {
+      exeSql(connection, "insert into foo_extra (acol) values (1)");
+    }
+    extraDataSource.shutdown();
+
     container.stopRemove();
     log.log(INFO, "start() finished");
   }

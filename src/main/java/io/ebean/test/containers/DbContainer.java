@@ -108,6 +108,14 @@ abstract class DbContainer<C extends DbContainer<C>> extends BaseContainer<C> {
   }
 
   /**
+   * Return the Ebean SDK to obtain Ebean Database and Ebean DataSource builders
+   * for the underlying container.
+   */
+  public EbeanSDK ebean() {
+    return new EbeanAdapter(dbConfig);
+  }
+
+  /**
    * If we are using FastStartMode just check is the DB exists and if so assume it is all created correctly.
    * <p>
    * This should only be used with Mode.Create and when the container is already running.
