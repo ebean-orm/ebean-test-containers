@@ -76,6 +76,11 @@ class PostgresConfigTest {
     properties.setProperty("postgres.extraDb.initSqlFile", "extra_init.sql");
     properties.setProperty("postgres.extraDb.seedSqlFile", "extra_seed.sql");
     properties.setProperty("postgres.extraDb.extensions", "hstore,pgcrypto");
+    properties.setProperty("postgres.extra.dbName", "extra1");
+    properties.setProperty("postgres.extra.initSqlFile", "extra1_init.sql");
+
+    properties.setProperty("postgres.extra2.dbName", "extra2");
+    properties.setProperty("postgres.extra2.password", "foo");
 
     InternalConfigDb config = PostgresContainer.builder("15").properties(properties).internalConfig();
     assertEquals(config.containerName(), "junk_postgres");
@@ -89,9 +94,13 @@ class PostgresConfigTest {
 
     assertEquals(config.getInitSqlFile(), "init.sql");
     assertEquals(config.getSeedSqlFile(), "seed.sql");
-    assertEquals(config.extra().initSqlFile(), "extra_init.sql");
+    assertEquals(config.extra().dbName(), "extra1");
+    assertEquals(config.extra().initSqlFile(), "extra1_init.sql");
     assertEquals(config.extra().seedSqlFile(), "extra_seed.sql");
     assertEquals(config.extra().extensions(), "hstore,pgcrypto");
+    assertEquals(config.extra2().dbName(), "extra2");
+    assertEquals(config.extra2().userWithDefaults("junk"), "extra2");
+    assertEquals(config.extra2().password, "foo");
 
     assertEquals(config.jdbcAdminUrl(), "jdbc:postgresql://172.17.0.1:9823/postgres");
     assertEquals(config.jdbcUrl(), "jdbc:postgresql://172.17.0.1:9823/baz");
