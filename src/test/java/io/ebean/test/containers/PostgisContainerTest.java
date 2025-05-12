@@ -16,6 +16,7 @@ class PostgisContainerTest {
   void extraDb() throws java.sql.SQLException {
     PostgisContainer container = PostgisContainer.builder("15")
       .port(0)
+      .useLW(true)
       .extraDb("myextra")
       .build();
 
@@ -27,6 +28,7 @@ class PostgisContainerTest {
 
     String jdbcUrl = container.config().jdbcUrl();
     assertThat(jdbcUrl).contains(":" + containerConfig.port());
+    assertThat(jdbcUrl).startsWith("jdbc:postgresql_lwgis://");
     runSomeSql(container);
 
     DataSourcePool dataSource = container.ebean().dataSourceBuilder().build();

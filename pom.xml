@@ -136,6 +136,13 @@
     </dependency>
 
     <dependency>
+      <groupId>net.postgis</groupId>
+      <artifactId>postgis-jdbc</artifactId>
+      <version>2023.1.0</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>ru.yandex.clickhouse</groupId>
       <artifactId>clickhouse-jdbc</artifactId>
       <version>0.3.2</version>
