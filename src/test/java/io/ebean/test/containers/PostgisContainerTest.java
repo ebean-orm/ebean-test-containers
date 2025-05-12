@@ -37,7 +37,10 @@ class PostgisContainerTest {
     }
     dataSource.shutdown();
 
-    Database ebean = container.ebean().builder().build();
+    Database ebean = container.ebean().builder()
+      .register(false)
+      .defaultDatabase(false)
+      .build();
     ebean.sqlUpdate("insert into test_junk2 (acol) values (?)")
       .setParameter(45)
       .execute();
