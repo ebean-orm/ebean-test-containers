@@ -39,7 +39,7 @@ public interface ContainerConfig {
   /**
    * Return a DB connection url or null for the extra database.
    */
-  String jdbcExtraUrl();
+  String jdbcUrl(String dbName);
 
   /**
    * Return a DB connection url for the admin database user.

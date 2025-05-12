@@ -69,8 +69,8 @@ public class PostgresContainer extends BasePostgresContainer<PostgresContainer> 
     }
 
     @Override
-    protected String buildExtraJdbcUrl() {
-      return "jdbc:postgresql://" + host + ":" + port + "/" + extraDb;
+    protected String buildExtraJdbcUrl(String dbName) {
+      return "jdbc:postgresql://" + host + ":" + port + "/" + dbName;
     }
 
     @Override

@@ -335,7 +335,7 @@ abstract class BaseBuilder<C, SELF extends BaseBuilder<C, SELF>> implements Cont
   /**
    * Override to build jdbc url for extraDb.
    */
-  protected String buildExtraJdbcUrl() {
+  protected String buildExtraJdbcUrl(String dbName) {
     throw new IllegalStateException("Not valid for this type");
   }
 
@@ -396,8 +396,8 @@ abstract class BaseBuilder<C, SELF extends BaseBuilder<C, SELF>> implements Cont
     }
 
     @Override
-    public String jdbcExtraUrl() {
-      return buildExtraJdbcUrl();
+    public String jdbcUrl(String dbName) {
+      return buildExtraJdbcUrl(dbName);
     }
 
     @Override

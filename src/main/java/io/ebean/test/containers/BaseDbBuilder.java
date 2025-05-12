@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 /**
  * Configuration for an DBMS like Postgres, MySql, Oracle, SQLServer
@@ -25,15 +26,8 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
    */
   String adminPassword = "admin";
 
-  /**
-   * An additional database.
-   */
-  String extraDb;
-  private String extraDbUser;
-  private String extraDbPassword = "test";
-  String extraDbExtensions;
-  private String extraDbInitSqlFile;
-  private String extraDbSeedSqlFile;
+  final ExtraAttributes extra = new ExtraAttributes();
+  final ExtraAttributes extra2 = new ExtraAttributes();
 
   /**
    * Database name to use.
@@ -123,13 +117,8 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
     adminPassword = prop(properties, "adminPassword", adminPassword);
     initSqlFile = prop(properties, "initSqlFile", initSqlFile);
     seedSqlFile = prop(properties, "seedSqlFile", seedSqlFile);
-
-    extraDb = prop(properties, "extraDb.dbName", prop(properties, "extraDb", extraDb));
-    extraDbUser = prop(properties, "extraDb.username", extraDbUser);
-    extraDbPassword = prop(properties, "extraDb.password", extraDbPassword);
-    extraDbExtensions = prop(properties, "extraDb.extensions", extraDbExtensions);
-    extraDbInitSqlFile = prop(properties, "extraDb.initSqlFile", extraDbInitSqlFile);
-    extraDbSeedSqlFile = prop(properties, "extraDb.seedSqlFile", extraDbSeedSqlFile);
+    extra.load(platform, "extraDb", properties);
+    extra2.load(platform, "extra2Db", properties);
     return self();
   }
 
@@ -270,7 +259,7 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
    */
   @Override
   public SELF extraDb(String extraDb) {
-    this.extraDb = extraDb;
+    this.extra.dbName = extraDb;
     return self();
   }
 
@@ -282,7 +271,7 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
    */
   @Override
   public SELF extraDbUser(String extraDbUser) {
-    this.extraDbUser = extraDbUser;
+    this.extra.username = extraDbUser;
     return self();
   }
 
@@ -294,13 +283,13 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
    */
   @Override
   public SELF extraDbPassword(String extraDbPassword) {
-    this.extraDbPassword = extraDbPassword;
+    this.extra.password = extraDbPassword;
     return self();
   }
 
   @Override
   public SELF extraDbExtensions(String extraDbExtensions) {
-    this.extraDbExtensions = extraDbExtensions;
+    this.extra.extensions = extraDbExtensions;
     return self();
   }
 
@@ -309,7 +298,7 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
    */
   @Override
   public SELF extraDbInitSqlFile(String extraDbInitSqlFile) {
-    this.extraDbInitSqlFile = extraDbInitSqlFile;
+    this.extra.initSqlFile = extraDbInitSqlFile;
     return self();
   }
 
@@ -318,7 +307,19 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
    */
   @Override
   public SELF extraDbSeedSqlFile(String extraDbSeedSqlFile) {
-    this.extraDbSeedSqlFile = extraDbSeedSqlFile;
+    this.extra.seedSqlFile = extraDbSeedSqlFile;
+    return self();
+  }
+
+  @Override
+  public SELF extra(Consumer<ExtraBuilder> extraBuilder) {
+    extraBuilder.accept(extra);
+    return self();
+  }
+
+  @Override
+  public SELF extra2(Consumer<ExtraBuilder> extraBuilder) {
+    extraBuilder.accept(extra2);
     return self();
   }
 
@@ -469,43 +470,13 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
     }
 
     @Override
-    public String getExtraDb() {
-      return extraDb;
+    public ExtraAttributes extra() {
+      return extra;
     }
 
     @Override
-    public String getExtraDbUser() {
-      return extraDbUser;
-    }
-
-    @Override
-    public String getExtraDbUserWithDefault() {
-      return extraDbUser != null ? extraDbUser : extraDb;
-    }
-
-    @Override
-    public String getExtraDbPassword() {
-      return extraDbPassword;
-    }
-
-    @Override
-    public String getExtraDbPasswordWithDefault() {
-      return extraDbPassword != null ? extraDbPassword : password;
-    }
-
-    @Override
-    public String getExtraDbExtensions() {
-      return extraDbExtensions;
-    }
-
-    @Override
-    public String getExtraDbInitSqlFile() {
-      return extraDbInitSqlFile;
-    }
-
-    @Override
-    public String getExtraDbSeedSqlFile() {
-      return extraDbSeedSqlFile;
+    public ExtraAttributes extra2() {
+      return extra2;
     }
 
     @Override

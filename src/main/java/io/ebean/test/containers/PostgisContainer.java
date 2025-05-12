@@ -43,7 +43,8 @@ public class PostgisContainer extends BasePostgresContainer<PostgisContainer> {
       this.adminUsername = "postgres";
       this.tmpfs = "/var/lib/postgresql/data:rw";
       this.extensions = "hstore,pgcrypto,postgis";
-      this.extraDbExtensions = extensions;
+      this.extra.extensions = extensions;
+      this.extra2.extensions = extensions;
     }
 
     private String prefix() {
@@ -61,8 +62,8 @@ public class PostgisContainer extends BasePostgresContainer<PostgisContainer> {
     }
 
     @Override
-    protected String buildExtraJdbcUrl() {
-      return prefix() + host + ":" + port + "/" + extraDb;
+    protected String buildExtraJdbcUrl(String dbName) {
+      return prefix() + host + ":" + port + "/" + dbName;
     }
 
     /**

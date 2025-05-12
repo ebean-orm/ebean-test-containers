@@ -28,6 +28,10 @@ class PostgresContainerTest {
       .extraDbUser("extra1")
       .extraDbPassword("extraPwd")
       .extraDbExtensions("pgcrypto")
+      .extraDbInitSqlFile("init-extra-database.sql")
+      .extra2(e -> e.dbName("my_extra2")
+        .username("my_extra2user")
+        .initSqlFile("init-extra2-database.sql"))
       .build();
 
     container.startMaybe();
@@ -39,6 +43,12 @@ class PostgresContainerTest {
     String jdbcUrl = container.config().jdbcUrl();
     assertThat(jdbcUrl).contains(":" + containerConfig.port());
     runSomeSql(container);
+
+    Database ebeanExtra = container.ebean().extraDatabaseBuilder().build();
+    ebeanExtra.sqlUpdate("insert into foo_extra (acol) values (44)").execute();
+
+    Database ebeanExtra2 = container.ebean().extra2DatabaseBuilder().build();
+    ebeanExtra2.sqlUpdate("insert into bar_extra2 (acol) values (44)").execute();
   }
 
   @Test

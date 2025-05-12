@@ -33,9 +33,10 @@ abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends
         dropRoleIfExists(connection, dbConfig.getUsername());
       }
       if (databaseNotExists(connection, dbConfig.getDbName())) {
-        createExtraDb(connection, withDrop);
         createRole(connection);
         createDatabase(connection);
+        createExtraDb(connection, withDrop, dbConfig.extra());
+        createExtraDb(connection, withDrop, dbConfig.extra2());
       }
     } catch (SQLException e) {
       throw new RuntimeException("Error when creating database and role", e);
@@ -43,24 +44,31 @@ abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends
   }
 
   private void dropRoleIfExists(Connection connection, String username) {
-    sqlRun(connection, "drop role if exists " + username);
+    if (defined(username)) {
+      sqlRun(connection, "drop role if exists " + username);
+    }
   }
 
   private void dropDatabaseIfExists(Connection connection, String dbName) {
-    sqlRun(connection, "drop database if exists " + dbName);
+    if (defined(dbName)) {
+      sqlRun(connection, "drop database if exists " + dbName);
+    }
   }
 
-  private void createExtraDb(Connection connection, boolean withDrop) {
-    final String extraUser = getExtraDbUser();
+  private void createExtraDb(Connection connection, boolean withDrop, ExtraAttributes extra) {
+    final String extraDb = extra.dbName();
+    if (!defined(extraDb)) {
+      return;
+    }
+    final String extraUser = extra.userWithDefaults(dbConfig.getUsername());
     if (defined(extraUser)) {
-      final String extraDb = dbConfig.getExtraDb();
       if (withDrop) {
         dropDatabaseIfExists(connection, extraDb);
         dropRoleIfExists(connection, extraUser);
       }
-      createRole(connection, extraUser, dbConfig.getExtraDbPasswordWithDefault());
+      createRole(connection, extraUser, extra.passwordWithDefault(dbConfig.getPassword()));
       if (databaseNotExists(connection, extraDb)) {
-        createExtraDatabase(connection, extraDb, extraUser);
+        createExtraDatabase(connection, extraDb, extraUser, extra);
       }
     }
   }
@@ -71,10 +79,10 @@ abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends
     createDatabaseInitSql(dbConfig.getDbName(), dbConfig.getUsername(),  dbConfig.getInitSqlFile(), dbConfig.getSeedSqlFile());
   }
 
-  private void createExtraDatabase(Connection connection, String extraDb, String extraUser) {
-    createDatabaseWithOwner(connection, extraDb, extraUser);
-    addExtensions(dbConfig.getExtraDbExtensions(), dbConfig.jdbcExtraUrl());
-    createDatabaseInitSql(extraDb, extraUser,  dbConfig.getExtraDbInitSqlFile(), dbConfig.getExtraDbSeedSqlFile());
+  private void createExtraDatabase(Connection connection, String dbName, String username, ExtraAttributes attrs) {
+    createDatabaseWithOwner(connection, dbName, username);
+    addExtensions(attrs.extensions(), dbConfig.jdbcUrl(dbName));
+    createDatabaseInitSql(dbName, username,  attrs);
   }
 
   private void createRole(Connection connection) {
@@ -82,17 +90,26 @@ abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends
   }
 
   private void createRole(Connection connection, String username, String password) {
-    if (!sqlHasRow(connection, "select rolname from pg_roles where rolname = '" + username + "'")) {
+    if (defined(username) && !sqlHasRow(connection, "select rolname from pg_roles where rolname = '" + username + "'")) {
       sqlRun(connection, "create role " + username + " password '" + password + "' login createrole superuser");
     }
   }
 
   private boolean databaseNotExists(Connection connection, String dbName) {
+    if (!defined(dbName)) {
+      return false;
+    }
     return !sqlHasRow(connection, "select 1 from pg_database where datname = '" + dbName + "'");
   }
 
   private void createDatabaseWithOwner(Connection connection, String dbName, String owner) {
-    sqlRun(connection, "create database " + dbName + " with owner " + owner);
+    if (defined(dbName) && defined(owner)) {
+      sqlRun(connection, "create database " + dbName + " with owner " + owner);
+    }
+  }
+
+  private void createDatabaseInitSql(String extraDb, String extraUser, ExtraAttributes attrs) {
+    createDatabaseInitSql(extraDb, extraUser, attrs.initSqlFile(), attrs.seedSqlFile());
   }
 
   private void createDatabaseInitSql(String dbName, String owner, String initSql, String seedSql) {
@@ -118,17 +135,6 @@ abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends
         throw new RuntimeException(e);
       }
     }
-  }
-
-  /**
-   * Maybe return an extra user to create.
-   * <p>
-   * The extra user will default to be the same as the extraDB if that is defined.
-   * Additionally we don't create an extra user IF it is the same as the main db user.
-   */
-  private String getExtraDbUser() {
-    String extraUser = dbConfig.getExtraDbUserWithDefault();
-    return extraUser != null && !extraUser.equals(dbConfig.getUsername()) ? extraUser : null;
   }
 
   @Override
