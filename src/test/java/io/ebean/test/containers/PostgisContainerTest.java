@@ -1,5 +1,7 @@
 package io.ebean.test.containers;
 
+import io.ebean.Database;
+import io.ebean.datasource.DataSourcePool;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
@@ -11,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PostgisContainerTest {
 
   @Test
-  void extraDb() {
+  void extraDb() throws java.sql.SQLException {
     PostgisContainer container = PostgisContainer.builder("15")
       .port(0)
       .extraDb("myextra")
@@ -26,6 +28,19 @@ class PostgisContainerTest {
     String jdbcUrl = container.config().jdbcUrl();
     assertThat(jdbcUrl).contains(":" + containerConfig.port());
     runSomeSql(container);
+
+    DataSourcePool dataSource = container.ebean().dataSourceBuilder().build();
+    try (Connection connection = dataSource.getConnection()) {
+      exeSql(connection, "insert into test_junk2 (acol) values (44)");
+    }
+    dataSource.shutdown();
+
+    Database ebean = container.ebean().builder().build();
+    ebean.sqlUpdate("insert into test_junk2 (acol) values (?)")
+      .setParameter(45)
+      .execute();
+
+    ebean.shutdown();
   }
 
   private void runSomeSql(PostgisContainer container) {
@@ -39,9 +54,9 @@ class PostgisContainerTest {
     }
   }
 
-  private void exeSql(Connection connection, String sql) throws SQLException {
-    PreparedStatement st = connection.prepareStatement(sql);
-    st.execute();
-    st.close();
+  private static void exeSql(Connection connection, String sql) throws SQLException {
+    try (PreparedStatement st = connection.prepareStatement(sql)) {
+      st.execute();
+    }
   }
 }

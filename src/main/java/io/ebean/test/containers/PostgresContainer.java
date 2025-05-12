@@ -1,7 +1,15 @@
 package io.ebean.test.containers;
 
 /**
- * Commands for controlling a postgres docker container.
+ * Run a postgres docker container for testing purposes.
+ * <pre>{@code
+ *
+ *     PostgresContainer container = PostgresContainer.builder("15")
+ *       .dbName("my_test")
+ *       .build()
+ *       .start();
+ *
+ * }</pre>
  */
 public class PostgresContainer extends BasePostgresContainer<PostgresContainer> {
 
@@ -13,6 +21,15 @@ public class PostgresContainer extends BasePostgresContainer<PostgresContainer> 
 
   /**
    * Create a builder for PostgresContainer.
+   *
+   * <pre>{@code
+   *
+   *     PostgresContainer container = PostgresContainer.builder("15")
+   *       .dbName("my_test")
+   *       .build()
+   *       .start();
+   *
+   * }</pre>
    */
   public static Builder builder(String version) {
     return new Builder(version);

@@ -58,7 +58,7 @@ abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends
         dropDatabaseIfExists(connection, extraDb);
         dropRoleIfExists(connection, extraUser);
       }
-      createRole(connection, extraUser, getWithDefault(dbConfig.getExtraDbPassword(), dbConfig.getPassword()));
+      createRole(connection, extraUser, dbConfig.getExtraDbPasswordWithDefault());
       if (databaseNotExists(connection, extraDb)) {
         createExtraDatabase(connection, extraDb, extraUser);
       }
@@ -127,7 +127,7 @@ abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends
    * Additionally we don't create an extra user IF it is the same as the main db user.
    */
   private String getExtraDbUser() {
-    String extraUser = getWithDefault(dbConfig.getExtraDbUser(), dbConfig.getExtraDb());
+    String extraUser = dbConfig.getExtraDbUserWithDefault();
     return extraUser != null && !extraUser.equals(dbConfig.getUsername()) ? extraUser : null;
   }
 
@@ -145,10 +145,6 @@ abstract class BasePostgresContainer<C extends BasePostgresContainer<C>> extends
     args.add("-f");
     args.add(containerFilePath);
     return createProcessBuilder(args);
-  }
-
-  private String getWithDefault(String value, String defaultValue) {
-    return value == null ? defaultValue : value;
   }
 
   private List<String> parseExtensions(String dbExtn) {
