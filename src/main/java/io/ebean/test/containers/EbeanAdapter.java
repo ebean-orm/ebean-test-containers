@@ -13,6 +13,7 @@ final class EbeanAdapter implements EbeanSDK {
     return io.ebean.Database.builder()
       .dataSourceBuilder(dataSourceBuilder())
       .name(dbConfig.getDbName())
+      .register(false)
       .ddlGenerate(true)
       .ddlRun(true);
   }
@@ -40,7 +41,8 @@ final class EbeanAdapter implements EbeanSDK {
     return io.ebean.Database.builder()
       .dataSourceBuilder(extraDataSourceBuilder())
       .name(dbConfig.getExtraDb())
-      .defaultDatabase(false);
+      .defaultDatabase(false)
+      .register(false);
   }
 
 }
