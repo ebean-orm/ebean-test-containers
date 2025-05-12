@@ -118,7 +118,8 @@ abstract class BaseDbBuilder<C, SELF extends BaseDbBuilder<C, SELF>> extends Bas
     initSqlFile = prop(properties, "initSqlFile", initSqlFile);
     seedSqlFile = prop(properties, "seedSqlFile", seedSqlFile);
     extra.load(platform, "extraDb", properties);
-    extra2.load(platform, "extra2Db", properties);
+    extra.load(platform, "extra", properties);
+    extra2.load(platform, "extra2", properties);
     return self();
   }
 
