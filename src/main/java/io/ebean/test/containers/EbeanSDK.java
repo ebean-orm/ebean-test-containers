@@ -19,6 +19,7 @@ public interface EbeanSDK {
     /**
      * Return an ebean Database builder for the underlying database (url, username, password).
      * <p>
+     * This defaults to register with Ebean's io.ebean.DB as the default database.
      * The name of the ebean database will be dbName set for the container.
      * <p>
      * This builder will have ddlGenerate set to true and ddlRun set to true. Alternatively,
@@ -32,22 +33,27 @@ public interface EbeanSDK {
     io.ebean.datasource.DataSourceBuilder dataSourceBuilder();
 
     /**
+     * Return an ebean Database builder for the EXTRA database.
+     * <p>
+     * This is set to not register with Ebean's io.ebean.DB.
+     */
+    io.ebean.DatabaseBuilder extraDatabaseBuilder();
+
+    /**
      * Return a DataSource builder for the extra database (url, username, password).
      */
     io.ebean.datasource.DataSourceBuilder extraDataSourceBuilder();
+
+    /**
+     * Return an ebean Database builder for the second EXTRA2 database.
+     * <p>
+     * This is set to not register with Ebean's io.ebean.DB.
+     */
+    io.ebean.DatabaseBuilder extra2DatabaseBuilder();
 
     /**
      * Return a DataSource builder for the second extra database (url, username, password).
      */
     io.ebean.datasource.DataSourceBuilder extra2DataSourceBuilder();
 
-    /**
-     * Return an ebean Database builder for the EXTRA database.
-     */
-    io.ebean.DatabaseBuilder extraDatabaseBuilder();
-
-    /**
-     * Return an ebean Database builder for the second EXTRA2 database.
-     */
-    io.ebean.DatabaseBuilder extra2DatabaseBuilder();
 }
