@@ -61,8 +61,7 @@ final class EbeanAdapter implements EbeanSDK {
         return io.ebean.Database.builder()
                 .dataSourceBuilder(ds)
                 .name(name)
-                .defaultDatabase(false)
-                .register(false);
+                .defaultDatabase(false);
     }
 
 }
