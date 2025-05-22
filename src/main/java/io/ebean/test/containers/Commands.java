@@ -85,9 +85,11 @@ public class Commands {
   public void removeContainers(String... containerNames) {
     log.log(Level.DEBUG, "remove {0}", Arrays.toString(containerNames));
     try {
-      final List<String> cmds = dockerCmd("rm", "-f", "--volumes");
-      cmds.addAll(Arrays.asList(containerNames));
-      ProcessHandler.command(cmds);
+      var args = new ArrayList<String>();
+      args.add("-f");
+      args.add("--volumes");
+      args.addAll(Arrays.asList(containerNames));
+      dockerCmd("rm", args);
     } catch (CommandException e) {
       log.log(Level.DEBUG, "removing containers that don't exist " + e.getMessage());
     }
@@ -96,19 +98,18 @@ public class Commands {
   public void stopContainers(String... containerNames) {
     log.log(Level.DEBUG, "stop {0}", Arrays.toString(containerNames));
     try {
-      final List<String> cmds = dockerCmd("stop");
-      cmds.addAll(Arrays.asList(containerNames));
-      ProcessHandler.command(cmds);
+      dockerCmd("stop", Arrays.asList(containerNames));
     } catch (CommandException e) {
       log.log(Level.DEBUG, "stopping containers that don't exist " + e.getMessage());
     }
   }
 
-  private List<String> dockerCmd(String... args) {
+  private void dockerCmd(String first, List<String> args) {
     final List<String> cmd = new ArrayList<>();
     cmd.add(docker);
-    cmd.addAll(Arrays.asList(args));
-    return cmd;
+    cmd.add(first);
+    cmd.addAll(args);
+    ProcessHandler.command(cmd);
   }
 
   /**
