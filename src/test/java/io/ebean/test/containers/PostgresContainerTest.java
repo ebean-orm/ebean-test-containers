@@ -90,7 +90,12 @@ class PostgresContainerTest {
       .build();
 
     container.stopRemove();
+    Commands commands = new Commands();
+    commands.stopContainers("temp_pg15_9824");
+    commands.removeContainers("temp_pg15_9824");
+
     container.startContainerOnly();
+
 
     runBasedOnPort(9824);
 
