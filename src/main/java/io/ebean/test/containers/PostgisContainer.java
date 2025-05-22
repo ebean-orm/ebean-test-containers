@@ -1,5 +1,8 @@
 package io.ebean.test.containers;
 
+import static java.lang.System.Logger.Level.DEBUG;
+import static java.lang.System.Logger.Level.ERROR;
+
 /**
  * Commands for controlling a postgis docker container.
  */
@@ -70,9 +73,37 @@ public class PostgisContainer extends BasePostgresContainer<PostgisContainer> {
      * Set to use HexWKB and DriverWrapperLW. The JDBC URL will prefix with
      * <code>jdbc:postgresql_lwgis://</code> instead of <code>jdbc:postgresql://</code>.
      */
-    Builder useLW(boolean useLW) {
+    public Builder useLW(boolean useLW) {
       this.useLW = useLW;
+      if (useLW) {
+        // make sure the LW driver is registered
+        String driver = checkDriver();
+        if (driver != null) {
+          log.log(DEBUG, "DriverWrapperLW exists {0}", driver);
+        } else {
+          log.log(ERROR, "Missing dependency net.postgis:postgis-jdbc for DriverWrapperLW?");
+        }
+      }
       return this;
+    }
+
+    private static String checkDriver() {
+      if (classExists("net.postgis.jdbc.DriverWrapperLW")) {
+        return "net.postgis.jdbc.DriverWrapperLW";
+      }
+      if (classExists("org.postgis.DriverWrapperLW")) {
+        return "org.postgis.DriverWrapperLW";
+      }
+      return null;
+    }
+
+    private static boolean classExists(String cn) {
+      try {
+        Class.forName(cn);
+        return true;
+      } catch (ClassNotFoundException e) {
+        return false;
+      }
     }
 
     @Override
