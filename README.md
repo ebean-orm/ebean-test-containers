@@ -26,7 +26,7 @@ Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Hana, LocalDynamoDB, Loca
   <dependency>
     <groupId>io.ebean</groupId>
     <artifactId>ebean-test-containers</artifactId>
-    <version>6.2</version>
+    <version>7.13</version>
     <scope>test</scope>
   </dependency>
 
@@ -65,10 +65,21 @@ The dbName needs to be a valid database name so please just use alpha and unders
 special characters. For example, with Postgres it needs to be a valid postgres database name.
 
 ```java
-    PostgresContainer container = PostgresContainer.builder("14")
+    PostgresContainer container = PostgresContainer.builder("17")
       .dbName("my_app1") // this needs to be unique, not clash with other projects
       .start();
 
+```
+
+Database containers can create an Ebean DatabaseBuilder and also a DataSourceBuilder.
+For full programmatic test setup like:
+```java
+  PostgresContainer container = PostgresContainer.builder("17")
+    .dbName("my_app1") // this needs to be unique, not clash with other projects
+    .start();
+
+  DatabaseBuilder ebeanBuilder = container.ebean().builder();
+  Database ebeanDatabase = ebeanBuilder.build();
 ```
 
 Some containers like Redis, Localstack, LocalDynamoDB, ElasticSearch, ClickHouse do not have a concept
