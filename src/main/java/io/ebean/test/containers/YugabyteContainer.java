@@ -36,6 +36,7 @@ public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> 
     int port9042 = 9042;
     int port9000 = 9000;
     int port7000 = 7000;
+    String tserverFlags = "yb_enable_read_committed_isolation=true";
 
     private Builder(String version) {
       super("yugabyte", 6433, 5433, version);
@@ -55,6 +56,14 @@ public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> 
 
     public YugabyteContainer.Builder port9042(int port9042) {
       this.port9042 = port9042;
+      return self();
+    }
+
+    /**
+     * Set the tserverFlags to be used. Defaults to <code>yb_enable_read_committed_isolation=true</code>.
+     */
+    public YugabyteContainer.Builder tserverFlags(String tserverFlags) {
+      this.tserverFlags = tserverFlags;
       return self();
     }
 
@@ -101,18 +110,13 @@ public class YugabyteContainer extends BasePostgresContainer<YugabyteContainer> 
     args.add("-p");
     args.add(builder.port9042 +":9042");
 
-//    if (dbConfig.isInMemory() && dbConfig.getTmpfs() != null) {
-//      args.add("--tmpfs");
-//      args.add(dbConfig.getTmpfs());
-//    }
-//    if (!dbConfig.adminPassword.isEmpty()) {
-//      args.add("-e");
-//      args.add("POSTGRES_PASSWORD=" + dbConfig.getAdminPassword());
-//    }
     args.add(config.getImage());
     args.add("bin/yugabyted");
     args.add("start");
     // args.add("--base_dir=/home/yugabyte/yb_data");
+    if (builder.tserverFlags != null) {
+      args.add("--tserver_flags=" + builder.tserverFlags);
+    }
     args.add("--daemon=false");
     return createProcessBuilder(args);
   }
