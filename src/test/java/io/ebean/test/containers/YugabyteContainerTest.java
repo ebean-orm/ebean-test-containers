@@ -10,10 +10,11 @@ class YugabyteContainerTest {
 
   @Test
   void start_run_stop() {
-    YugabyteContainer yugaContainer = YugabyteContainer.builder("2.11.2.0-b89")
+    YugabyteContainer yugaContainer = YugabyteContainer.builder("2.20.11.0-b34")
       .containerName("temp_yugabyte")
       .extensions("pgcrypto")
       .port(9844)
+      .port7000(7001)
       .build();
 
     yugaContainer.stopRemove();
