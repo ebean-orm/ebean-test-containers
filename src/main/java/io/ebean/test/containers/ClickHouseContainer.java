@@ -22,23 +22,25 @@ public class ClickHouseContainer extends BaseJdbcContainer<ClickHouseContainer> 
 
   public static class Builder extends BaseDbBuilder<ClickHouseContainer, Builder> {
 
+    private String jdbcUrlPrefix = "jdbc:clickhouse://";
+
     private Builder(String version) {
       super("clickhouse", 8123, 8123, version);
       this.image = "clickhouse/clickhouse-server:" + version;
       this.username = "default";
-      this.password = "";
+      this.password = "test";
       this.adminUsername = "default";
-      this.adminPassword = "";
+      this.adminPassword = "test";
     }
 
     @Override
     protected String buildJdbcUrl() {
-      return "jdbc:clickhouse://" + getHost() + ":" + getPort() + "/" + getDbName();
+      return jdbcUrlPrefix + getHost() + ":" + getPort() + "/" + getDbName();
     }
 
     @Override
     protected String buildJdbcAdminUrl() {
-      return "jdbc:clickhouse://" + getHost() + ":" + getPort() + "/default";
+      return jdbcUrlPrefix + getHost() + ":" + getPort(); // + "/system";
     }
 
     /**
@@ -47,6 +49,14 @@ public class ClickHouseContainer extends BaseJdbcContainer<ClickHouseContainer> 
     @Override
     public Builder user(String user) {
       return super.user(user);
+    }
+
+    /**
+     * Set the jdbc prefix. Defaults to {@code jdbc:clickhouse://}
+     */
+    public Builder jdbcUrlPrefix(String jdbcUrlPrefix) {
+      this.jdbcUrlPrefix = jdbcUrlPrefix;
+      return this;
     }
 
     @Override
@@ -107,6 +117,9 @@ public class ClickHouseContainer extends BaseJdbcContainer<ClickHouseContainer> 
     args.add(config.containerName());
     args.add("--ulimit");
     args.add("nofile=262144:262144");
+
+    args.add("-e");
+    args.add("CLICKHOUSE_PASSWORD=" + dbConfig.getAdminPassword());
 
     args.add("-p");
     args.add(config.getPort() + ":" + config.getInternalPort());
