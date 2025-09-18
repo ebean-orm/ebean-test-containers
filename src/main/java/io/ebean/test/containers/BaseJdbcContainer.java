@@ -50,7 +50,7 @@ abstract class BaseJdbcContainer<C extends BaseJdbcContainer<C>> extends DbConta
       return false;
     }
     try (Connection connection = dbConfig.createAdminConnection()) {
-      return true;
+      return connection.isValid(1);
     } catch (Throwable e) {
       // no connectivity
       return false;
