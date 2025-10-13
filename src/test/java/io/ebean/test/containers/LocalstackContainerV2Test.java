@@ -6,6 +6,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
 import software.amazon.awssdk.services.kinesis.model.CreateStreamRequest;
+import software.amazon.awssdk.services.kms.model.CreateKeyResponse;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Bucket;
 import software.amazon.awssdk.services.s3.model.CreateBucketResponse;
@@ -29,8 +30,7 @@ class LocalstackContainerV2Test {
   void start_viaBuilder() {
     Localstack2Container container = Localstack2Container.builder("4.0.3")
       .awsRegion("ap-southeast-2")
-      .services("dynamodb,kinesis,sns,sqs,s3")
-      //.port(4567)
+      .services("dynamodb,kinesis,sns,sqs,s3,kms")
       .containerName("ut_localstack_dkss2")
       .image("localstack/localstack:4.0.3")
       .port(4577)
@@ -40,6 +40,14 @@ class LocalstackContainerV2Test {
     container.startMaybe();
 
     AwsSDKv2 sdk = container.sdk2();
+
+    assertThat(sdk.endpoint()).isNotNull();
+    assertThat(sdk.kmsClient()).isNotNull();
+    assertThat(sdk.kmsAsyncClient()).isNotNull();
+
+    CreateKeyResponse key = sdk.kmsClient().createKey();
+    assertThat(key.keyMetadata().keyId()).isNotNull();
+
     var amazonDynamoDB = sdk.dynamoDBClient();
     createTable(amazonDynamoDB);
 
@@ -166,7 +174,7 @@ class LocalstackContainerV2Test {
   @Test
   void start() {
 
-    Localstack2Container container = Localstack2Container.builder("0.14.4")
+    Localstack2Container container = Localstack2Container.builder("4.0.3")
       //.setShutdownMode(StopMode.None)
       .build();
     container.startMaybe();

@@ -5,6 +5,8 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.kinesis.KinesisClient;
+import software.amazon.awssdk.services.kms.KmsAsyncClient;
+import software.amazon.awssdk.services.kms.KmsClient;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
@@ -65,6 +67,29 @@ final class LocalstackSdkV2 implements AwsSDKv2 {
       .endpointOverride(endpoint)
       .region(region())
       .forcePathStyle(true)
+      .build();
+  }
+
+  @Override
+  public URI endpoint() {
+    return endpoint;
+  }
+
+  @Override
+  public KmsClient kmsClient() {
+    return KmsClient.builder()
+      .credentialsProvider(credentialsProvider())
+      .endpointOverride(endpoint)
+      .region(region())
+      .build();
+  }
+
+  @Override
+  public KmsAsyncClient kmsAsyncClient() {
+    return KmsAsyncClient.builder()
+      .credentialsProvider(credentialsProvider())
+      .endpointOverride(endpoint)
+      .region(region())
       .build();
   }
 
