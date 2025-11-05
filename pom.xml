@@ -152,6 +152,13 @@
     </dependency>
 
     <dependency>
+      <groupId>com.pgvector</groupId>
+      <artifactId>pgvector</artifactId>
+      <version>0.1.6</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>ru.yandex.clickhouse</groupId>
       <artifactId>clickhouse-jdbc</artifactId>
       <version>0.3.2</version>
