@@ -12,18 +12,10 @@ public class PGvectorContainer extends BasePostgresContainer<PGvectorContainer> 
   }
 
   /**
-   * Create a builder for PostgisContainer.
+   * Create a builder for PGvectorContainer.
    */
   public static Builder builder(String version) {
     return new Builder(version);
-  }
-
-  /**
-   * Deprecated - migrate to builder().
-   */
-  @Deprecated
-  public static Builder newBuilder(String version) {
-    return builder(version);
   }
 
   private PGvectorContainer(Builder config) {
@@ -36,7 +28,7 @@ public class PGvectorContainer extends BasePostgresContainer<PGvectorContainer> 
   public static class Builder extends BaseDbBuilder<PGvectorContainer, Builder> {
 
     private Builder(String version) {
-      super("pgvector", 6432, 5432, version);
+      super("pgvector", 6435, 5432, version);
       this.image = "pgvector/pgvector:" + version;
       this.adminUsername = "postgres";
       this.tmpfs = "/var/lib/postgresql/data:rw";
