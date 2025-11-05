@@ -164,6 +164,19 @@ occurring automatically on JVM shutdown.
 
 ```
 
+#### Postgres PGvector
+```java
+    var container = PGvectorContainer.builder("pg18")
+      .start();
+```
+
+#### Postgres Postgis
+```java
+    PostgisContainer container = PostgisContainer.builder("15")
+      .useLW(true) // use LW compression JDBC urls
+      .build();
+```
+
 #### SqlServer
 
 ```java
