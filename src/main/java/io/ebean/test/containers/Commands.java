@@ -208,11 +208,11 @@ public class Commands {
    * Check if the port matches the existing port bindings and if not return the existing port bindings.
    */
   public String registeredPortMatch(String containerName, int matchPort) {
-    ProcessResult result = ProcessHandler.command(docker, "container", "inspect", containerName, "--format={{.HostConfig.PortBindings}}");
+    ProcessResult result = ProcessHandler.command(docker, "container", "inspect", containerName, "--format={{json .HostConfig.PortBindings}}");
     List<String> outLines = result.getOutLines();
     for (String outLine : outLines) {
       if (outLine.startsWith("map")) {
-        if (outLine.contains("{ " + matchPort + "}")) {
+        if (outLine.contains("\"HostPort\":\"" + matchPort + "\"}")) {
           // port matching all good
           return null;
         } else {
