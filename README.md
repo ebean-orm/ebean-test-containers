@@ -17,7 +17,7 @@ containers to make testing nice for Ebean ORM, see https://ebean.io/docs/testing
 
 ## Supported Containers
 
-Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Hana, LocalDynamoDB, Localstack, MariaDB, MySql, NuoDB, Oracle, Postgres, Redis, SqlServer, Yugabyte.
+Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Floci, Hana, LocalDynamoDB, Localstack, MariaDB, MySql, NuoDB, Oracle, Postgres, Redis, SqlServer, Yugabyte.
 
 ## Dependency
 
@@ -211,6 +211,25 @@ occurring automatically on JVM shutdown.
 
 ```
 
+#### Floci - `hectorvent/floci`
+
+```java
+    FlociContainer container = FlociContainer.builder("latest")
+      .services("dynamodb,kinesis,sns,sqs,s3,kms")
+      //.awsRegion("ap-southeast-2")
+      //.port(4566)
+      //.image("hectorvent/floci:latest")
+      .start();
+
+    AwsSDKv2 sdk = container.sdk2();
+    DynamoDbClient dynamoDb = sdk.dynamoDBClient();
+    SqsClient sqs = sdk.sqsClient();
+    SnsClient sns = sdk.snsClient();
+
+    // setup - create dynamoDB tables, queues etc
+
+```
+
 #### LocalDynamoDB - `amazon/dynamodb-local`
 
 ```java
@@ -319,4 +338,3 @@ occurring automatically on JVM shutdown.
 Refer to the ebean testing documentation (https://ebean.io/docs/testing/) ...
 where we use ebean-test to hook into the Ebean lifecycle and automatically
 start the docker containers as needed (prior to running tests etc).
-
