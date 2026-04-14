@@ -1,6 +1,5 @@
 package io.ebean.test.containers;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition;
@@ -41,7 +40,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class FlociContainerIntegrationTest {
 
-  @Disabled
   @Test
   void start_viaBuilder() {
     FlociContainer container = FlociContainer.builder("latest")
@@ -77,7 +75,6 @@ class FlociContainerIntegrationTest {
     assertThat(s3).isNotNull();
   }
 
-  @Disabled
   @Test
   void randomPort() {
     FlociContainer container = FlociContainer.builder("latest")
@@ -95,7 +92,6 @@ class FlociContainerIntegrationTest {
     container.stop();
   }
 
-  @Disabled
   @Test
   void start() {
     FlociContainer container = FlociContainer.builder("latest")
