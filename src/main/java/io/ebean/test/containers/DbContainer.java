@@ -1,5 +1,6 @@
 package io.ebean.test.containers;
 
+import io.ebean.datasource.DataSourceBuilder;
 import io.ebean.test.containers.process.ProcessHandler;
 
 import java.io.File;
@@ -113,6 +114,13 @@ abstract class DbContainer<C extends DbContainer<C>> extends BaseContainer<C> {
    */
   public EbeanSDK ebean() {
     return new EbeanAdapter(dbConfig);
+  }
+
+  /**
+   * Return a DataSource builder for the underlying database (url, username, password).
+   */
+  public DataSourceBuilder dataSourceBuilder() {
+    return ebean().dataSourceBuilder();
   }
 
   /**

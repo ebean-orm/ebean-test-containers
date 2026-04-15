@@ -80,6 +80,9 @@ For full programmatic test setup like:
 
   DatabaseBuilder ebeanBuilder = container.ebean().builder();
   Database ebeanDatabase = ebeanBuilder.build();
+
+  DataSourceBuilder dsBuilder = container.dataSourceBuilder();
+  DataSource dataSource = dsBuilder.build();
 ```
 
 Some containers like Redis, Localstack, LocalDynamoDB, ElasticSearch, ClickHouse do not have a concept
