@@ -172,7 +172,7 @@ class PostgresContainerTest {
       .setParameter(2)
       .execute();
 
-    DataSourcePool dataSource = container.ebean().dataSourceBuilder().build();
+    DataSourcePool dataSource = container.dataSourceBuilder().build();
     try (Connection connection = dataSource.getConnection()) {
       exeSql(connection, "insert into foo_main (mcol) values (1)");
     }
