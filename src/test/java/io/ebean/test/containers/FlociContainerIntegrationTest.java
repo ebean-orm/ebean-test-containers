@@ -28,11 +28,6 @@ import software.amazon.awssdk.services.sqs.model.QueueAttributeName;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageRequest;
 import software.amazon.awssdk.services.sqs.model.ReceiveMessageResponse;
 
-import java.io.IOException;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,11 +37,10 @@ class FlociContainerIntegrationTest {
 
   @Test
   void start_viaBuilder() {
-    FlociContainer container = FlociContainer.builder("latest")
+    FlociContainer container = FlociContainer.builder("1.5.5")
       .awsRegion("ap-southeast-2")
       .services("dynamodb,kinesis,sns,sqs,s3")
       .containerName("ut_floci_dkss2")
-      .image("hectorvent/floci:latest")
       .port(4578)
       .build();
 
@@ -117,44 +111,10 @@ class FlociContainerIntegrationTest {
   private void useKinesis(AwsSDKv2 sdk) {
     KinesisClient kinesis = sdk.kinesisClient();
     String streamName = "hello-stream-" + System.currentTimeMillis();
-    try {
-      kinesis.createStream(CreateStreamRequest.builder()
-        .streamName(streamName)
-        .shardCount(1)
-        .build());
-    } catch (software.amazon.awssdk.services.kinesis.model.ResourceInUseException e) {
-      // ignored for reruns against a shared integration container
-    } catch (software.amazon.awssdk.services.kinesis.model.KinesisException e) {
-      if (e.statusCode() == 415) {
-        // Floci currently expects JSON for Kinesis while AWS SDK v2 sends CBOR by default.
-        // Fallback request validates the Kinesis service path for this integration test.
-        createStreamViaJsonProtocol(sdk.endpoint(), streamName);
-      } else {
-        throw e;
-      }
-    }
-  }
-
-  private void createStreamViaJsonProtocol(URI endpoint, String streamName) {
-    String payload = "{\"StreamName\":\"" + streamName + "\",\"ShardCount\":1}";
-    HttpRequest request = HttpRequest.newBuilder(endpoint)
-      .header("X-Amz-Target", "Kinesis_20131202.CreateStream")
-      .header("Content-Type", "application/x-amz-json-1.1")
-      .POST(HttpRequest.BodyPublishers.ofString(payload))
-      .build();
-    try {
-      HttpResponse<String> response = HttpClient.newHttpClient()
-        .send(request, HttpResponse.BodyHandlers.ofString());
-      assertThat(response.statusCode()).isIn(200, 400);
-      if (response.statusCode() == 400) {
-        assertThat(response.body()).contains("ResourceInUseException");
-      }
-    } catch (IOException e) {
-      throw new IllegalStateException("Error creating Kinesis stream via JSON fallback", e);
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      throw new IllegalStateException("Interrupted creating Kinesis stream via JSON fallback", e);
-    }
+    kinesis.createStream(CreateStreamRequest.builder()
+      .streamName(streamName)
+      .shardCount(1)
+      .build());
   }
 
   private void useSnsSqs(AwsSDKv2 sdk) {
