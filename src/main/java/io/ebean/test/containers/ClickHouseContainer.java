@@ -1,11 +1,15 @@
 package io.ebean.test.containers;
 
+import java.lang.System.Logger.Level;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClickHouseContainer extends BaseJdbcContainer<ClickHouseContainer> {
+
+  private static final int CREATE_DB_MAX_ATTEMPTS = 30;
+  private static final long CREATE_DB_RETRY_PAUSE_MILLIS = 200;
 
   @Override
   public ClickHouseContainer start() {
@@ -85,14 +89,32 @@ public class ClickHouseContainer extends BaseJdbcContainer<ClickHouseContainer> 
   }
 
   private void createRoleAndDatabase(boolean withDrop) {
-    try (Connection connection = config.createAdminConnection()) {
-      if (withDrop) {
-        dropDatabase(connection);
+    Exception last = null;
+    for (int attempt = 0; attempt < CREATE_DB_MAX_ATTEMPTS; attempt++) {
+      try (Connection connection = config.createAdminConnection()) {
+        if (withDrop) {
+          dropDatabase(connection);
+        }
+        createDatabase(connection);
+        return;
+      } catch (SQLException | RuntimeException e) {
+        // ClickHouse can accept connections before the HTTP interface is ready to
+        // serve DDL, so the first attempt occasionally fails with "Connection reset"
+        // / "failed to respond" (surfaced via sqlRun as IllegalStateException).
+        // Retry briefly to absorb that startup race.
+        last = e;
+        log.log(Level.DEBUG, "Retry createRoleAndDatabase (attempt {0}) after: {1}", attempt + 1, e.getMessage());
+        pauseRetry();
       }
-      createDatabase(connection);
+    }
+    throw new RuntimeException("Error when creating database and role", last);
+  }
 
-    } catch (SQLException e) {
-      throw new RuntimeException("Error when creating database and role", e);
+  private void pauseRetry() {
+    try {
+      Thread.sleep(CREATE_DB_RETRY_PAUSE_MILLIS);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
     }
   }
 
