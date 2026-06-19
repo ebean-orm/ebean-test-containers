@@ -117,6 +117,13 @@
     </dependency>
 
     <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>aws-query-protocol</artifactId>
+      <version>2.20.154</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
       <groupId>io.avaje</groupId>
       <artifactId>junit</artifactId>
       <version>1.8</version>
