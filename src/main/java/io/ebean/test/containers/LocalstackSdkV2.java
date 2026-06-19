@@ -11,9 +11,34 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.sns.SnsClient;
 import software.amazon.awssdk.services.sqs.SqsClient;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 
 final class LocalstackSdkV2 implements AwsSDKv2 {
+
+  static {
+    // AWS SDK v2 NPEs in ProfileFile$BuilderImpl.build() when the resolved config/credentials
+    // file path is null (i.e. ~/.aws does not exist, as on CI runners).
+    // ProfileFileLocation checks aws.configFile / aws.sharedCredentialsFile system properties
+    // BEFORE falling back to the user.home-based path, so pointing them to a real (empty)
+    // temp file makes the path non-null and prevents the NPE.
+    ensureAwsProfileFilesExist();
+  }
+
+  private static void ensureAwsProfileFilesExist() {
+    if (System.getProperty("aws.configFile") == null) {
+      try {
+        File emptyFile = File.createTempFile("aws-sdk-empty-config", ".properties");
+        emptyFile.deleteOnExit();
+        String path = emptyFile.getAbsolutePath();
+        System.setProperty("aws.configFile", path);
+        System.setProperty("aws.sharedCredentialsFile", path);
+      } catch (IOException e) {
+        // best effort
+      }
+    }
+  }
 
   private final String awsRegion;
   private final URI endpoint;
