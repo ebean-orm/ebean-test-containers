@@ -105,6 +105,10 @@ public class ContainerFactory {
     if (db2Version != null) {
       containers.add(Db2Container.builder(db2Version).properties(properties).build());
     }
+    String mongoVersion = runWithVersion("mongo");
+    if (mongoVersion != null) {
+      containers.add(MongoContainer.builder(mongoVersion).properties(properties).build());
+    }
   }
 
   /**
