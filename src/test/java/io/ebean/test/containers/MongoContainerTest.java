@@ -65,14 +65,14 @@ class MongoContainerTest {
   @Test
   void properties_with_noPrefix() {
     Properties properties = new Properties();
-    properties.setProperty("mongodb.image", "mongo:7.0");
-    properties.setProperty("mongodb.port", "27018");
-    properties.setProperty("mongodb.containerName", "mongo_junk8");
-    properties.setProperty("mongodb.internalPort", "27017");
-    properties.setProperty("mongodb.username", "admin");
-    properties.setProperty("mongodb.password", "secret");
-    properties.setProperty("mongodb.dbName", "mydb");
-    properties.setProperty("mongodb.shutdownMode", "stop");
+    properties.setProperty("mongo.image", "mongo:7.0");
+    properties.setProperty("mongo.port", "27018");
+    properties.setProperty("mongo.containerName", "mongo_junk8");
+    properties.setProperty("mongo.internalPort", "27017");
+    properties.setProperty("mongo.username", "admin");
+    properties.setProperty("mongo.password", "secret");
+    properties.setProperty("mongo.dbName", "mydb");
+    properties.setProperty("mongo.shutdownMode", "stop");
 
     InternalConfig config = MongoContainer.builder("8.0")
       .properties(properties)
@@ -85,14 +85,14 @@ class MongoContainerTest {
   @Test
   void properties_with_ebeanTestPrefix() {
     Properties properties = new Properties();
-    properties.setProperty("ebean.test.mongodb.image", "mongo:7.0");
-    properties.setProperty("ebean.test.mongodb.port", "27018");
-    properties.setProperty("ebean.test.mongodb.containerName", "mongo_junk8");
-    properties.setProperty("ebean.test.mongodb.internalPort", "27017");
-    properties.setProperty("ebean.test.mongodb.username", "admin");
-    properties.setProperty("ebean.test.mongodb.password", "secret");
-    properties.setProperty("ebean.test.mongodb.dbName", "mydb");
-    properties.setProperty("ebean.test.mongodb.shutdownMode", "stop");
+    properties.setProperty("ebean.test.mongo.image", "mongo:7.0");
+    properties.setProperty("ebean.test.mongo.port", "27018");
+    properties.setProperty("ebean.test.mongo.containerName", "mongo_junk8");
+    properties.setProperty("ebean.test.mongo.internalPort", "27017");
+    properties.setProperty("ebean.test.mongo.username", "admin");
+    properties.setProperty("ebean.test.mongo.password", "secret");
+    properties.setProperty("ebean.test.mongo.dbName", "mydb");
+    properties.setProperty("ebean.test.mongo.shutdownMode", "stop");
 
     InternalConfig config = MongoContainer.builder("8.0")
       .properties(properties)

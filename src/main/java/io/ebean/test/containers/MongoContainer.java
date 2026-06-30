@@ -71,7 +71,7 @@ public class MongoContainer extends BaseContainer<MongoContainer> {
     private String dbName = "test";
 
     private Builder(String version) {
-      super("mongodb", 27017, 27017, version);
+      super("mongo", 27017, 27017, version);
     }
 
     /**
