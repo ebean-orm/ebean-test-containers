@@ -12,4 +12,5 @@ open module io.ebean.test.containers {
 //  requires static aws.java.sdk.s3;
 //  requires static aws.java.sdk.sns;
 //  requires static aws.java.sdk.sqs;
+//  requires static org.mongodb.driver.sync.client;
 }
