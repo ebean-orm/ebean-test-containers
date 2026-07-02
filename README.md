@@ -17,7 +17,7 @@ containers to make testing nice for Ebean ORM, see https://ebean.io/docs/testing
 
 ## Supported Containers
 
-Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Floci, Hana, LocalDynamoDB, Localstack, MariaDB, MySql, NuoDB, Oracle, Postgres, Redis, SqlServer, Yugabyte.
+Postgres, ClickHouse, CockroachDB, DB2, ElasticSearch, Floci, Hana, LocalDynamoDB, Localstack, MariaDB, MongoDB, MySql, NuoDB, Oracle, Postgres, Redis, SqlServer, Yugabyte.
 
 ## Dependency
 
@@ -286,6 +286,25 @@ occurring automatically on JVM shutdown.
 ```java
     RedisContainer container = RedisContainer.builder("latest")
       .start();
+
+```
+
+#### MongoDB
+
+```java
+    MongoContainer container = MongoContainer.builder("8.0")
+      //.port(27017)
+      //.containerName("ut_mongodb")
+      //.username("test")
+      //.password("test")
+      //.dbName("test")
+      .start();
+
+    // obtain connection string
+    String connectionString = container.connectionString();
+
+    // obtain a MongoClient (requires mongodb-driver-sync on the classpath)
+    MongoClient client = container.mongoClient();
 
 ```
 

@@ -109,6 +109,14 @@
     </dependency>
 
     <dependency>
+      <groupId>org.mongodb</groupId>
+      <artifactId>mongodb-driver-sync</artifactId>
+      <version>5.3.0</version>
+      <scope>provided</scope>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
       <groupId>io.ebean</groupId>
       <artifactId>ebean</artifactId>
       <version>17.5.0</version>
