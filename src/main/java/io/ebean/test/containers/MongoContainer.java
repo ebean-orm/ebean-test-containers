@@ -139,7 +139,8 @@ public class MongoContainer extends BaseContainer<MongoContainer> {
    */
   public String connectionString() {
     if (notEmpty(username) && notEmpty(password)) {
-      return String.format("mongodb://%s:%s@%s:%d/%s", username, password, config.getHost(), config.getPort(), dbName);
+      // MONGO_INITDB_ROOT_USERNAME/PASSWORD always create the root user in the "admin" database
+      return String.format("mongodb://%s:%s@%s:%d/%s?authSource=admin", username, password, config.getHost(), config.getPort(), dbName);
     }
     return String.format("mongodb://%s:%d/%s", config.getHost(), config.getPort(), dbName);
   }

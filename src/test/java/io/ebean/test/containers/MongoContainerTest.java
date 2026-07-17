@@ -2,6 +2,7 @@ package io.ebean.test.containers;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 import org.junit.jupiter.api.Test;
 
 import java.util.Properties;
@@ -35,6 +36,8 @@ class MongoContainerTest {
     try (MongoClient client = container.mongoClient()) {
       MongoDatabase db = client.getDatabase(container.dbName());
       assertThat(db.getName()).isEqualTo("test");
+      Document result = db.runCommand(new Document("ping", 1));
+      assertThat(result.getDouble("ok")).isEqualTo(1.0);
     }
 
     container.stopRemove();
@@ -48,7 +51,7 @@ class MongoContainerTest {
       .dbName("mydb")
       .build();
 
-    assertThat(container.connectionString()).isEqualTo("mongodb://admin:secret@localhost:27017/mydb");
+    assertThat(container.connectionString()).isEqualTo("mongodb://admin:secret@localhost:27017/mydb?authSource=admin");
   }
 
   @Test
